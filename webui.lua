@@ -1,4 +1,5 @@
 socket = require("socket")
+require("webui-page")
 
 host = "0.0.0.0"
 port = "8000"
@@ -58,9 +59,8 @@ function listen()
       response = response.."Content-Type: text/html; charset=UTF-8\n"
       response = response.."Connection: close\n\n"
 
-      for l in io.lines("webui.html") do
-        response = response..l
-      end
+      response = response..page
+
       connection:send(response)
       connection:close()
       return
