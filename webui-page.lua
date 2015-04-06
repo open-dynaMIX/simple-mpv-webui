@@ -1,4 +1,4 @@
-<!doctype html>
+page = [[<!doctype html>
 <html>
   <head>
     <meta charset="utf-8"/>
@@ -59,3 +59,4 @@ function ajax(command, param){
 }
   </script>
 </html>
+]]
