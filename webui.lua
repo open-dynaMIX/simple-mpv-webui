@@ -20,10 +20,27 @@ commands = {
     local curr = mp.get_property_number("volume")
     mp.set_property_number("volume", curr + v)
   end
-
 }
 
-function listen() 
+function header(code, content_type)
+  local h = ""
+  if code == 200 then
+    h = h.."HTTP/1.1 200 OK\n"
+
+    if content_type == "html" then
+      h = h.."Content-Type: text/html; charset=UTF-8\n"
+    elseif content_type == "json" then
+      h = h.."Content-Type: application/json; charset=UTF-8\n"
+    end
+
+  elseif code == 404 then
+    h = h.."HTTP/1.1 404 Not Found\n"
+  end
+
+  return h.."Connection: close\n\n"
+end
+
+function listen()
   local connection = server:accept()
   if connection == nil then
     return
@@ -41,33 +58,41 @@ function listen()
       local param = components() or ""
 
       local f = commands[command]
-      if (f ~= nil) then
+      if f ~= nil then
         f(param);
-        connection:send("HTTP/1.1 200 OK\n")
+        connection:send(header(200, "html"))
       else 
-        connection:send("HTTP/1.1 404 Not Found\n")
+        connection:send(header(404, nil))
       end
 
-      connection:send("Connection: close\n\n")
       connection:close()
       return
-    end
 
-    if method == "GET" then
+    elseif method == "GET" then
       local response = ""
-      response = response.."HTTP/1.1 200 OK\n"
-      response = response.."Content-Type: text/html; charset=UTF-8\n"
-      response = response.."Connection: close\n\n"
+      if (path == "") then
+        connection:send(header(200, "html"))
+        connection:send(page)
+        connection:close()
+        return
 
-      response = response..page
+      else if (path == "status") then
+          connection:send(header(200, "json"))
+          local json = [[{"file":"]]..mp.get_property("path")..'",'
+          json = json..'"length":"'..mp.get_property("length")..'",'
+          json = json..'"pos":"'..mp.get_property("time-pos")..'",'
+          json = json..'"volume":"'..mp.get_property("volume")..'"}'
+          
 
-      connection:send(response)
-      connection:close()
-      return
+          connection:send(json)
+          connection:close()
+          return
+        else
+          connection:send(header(404, nil))
+          return
+        end
+      end
     end
-    local line = connection:receive()
   end
-  connection:close()
 end
-
 mp.add_periodic_timer(0.2, listen)

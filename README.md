@@ -7,4 +7,5 @@ basic web design skills by editing `webui-page.lua`.
 
 To use it, simply copy `webui.lua` and `webui-page.lua` to `~/.mpv/scripts`. mpv
 will then run it automatically. Note that as the port is hard coded, only one
-instance can be run at a time. This should be quite trivial to fix.
+instance can be run at a time. This should be quite trivial to fix. Note also,
+that [luasocket](https://github.com/diegonehab/luasocket) is required.
