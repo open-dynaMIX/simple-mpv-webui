@@ -1,8 +1,8 @@
 socket = require("socket")
-require("webui-page")
+local open = io.open
 
-host = "0.0.0.0"
-port = "8000"
+host = "::"
+port = "8080"
 server = assert(socket.bind(host, port))
 server:settimeout(0)
 
@@ -16,11 +16,47 @@ commands = {
     mp.command("seek "..t)
   end,
 
+  prev = function(t)
+    mp.command("playlist-prev")
+  end,
+
+  next = function(t)
+    mp.command("playlist-next")
+  end,
+
   volume = function(v)
-    local curr = mp.get_property_number("volume")
-    mp.set_property_number("volume", curr + v)
+    mp.command('add volume '..v)
+  end,
+
+  sub_delay = function(v)
+    mp.command('add sub-delay '..v)
+  end,
+
+  cycle_sub = function(v)
+    mp.command("cycle sub")
+  end,
+
+  cycle_audio = function(v)
+    mp.command("cycle audio")
   end
 }
+
+function script_path()
+   local str = debug.getinfo(2, "S").source:sub(2)
+   return str:match("(.*/)")
+end
+
+local function sleep(n)
+  os.execute("sleep " .. tonumber(n))
+end
+
+local function read_file(path)
+    local file = open(path, "rb")
+    if not file then return nil end
+    local content = file:read "*a"
+    file:close()
+    return content
+end
 
 function header(code, content_type)
   local h = ""
@@ -38,6 +74,15 @@ function header(code, content_type)
   end
 
   return h.."Connection: close\n\n"
+end
+
+local function get_prop(property, placeholder)
+  placeholder = placeholder or 'unknown'
+  local prop = mp.get_property(property)
+  if prop == nil then
+    prop = placeholder
+  end
+  return prop
 end
 
 function listen()
@@ -61,7 +106,7 @@ function listen()
       if f ~= nil then
         f(param);
         connection:send(header(200, "html"))
-      else 
+      else
         connection:send(header(404, nil))
       end
 
@@ -70,27 +115,34 @@ function listen()
 
     elseif method == "GET" then
       local response = ""
-      if (path == "") then
-        connection:send(header(200, "html"))
-        connection:send(page)
+
+      if (path == "status") then
+        sleep(.2)
+        connection:send(header(200, "json"))
+
+        local json = [[{"file":"]]..get_prop("path")..'",'
+        json = json..'"duration":"'..get_prop("duration")..'",'
+        json = json..'"position":"'..get_prop("time-pos")..'",'
+        json = json..'"remaining":"'..get_prop("playtime-remaining")..'",'
+        json = json..'"sub-delay":"'..get_prop("sub-delay")..'",'
+        json = json..'"volume":"'..get_prop("volume")..'"}'
+
+        connection:send(json)
         connection:close()
         return
-
-      else if (path == "status") then
-          connection:send(header(200, "json"))
-          local json = [[{"file":"]]..mp.get_property("path")..'",'
-          json = json..'"length":"'..mp.get_property("length")..'",'
-          json = json..'"pos":"'..mp.get_property("time-pos")..'",'
-          json = json..'"volume":"'..mp.get_property("volume")..'"}'
-          
-
-          connection:send(json)
-          connection:close()
-          return
-        else
-          connection:send(header(404, nil))
-          return
+      else
+        if path == "" then
+          path = 'index.html'
         end
+        local content = read_file(script_path()..'webui-page/'..path)
+        if content == nil then
+          connection:send(header(404, nil))
+        else
+          connection:send(header(200, "html"))
+          connection:send(content)
+        end
+        connection:close()
+        return
       end
     end
   end

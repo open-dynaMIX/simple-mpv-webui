@@ -1,0 +1,100 @@
+body {
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-size: 50px;
+  max-width: 100%;
+  background-color: #000000;
+  color: #a0a0a0;
+}
+
+h1 {
+  font-size: 30px;
+  word-wrap: break-word;
+}
+
+.button {
+  text-align: center;
+  display: inline-block;
+  height: 150px;
+  border-radius: 6px;
+  font-size: 80px;
+  margin-bottom: 15px;
+  color: #000000;
+  cursor: pointer;
+}
+
+.button-content {
+  padding-top: 32px;
+}
+
+.green {
+  background-color: #6f6;
+}
+
+.green:hover {
+    background-color: #48b048;
+}
+
+.green:active {
+    background-color: #368236;
+}
+
+.blue {
+  background-color: #66f;
+}
+
+.blue:hover {
+    background-color: #5353cd;
+}
+
+.blue:active {
+    background-color: #333380;
+}
+
+.gray {
+  background-color: #999;
+}
+
+.gray:hover {
+    background-color: #6f6f6f;
+}
+
+.gray:active {
+    background-color: #3d3d3d;
+}
+
+.play {
+  width: 100%;
+}
+
+.seek {
+  width: 49%;
+}
+
+.next-prev {
+  width: 49%;
+}
+
+.vol {
+  width: 49%;
+}
+
+.sub {
+  width: 49%;
+}
+
+.right {
+  float: right;
+}
+
+.left {
+  float: left;
+}
+
+table {
+  margin-bottom: 10px;
+  font-size: 20px;
+}
+
+table td {
+  padding: 0 7px;
+}
