@@ -22,6 +22,14 @@ h1 {
   cursor: pointer;
 }
 
+.button:hover {
+  filter: brightness(50%);
+}
+
+.button:active {
+  filter: brightness(30%);
+}
+
 .button-content {
   padding-top: 32px;
 }
@@ -30,36 +38,12 @@ h1 {
   background-color: #6f6;
 }
 
-.green:hover {
-    background-color: #48b048;
-}
-
-.green:active {
-    background-color: #368236;
-}
-
 .blue {
   background-color: #66f;
 }
 
-.blue:hover {
-    background-color: #5353cd;
-}
-
-.blue:active {
-    background-color: #333380;
-}
-
 .gray {
   background-color: #999;
-}
-
-.gray:hover {
-    background-color: #6f6f6f;
-}
-
-.gray:active {
-    background-color: #3d3d3d;
 }
 
 .play {
