@@ -1,5 +1,5 @@
 # simple-mpv-webui
-**simple mpv webui** is a web based user interface with controls for the [mpv mediaplayer](https://mpv.io/). It serves a web page on port 8080.
+...is a web based user interface with controls for the [mpv mediaplayer](https://mpv.io/). It serves a web page on port 8080.
 
 ## Usage
 To use it, simply copy `webui.lua` and the `webui-page`-folder to `~/.mpv/scripts`, mpv will then run it automatically.
