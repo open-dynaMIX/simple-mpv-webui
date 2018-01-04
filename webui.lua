@@ -50,6 +50,22 @@ local function sleep(n)
   os.execute("sleep " .. tonumber(n))
 end
 
+local function get_content_type(file_type)
+  if file_type == 'html' then
+    return 'text/html'
+  elseif file_type == 'json' then
+    return 'application/json'
+  elseif file_type == 'js' then
+    return 'application/javascript'
+  elseif file_type == 'png' then
+    return 'image/png'
+  elseif file_type == 'css' then
+    return 'text/css'
+  elseif file_type == 'woff2' then
+    return 'font/woff2'
+  end
+end
+
 local function read_file(path)
     local file = open(path, "rb")
     if not file then return nil end
@@ -63,11 +79,7 @@ function header(code, content_type)
   if code == 200 then
     h = h.."HTTP/1.1 200 OK\n"
 
-    if content_type == "html" then
-      h = h.."Content-Type: text/html; charset=UTF-8\n"
-    elseif content_type == "json" then
-      h = h.."Content-Type: application/json; charset=UTF-8\n"
-    end
+    h = h.."Content-Type: "..content_type.."; charset=UTF-8\n"
 
   elseif code == 404 then
     h = h.."HTTP/1.1 404 Not Found\n"
@@ -105,7 +117,7 @@ function listen()
       local f = commands[command]
       if f ~= nil then
         f(param);
-        connection:send(header(200, "html"))
+        connection:send(header(200, get_content_type("html")))
       else
         connection:send(header(404, nil))
       end
@@ -118,7 +130,7 @@ function listen()
 
       if (path == "status") then
         sleep(.2)
-        connection:send(header(200, "json"))
+        connection:send(header(200, get_content_type("json")))
 
         local json = [[{"file":"]]..get_prop("path")..'",'
         json = json..'"duration":"'..get_prop("duration")..'",'
@@ -134,11 +146,13 @@ function listen()
         if path == "" then
           path = 'index.html'
         end
+        local extension = path:match("[^.]+$") or ""
         local content = read_file(script_path()..'webui-page/'..path)
-        if content == nil then
+        local content_type = get_content_type(extension)
+        if content == nil or content_type == nil then
           connection:send(header(404, nil))
         else
-          connection:send(header(200, "html"))
+          connection:send(header(200, content_type))
           connection:send(content)
         end
         connection:close()
