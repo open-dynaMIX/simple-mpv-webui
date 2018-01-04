@@ -52,17 +52,23 @@ end
 
 local function get_content_type(file_type)
   if file_type == 'html' then
-    return 'text/html'
+    return 'text/html; charset=UTF-8'
   elseif file_type == 'json' then
-    return 'application/json'
+    return 'application/json; charset=UTF-8'
   elseif file_type == 'js' then
-    return 'application/javascript'
+    return 'application/javascript; charset=UTF-8'
   elseif file_type == 'png' then
     return 'image/png'
+  elseif file_type == 'ico' then
+    return 'image/x-icon'
+  elseif file_type == 'svg' then
+    return 'image/svg+xml'
+  elseif file_type == 'xml' then
+    return 'application/xml; charset=UTF-8'
   elseif file_type == 'css' then
-    return 'text/css'
+    return 'text/css; charset=UTF-8'
   elseif file_type == 'woff2' then
-    return 'font/woff2'
+    return 'font/woff2; charset=UTF-8'
   end
 end
 
@@ -79,7 +85,7 @@ function header(code, content_type)
   if code == 200 then
     h = h.."HTTP/1.1 200 OK\n"
 
-    h = h.."Content-Type: "..content_type.."; charset=UTF-8\n"
+    h = h.."Content-Type: "..content_type.."\n"
 
   elseif code == 404 then
     h = h.."HTTP/1.1 404 Not Found\n"
