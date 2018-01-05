@@ -12,6 +12,11 @@ commands = {
     mp.set_property_bool("pause", not curr)
   end,
 
+  fullscreen = function()
+    local curr = mp.get_property_bool("fullscreen")
+    mp.set_property_bool("fullscreen", not curr)
+  end,
+
   seek = function(t)
     mp.command("seek "..t)
   end,
@@ -38,6 +43,10 @@ commands = {
 
   cycle_audio = function(v)
     mp.command("cycle audio")
+  end,
+
+  cycle_audio_device = function(v)
+    mp.command("cycle_values audio-device alsa alsa/hdmi")
   end
 }
 

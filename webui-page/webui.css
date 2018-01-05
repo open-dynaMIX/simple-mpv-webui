@@ -15,6 +15,7 @@ h1 {
   text-align: center;
   display: inline-block;
   height: 150px;
+  width: 49%;
   border-radius: 6px;
   font-size: 80px;
   margin-bottom: 15px;
@@ -48,22 +49,6 @@ h1 {
 
 .play {
   width: 100%;
-}
-
-.seek {
-  width: 49%;
-}
-
-.next-prev {
-  width: 49%;
-}
-
-.vol {
-  width: 49%;
-}
-
-.sub {
-  width: 49%;
 }
 
 .right {
