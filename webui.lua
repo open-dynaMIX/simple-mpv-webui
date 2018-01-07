@@ -22,7 +22,12 @@ commands = {
   end,
 
   prev = function(t)
-    mp.command("playlist-prev")
+    local position = tonumber(mp.get_property("time-pos"))
+    if position > 1 then
+      mp.command("seek "..-position)
+    else
+      mp.command("playlist-prev")
+    end
   end,
 
   next = function(t)
