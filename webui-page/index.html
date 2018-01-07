@@ -16,48 +16,117 @@
   </head>
   <body>
     <h1 id="filename">Filename</h1>
-    <table>
-    <tr>
-      <td>Duration:</td>
-      <td id="duration"></td>
-    </tr>
-    <tr>
-      <td>Position:</td>
-      <td id="position"></td>
-    </tr>
-    <tr>
-      <td>Remaining:</td>
-      <td id="remaining"></td>
-    </tr>
-    <tr>
-      <td>Sub-delay:</td>
-      <td id="sub-delay"></td>
-    </tr>
-    <tr>
-      <td>Volume:</td>
-      <td id="volume"></td>
-    </tr>
-    </table>
+    <div class="table-one">
+      <table>
+        <tr>
+          <td>Duration:</td>
+          <td id="duration"></td>
+        </tr>
+        <tr>
+          <td>Position:</td>
+          <td id="position"></td>
+        </tr>
+        <tr>
+          <td>Remaining:</td>
+          <td id="remaining"></td>
+        </tr>
+      </table>
+    </div>
+    <div class="table-two">
+      <table class="two">
+        <tr>
+          <td>Sub-delay:</td>
+          <td id="sub-delay"></td>
+        </tr>
+        <tr>
+          <td>Volume:</td>
+          <td id="volume"></td>
+        </tr>
+      </table>
+    </div>
 
-    <div onClick="send('pause')" class="button play green"><div class='button-content'><i class="fas fa-play"></i> <i class="fas fa-pause"></i></div></div>
+    <div onClick="send('pause')" class="button play green">
+      <div class="content icon-content" id="playPause">
+        <i class="fas fa-play"></i><i class="fas fa-pause"></i>
+      </div>
+    </div>
 
-    <div onClick="send('seek', '-10')" class="button left blue"><div class='button-content'><i class="fas fa-backward"></i></div></div>
-    <div onClick="send('seek', '10')" class="button right blue"><div class='button-content'><i class="fas fa-forward"></i></div></div>
+    <div onClick="send('seek', '-10')" class="button left blue">
+      <div class="content icon-content">
+        <i class="fas fa-backward"></i>
+      </div>
+    </div>
+    <div onClick="send('seek', '10')" class="button right blue">
+      <div class="content icon-content">
+        <i class="fas fa-forward"></i>
+      </div>
+    </div>
 
-    <div onClick="send('prev')" class="button left blue"><div class='button-content'><i class="fas fa-fast-backward"></i></div></div>
-    <div onClick="send('next')" class="button right blue"><div class='button-content'><i class="fas fa-fast-forward"></i></div></div>
+    <div onClick="send('prev')" class="button left blue">
+      <div class="content icon-content">
+        <i class="fas fa-fast-backward"></i>
+      </div>
+    </div>
+    <div onClick="send('next')" class="button right blue">
+      <div class="content icon-content">
+        <i class="fas fa-fast-forward"></i>
+      </div>
+    </div>
 
-    <div onClick="send('volume', '-5')" class="button left gray"><div class='button-content'><i class="fas fa-volume-down"></i></div></div>
-    <div onClick="send('volume', '5')" class="button right gray"><div class='button-content'><i class="fas fa-volume-up"></i></div></div>
+    <div onClick="send('volume', '-5')" class="button left red">
+      <div class="content icon-content">
+        <i class="fas fa-volume-down"></i>
+      </div>
+    </div>
+    <div onClick="send('volume', '5')" class="button right red">
+      <div class="content icon-content">
+        <i class="fas fa-volume-up"></i>
+      </div>
+    </div>
 
-    <div onClick="send('sub_delay', '-0.05')" class="button left gray"><div class='button-content'>sub -</div></div>
-    <div onClick="send('sub_delay', '0.05')" class="button right gray"><div class='button-content'>sub +</div></div>
+    <div onClick="send('cycle_sub')" class="button left violet">
+      <div class="content text-content">
+        Next sub
+      </div>
+    </div>
+    <div onClick="send('cycle_audio')" class="button right violet">
+      <div class="content text-content">
+        Next audio
+      </div>
+    </div>
 
-    <div onClick="send('cycle_sub')" class="button left gray"><div class='button-content'>sub <i class="fas fa-fast-forward"></i></div></div>
-    <div onClick="send('cycle_audio')" class="button right gray"><div class='button-content'>audio <i class="fas fa-fast-forward"></i></div></div>
+    <div onClick="send('sub_delay', '-0.05')" class="button left yellow">
+      <div class="content text-content">
+        Sub delay -
+      </div>
+    </div>
+    <div onClick="send('sub_delay', '0.05')" class="button right yellow">
+      <div class="content text-content">
+        Sub delay +
+      </div>
+    </div>
 
-    <div onClick="send('fullscreen')" class="button left gray"><div class='button-content'>Fullscreen</div></div>
-    <div onClick="send('cycle_audio_device')" class="button right gray"><div class='button-content'>audio-device</div></div>
+    <div onClick="send('audio_delay', '-0.05')" class="button left yellow">
+      <div class="content text-content">
+        Audio delay -
+      </div>
+    </div>
+    <div onClick="send('audio_delay', '0.05')" class="button right yellow">
+      <div class="content text-content">
+        Audio delay +
+      </div>
+    </div>
+
+    <div onClick="send('fullscreen')" class="button left gray">
+      <div class="content text-content">
+        Fullscreen
+      </div>
+    </div>
+    <div onClick="send('cycle_audio_device')" class="button right gray">
+      <div class="content text-content">
+        Audio device
+      </div>
+    </div>
 
   </body>
   <script src="webui.js"></script>

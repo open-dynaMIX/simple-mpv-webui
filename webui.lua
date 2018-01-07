@@ -37,6 +37,10 @@ commands = {
     mp.command('add sub-delay '..v)
   end,
 
+  audio_delay = function(v)
+    mp.command('add audio-delay '..v)
+  end,
+
   cycle_sub = function(v)
     mp.command("cycle sub")
   end,
@@ -147,9 +151,10 @@ function listen()
         sleep(.2)
         connection:send(header(200, get_content_type("json")))
 
-        local json = [[{"file":"]]..get_prop("path")..'",'
+        local json = [[{"file":"]]..get_prop('filename')..'",'
         json = json..'"duration":"'..get_prop("duration")..'",'
         json = json..'"position":"'..get_prop("time-pos")..'",'
+        json = json..'"pause":"'..get_prop("pause")..'",'
         json = json..'"remaining":"'..get_prop("playtime-remaining")..'",'
         json = json..'"sub-delay":"'..get_prop("sub-delay")..'",'
         json = json..'"volume":"'..get_prop("volume")..'"}'

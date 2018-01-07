@@ -1,13 +1,12 @@
 body {
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-  font-size: 50px;
   max-width: 100%;
   background-color: #000000;
   color: #a0a0a0;
 }
 
 h1 {
-  font-size: 30px;
+  font-size: 5vmin;
   word-wrap: break-word;
 }
 
@@ -17,10 +16,10 @@ h1 {
   height: 150px;
   width: 49%;
   border-radius: 6px;
-  font-size: 80px;
   margin-bottom: 15px;
   color: #000000;
   cursor: pointer;
+  font-size: 150px;
 }
 
 .button:hover {
@@ -31,8 +30,19 @@ h1 {
   filter: brightness(30%);
 }
 
-.button-content {
-  padding-top: 32px;
+.button .content, .button .content i {
+  text-align: center;
+  vertical-align: middle;
+  line-height: 150px;
+}
+
+.button .icon-content {
+  font-size: 70%;
+}
+
+.button .text-content {
+  font-size: 5vw;
+  font-weight: bold;
 }
 
 .green {
@@ -45,6 +55,18 @@ h1 {
 
 .gray {
   background-color: #999;
+}
+
+.red {
+  background-color: #b53636;
+}
+
+.yellow {
+  background-color: #d7b52f;
+}
+
+.violet {
+  background-color: #9135bc;
 }
 
 .play {
@@ -60,10 +82,20 @@ h1 {
 }
 
 table {
-  margin-bottom: 10px;
-  font-size: 20px;
+  margin-bottom: 40px;
+  font-size: 4vmin;
 }
 
 table td {
-  padding: 0 7px;
+  padding: 0 17px 0 0;
 }
+
+.table-one {
+    float: left;
+    width: 50%;
+}
+
+.table-two   {
+    width: 50%;
+    float: right;
+}​

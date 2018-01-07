@@ -32,6 +32,14 @@ function format_time(seconds){
   return hours + ":" + minutes + ":" + seconds;
 }
 
+function playPause(value) {
+  if (value === 'yes') {
+    return '<i class="fas fa-play"></i>'
+  } else {
+    return '<i class="fas fa-pause"></i>'
+  }
+}
+
 function status(bottom = false){
   var request = new XMLHttpRequest();
   request.open("get", "/status");
@@ -50,6 +58,8 @@ function status(bottom = false){
         json['sub-delay'] * 1000;
       document.getElementById("volume").innerHTML =
         Math.floor(json['volume']) + "%";
+      document.getElementById("playPause").innerHTML =
+        playPause(json['pause']);
       if (bottom) {
         window.scrollTo(0,document.body.scrollHeight);
       }
@@ -59,5 +69,5 @@ function status(bottom = false){
   request.send(null);
 }
 
-status(true);
+status();
 setInterval(function(){status();}, 2000);
