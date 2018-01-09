@@ -64,10 +64,6 @@ function script_path()
    return str:match("(.*/)")
 end
 
-local function sleep(n)
-  os.execute("sleep " .. tonumber(n))
-end
-
 local function get_content_type(file_type)
   if file_type == 'html' then
     return 'text/html; charset=UTF-8'
@@ -150,10 +146,9 @@ function listen()
       return
 
     elseif method == "GET" then
-      local response = ""
 
       if (path == "status") then
-        sleep(.2)
+        socket.sleep(.2)
         connection:send(header(200, get_content_type("json")))
 
         local json = [[{"file":"]]..get_prop('filename')..'",'
