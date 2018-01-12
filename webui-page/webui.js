@@ -1,4 +1,15 @@
+var DEBUG = false;
+var loaded = false;
+var metadata = null;
+var filename = null;
+
 function send(command, param){
+  DEBUG && console.log('Sending command: ' + command + ' - param: ' + param);
+  if ('mediaSession' in navigator) {
+    if (command === 'toggle_pause') {
+      loadAudio();
+    }
+  }
   var path = command;
   if (param !== undefined)
     path += "/" + param;
@@ -13,6 +24,14 @@ function send(command, param){
   }
 
   request.send(null);
+}
+
+function loadAudio() {
+  if (!window.loaded) {
+    DEBUG && console.log('Loading dummy audio');
+    document.getElementById("audio").load();
+    window.loaded = true;
+  }
 }
 
 function format_time(seconds){
@@ -32,11 +51,29 @@ function format_time(seconds){
   return hours + ":" + minutes + ":" + seconds;
 }
 
-function playPause(value) {
+function setPlayPause(value) {
+  var playPause = document.getElementById("playPause");
   if (value === 'yes') {
-    return '<i class="fas fa-play"></i>'
+    playPause.innerHTML = '<i class="fas fa-play"></i>';
+    if ('mediaSession' in navigator) {
+      audioPause();
+    }
   } else {
-    return '<i class="fas fa-pause"></i>'
+    playPause.innerHTML = '<i class="fas fa-pause"></i>';
+    if ('mediaSession' in navigator) {
+      audioPlay();
+      setupNotification();
+    }
+  }
+}
+
+function getTitle() {
+  if (window.metadata['title']) {
+    return window.metadata['title'];
+  } else if (window.metadata['TITLE']) {
+    return window.metadata['TITLE'];
+  } else if (window.filename) {
+    return window.filename;
   }
 }
 
@@ -47,7 +84,9 @@ function status(bottom = false){
   request.onreadystatechange = function(){
     if (request.readyState == 4 && request.status == 200){
       var json = JSON.parse(request.responseText)
-      document.getElementById("filename").innerHTML = json['file'];
+      window.metadata = json['metadata'];
+      window.filename = json['file'];
+      document.getElementById("filename").innerHTML = getTitle();
       document.getElementById("duration").innerHTML =
         format_time(json['duration']);
       document.getElementById("position").innerHTML =
@@ -55,11 +94,12 @@ function status(bottom = false){
       document.getElementById("remaining").innerHTML =
         format_time(json['remaining']);
       document.getElementById("sub-delay").innerHTML =
-        json['sub-delay'] * 1000;
+        json['sub-delay'] * 1000 + ' ms';
+      document.getElementById("audio-delay").innerHTML =
+        json['audio-delay'] * 1000 + ' ms';
       document.getElementById("volume").innerHTML =
         Math.floor(json['volume']) + "%";
-      document.getElementById("playPause").innerHTML =
-        playPause(json['pause']);
+      setPlayPause(json['pause']);
       if (bottom) {
         window.scrollTo(0,document.body.scrollHeight);
       }
@@ -67,6 +107,51 @@ function status(bottom = false){
   }
 
   request.send(null);
+}
+
+function audioPlay(){
+  var audio = document.getElementById("audio");
+  if (audio.paused) {
+    DEBUG && console.log('Playing dummy audio');
+    audio.play();
+    setupNotification();
+  }
+}
+
+function audioPause(){
+  var audio = document.getElementById("audio");
+  if (!audio.paused) {
+    DEBUG && console.log('Pausing dummy audio');
+    audio.pause();
+    setupNotification();
+  }
+}
+
+function setupNotification() {
+  if ('mediaSession' in navigator) {
+    if (window.metadata['artist']) {
+      var artist = window.metadata['artist'];
+    }
+    if (window.metadata['album']) {
+      var album = window.metadata['album'];
+    }
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: getTitle(),
+      artist: artist,
+      album: album,
+      artwork: [
+        { src: '/favicons/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
+        { src: '/favicons/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
+      ]
+    });
+
+    navigator.mediaSession.setActionHandler('play', function() {send('play');});
+    navigator.mediaSession.setActionHandler('pause', function() {send('pause');});
+    navigator.mediaSession.setActionHandler('seekbackward', function() {send('seek', '-10');});
+    navigator.mediaSession.setActionHandler('seekforward', function() {send('seek', '10');});
+    navigator.mediaSession.setActionHandler('previoustrack', function() {send('playlist_prev');});
+    navigator.mediaSession.setActionHandler('nexttrack', function() {send('playlist_next');});
+  }
 }
 
 status();

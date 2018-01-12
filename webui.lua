@@ -7,7 +7,15 @@ server = assert(socket.bind(host, port))
 server:settimeout(0)
 
 commands = {
+  play = function()
+    mp.set_property_bool("pause", false)
+  end,
+
   pause = function()
+    mp.set_property_bool("pause", true)
+  end,
+
+  toggle_pause = function()
     local curr = mp.get_property_bool("pause")
     mp.set_property_bool("pause", not curr)
   end,
@@ -21,7 +29,7 @@ commands = {
     mp.command("seek "..t)
   end,
 
-  prev = function(t)
+  playlist_prev = function(t)
     local position = tonumber(mp.get_property("time-pos"))
     if position > 1 then
       mp.command("seek "..-position)
@@ -30,7 +38,7 @@ commands = {
     end
   end,
 
-  next = function(t)
+  playlist_next = function(t)
     mp.command("playlist-next")
   end,
 
@@ -83,6 +91,8 @@ local function get_content_type(file_type)
     return 'text/css; charset=UTF-8'
   elseif file_type == 'woff2' then
     return 'font/woff2; charset=UTF-8'
+  elseif file_type == 'mp3' then
+    return 'audio/mpeg'
   end
 end
 
@@ -157,6 +167,8 @@ function listen()
         json = json..'"pause":"'..get_prop("pause")..'",'
         json = json..'"remaining":"'..get_prop("playtime-remaining")..'",'
         json = json..'"sub-delay":"'..get_prop("sub-delay")..'",'
+        json = json..'"audio-delay":"'..get_prop("audio-delay")..'",'
+        json = json..'"metadata":'..get_prop("metadata")..','
         json = json..'"volume":"'..get_prop("volume")..'"}'
 
         connection:send(json)

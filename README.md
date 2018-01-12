@@ -11,6 +11,15 @@ Note that as the port is hard coded, only one instance can be run at a time. Thi
 ## Dependencies
  - [luasocket](https://github.com/diegonehab/luasocket)
 
+## Screenshot
+![screenshot](screenshots/webui.png)
+
+## Media Session API
+When using a browser that supports it, simple-mpv-webui uses the Media Session
+API to provide a notification with some metadata and controls:
+
+![notification](screenshots/notification.png)
+
 ## Differences to mpv-web-ui
  - More controls
  - Some styles and font-awesome
