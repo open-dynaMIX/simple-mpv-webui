@@ -1,12 +1,13 @@
 socket = require("socket")
 local open = io.open
+require 'mp.options'
 
-host = "::"
-port = "8080"
-server = assert(socket.bind(host, port))
-server:settimeout(0)
+local options = {
+    port = 8080,
+}
+read_options(options, "webui")
 
-commands = {
+local commands = {
   play = function()
     mp.set_property_bool("pause", false)
   end,
@@ -67,7 +68,25 @@ commands = {
   end
 }
 
-function script_path()
+local function init_server()
+  local msg_prefix = "[webui]"
+
+  local host = "0.0.0.0"
+
+  server = socket.bind(host, options.port)
+
+  if server == nil then
+    mp.osd_message("osd-msg1", msg_prefix..
+      " couldn't spawn server on port "..options.port, 2)
+  else
+    mp.osd_message(msg_prefix.." serving on port "..options.port, 2)
+  end
+  assert(server)
+
+  server:settimeout(0)
+end
+
+local function script_path()
    local str = debug.getinfo(2, "S").source:sub(2)
    return str:match("(.*/)")
 end
@@ -104,7 +123,7 @@ local function read_file(path)
     return content
 end
 
-function header(code, content_type)
+local function header(code, content_type)
   local h = ""
   if code == 200 then
     h = h.."HTTP/1.1 200 OK\n"
@@ -127,7 +146,7 @@ local function get_prop(property, placeholder)
   return prop
 end
 
-function listen()
+local function listen()
   local connection = server:accept()
   if connection == nil then
     return
@@ -193,4 +212,7 @@ function listen()
     end
   end
 end
+
+
+init_server()
 mp.add_periodic_timer(0.2, listen)
