@@ -103,6 +103,8 @@ function status(bottom = false){
       if (bottom) {
         window.scrollTo(0,document.body.scrollHeight);
       }
+    } else {
+      document.getElementById("filename").innerHTML = '<error>"Couldn\'t connect to MPV!"</error>';
     }
   }
 
