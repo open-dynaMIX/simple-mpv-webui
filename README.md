@@ -21,9 +21,14 @@ API to provide a notification with some metadata and controls:
 
 ![notification](screenshots/notification.png)
 
+## Thanks
+Thanks to [makedin](https://github.com/makedin) for his work on this.
+
 ## Differences to mpv-web-ui
  - More controls
  - Some styles and font-awesome
+ - Option to set the port being used (defaults to 8080)
+ - Using the Media Session API
 
 ## Warning
 These are my first steps with lua, so I'm just happy it works.
