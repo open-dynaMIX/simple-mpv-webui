@@ -29,7 +29,7 @@ local commands = {
     mp.command("seek "..t)
   end,
 
-  playlist_prev = function(t)
+  playlist_prev = function()
     local position = tonumber(mp.get_property("time-pos"))
     if position > 1 then
       mp.command("seek "..-position)
@@ -38,7 +38,7 @@ local commands = {
     end
   end,
 
-  playlist_next = function(t)
+  playlist_next = function()
     mp.command("playlist-next")
   end,
 
@@ -46,23 +46,23 @@ local commands = {
     mp.command('add volume '..v)
   end,
 
-  sub_delay = function(v)
-    mp.command('add sub-delay '..v)
+  sub_delay = function(ms)
+    mp.command('add sub-delay '..ms)
   end,
 
-  audio_delay = function(v)
-    mp.command('add audio-delay '..v)
+  audio_delay = function(ms)
+    mp.command('add audio-delay '..ms)
   end,
 
-  cycle_sub = function(v)
+  cycle_sub = function()
     mp.command("cycle sub")
   end,
 
-  cycle_audio = function(v)
+  cycle_audio = function()
     mp.command("cycle audio")
   end,
 
-  cycle_audio_device = function(v)
+  cycle_audio_device = function()
     mp.command("cycle_values audio-device alsa alsa/hdmi")
   end
 }
