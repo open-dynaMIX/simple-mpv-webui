@@ -7,7 +7,7 @@ function send(command, param){
   DEBUG && console.log('Sending command: ' + command + ' - param: ' + param);
   if ('mediaSession' in navigator) {
     if (command === 'toggle_pause') {
-      loadAudio();
+      audioLoad();
     }
   }
   var path = command;
@@ -24,14 +24,6 @@ function send(command, param){
   }
 
   request.send(null);
-}
-
-function loadAudio() {
-  if (!window.loaded) {
-    DEBUG && console.log('Loading dummy audio');
-    document.getElementById("audio").load();
-    window.loaded = true;
-  }
 }
 
 function format_time(seconds){
@@ -105,10 +97,21 @@ function status(bottom = false){
       }
     } else {
       document.getElementById("filename").innerHTML = "<error>Couldn't connect to MPV!</error>";
+      if ('mediaSession' in navigator) {
+        audioPause();
+      }
     }
   }
 
   request.send(null);
+}
+
+function audioLoad() {
+  if (!window.loaded) {
+    DEBUG && console.log('Loading dummy audio');
+    document.getElementById("audio").load();
+    window.loaded = true;
+  }
 }
 
 function audioPlay(){
