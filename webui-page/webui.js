@@ -6,9 +6,7 @@ var filename = null;
 function send(command, param){
   DEBUG && console.log('Sending command: ' + command + ' - param: ' + param);
   if ('mediaSession' in navigator) {
-    if (command === 'toggle_pause') {
-      audioLoad();
-    }
+    audioLoad();
   }
   var path = command;
   if (param !== undefined)
@@ -54,7 +52,6 @@ function setPlayPause(value) {
     playPause.innerHTML = '<i class="fas fa-pause"></i>';
     if ('mediaSession' in navigator) {
       audioPlay();
-      setupNotification();
     }
   }
 }
@@ -92,14 +89,14 @@ function status(bottom = false){
       document.getElementById("volume").innerHTML =
         Math.floor(json['volume']) + "%";
       setPlayPause(json['pause']);
+      if ('mediaSession' in navigator) {
+        setupNotification();
+      }
       if (bottom) {
         window.scrollTo(0,document.body.scrollHeight);
       }
     } else {
       document.getElementById("filename").innerHTML = "<error>Couldn't connect to MPV!</error>";
-      if ('mediaSession' in navigator) {
-        audioPause();
-      }
     }
   }
 
@@ -114,21 +111,19 @@ function audioLoad() {
   }
 }
 
-function audioPlay(){
+function audioPlay() {
   var audio = document.getElementById("audio");
   if (audio.paused) {
     DEBUG && console.log('Playing dummy audio');
     audio.play();
-    setupNotification();
   }
 }
 
-function audioPause(){
+function audioPause() {
   var audio = document.getElementById("audio");
   if (!audio.paused) {
     DEBUG && console.log('Pausing dummy audio');
     audio.pause();
-    setupNotification();
   }
 }
 
