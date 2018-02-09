@@ -21,6 +21,8 @@ API to provide a notification with some metadata and controls:
 
 ![notification](screenshots/notification.png)
 
+In order to have the notification work properly you need to at least once trigger play from the webui.
+
 ## Thanks
 Thanks to [makedin](https://github.com/makedin) for his work on this.
 

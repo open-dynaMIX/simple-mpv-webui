@@ -99,7 +99,6 @@ function status(bottom = false){
       document.getElementById("filename").innerHTML = "<error>Couldn't connect to MPV!</error>";
     }
   }
-
   request.send(null);
 }
 
