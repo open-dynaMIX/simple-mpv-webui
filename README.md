@@ -32,5 +32,8 @@ Thanks to [makedin](https://github.com/makedin) for his work on this.
  - Option to set the port being used (defaults to 8080)
  - Using the Media Session API
 
+## Security
+At this point simple-mpv-webui does not provide any form of authentication. So anyone in your local network can access it.
+
 ## Warning
 These are my first steps with lua, so I'm just happy it works.
