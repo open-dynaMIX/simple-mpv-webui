@@ -13,13 +13,13 @@ By default it serves the webui on port 8080. You can change the port with
  - [luasocket](https://github.com/diegonehab/luasocket)
 
 ## Screenshot
-![screenshot](screenshots/webui.png)
+![screenshot](screenshots/webui.png#1)
 
 ## Media Session API
 When using a browser that supports it, simple-mpv-webui uses the Media Session
 API to provide a notification with some metadata and controls:
 
-![notification](screenshots/notification.png)
+![notification](screenshots/notification.png#1)
 
 In order to have the notification work properly you need to at least once trigger play from the webui.
 
