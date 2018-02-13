@@ -2,6 +2,8 @@ var DEBUG = false;
 var loaded = false;
 var metadata = null;
 var filename = null;
+var blockPosSlider = false;
+var blockVolSlider = false;
 
 function send(command, param){
   DEBUG && console.log('Sending command: ' + command + ' - param: ' + param);
@@ -66,29 +68,72 @@ function getTitle() {
   }
 }
 
+function setPosSlider(duration, position) {
+  var slider = document.getElementById("mediaPosition");
+  var pos = document.getElementById("position");
+  slider.max = duration;
+  if (!window.blockPosSlider) {
+    slider.value = position;
+  }
+  pos.innerHTML = format_time(slider.value);
+}
+
+document.getElementById("mediaPosition").onchange = function() {
+  var slider = document.getElementById("mediaPosition");
+  send("set_position", slider.value);
+  window.blockPosSlider = false;
+}
+
+document.getElementById("mediaPosition").oninput = function() {
+  window.blockPosSlider = true;
+  var slider = document.getElementById("mediaPosition");
+  var pos = document.getElementById("position");
+  pos.innerHTML = format_time(slider.value);
+}
+
+function setVolumeSlider(volume) {
+  var slider = document.getElementById("mediaVolume");
+  var vol = document.getElementById("volume");
+  if (!window.blockVolSlider) {
+    slider.value = volume;
+  }
+  vol.innerHTML = slider.value + "%";
+}
+
+document.getElementById("mediaVolume").onchange = function() {
+  var slider = document.getElementById("mediaVolume");
+  send("set_volume", slider.value);
+  window.blockVolSlider = false;
+}
+
+document.getElementById("mediaVolume").oninput = function() {
+  window.blockVolSlider = true;
+  var slider = document.getElementById("mediaVolume");
+  var vol = document.getElementById("volume");
+  vol.innerHTML = slider.value + "%";
+}
+
 function status(bottom = false){
   var request = new XMLHttpRequest();
   request.open("get", "/status");
 
   request.onreadystatechange = function(){
-    if (request.readyState == 4 && request.status == 200){
+    if (request.readyState == 4 && request.status == 200) {
       var json = JSON.parse(request.responseText)
       window.metadata = json['metadata'];
       window.filename = json['file'];
       document.getElementById("filename").innerHTML = getTitle();
       document.getElementById("duration").innerHTML =
-        format_time(json['duration']);
-      document.getElementById("position").innerHTML =
-        format_time(json['position']);
+        '&nbsp;'+ format_time(json['duration']);
       document.getElementById("remaining").innerHTML =
-        format_time(json['remaining']);
+        "-" + format_time(json['remaining']);
       document.getElementById("sub-delay").innerHTML =
-        json['sub-delay'] * 1000 + ' ms';
+        json['sub-delay'];
       document.getElementById("audio-delay").innerHTML =
-        json['audio-delay'] * 1000 + ' ms';
-      document.getElementById("volume").innerHTML =
-        Math.floor(json['volume']) + "%";
+        json['audio-delay'];
       setPlayPause(json['pause']);
+      setPosSlider(json['duration'], json['position']);
+      setVolumeSlider(json['volume']);
       if ('mediaSession' in navigator) {
         setupNotification();
       }
@@ -154,4 +199,4 @@ function setupNotification() {
 }
 
 status();
-setInterval(function(){status();}, 2000);
+setInterval(function(){status();}, 1000);

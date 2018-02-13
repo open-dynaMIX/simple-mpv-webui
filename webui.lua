@@ -29,6 +29,10 @@ local commands = {
     mp.command("seek "..t)
   end,
 
+  set_position = function(t)
+    mp.set_property("time-pos", t)
+  end,
+
   playlist_prev = function()
     local position = tonumber(mp.get_property("time-pos"))
     if position > 1 then
@@ -42,8 +46,12 @@ local commands = {
     mp.command("playlist-next")
   end,
 
-  volume = function(v)
+  add_volume = function(v)
     mp.command('add volume '..v)
+  end,
+
+  set_volume = function(v)
+    mp.command('set volume '..v)
   end,
 
   sub_delay = function(ms)
@@ -136,15 +144,6 @@ local function header(code, content_type)
   return h.."Connection: close\n\n"
 end
 
-local function get_prop(property, placeholder)
-  placeholder = placeholder or 'unknown'
-  local prop = mp.get_property(property)
-  if prop == nil then
-    prop = placeholder
-  end
-  return prop
-end
-
 local function listen()
   local connection = server:accept()
   if connection == nil then
@@ -177,19 +176,24 @@ local function listen()
 
       if (path == "status") then
         socket.sleep(.2)
-        connection:send(header(200, get_content_type("json")))
+        local duration = mp.get_property("duration")
+        if (duration == nil) then
+          connection:send(header(503, nil))
+        else
+          connection:send(header(200, get_content_type("json")))
 
-        local json = [[{"file":"]]..get_prop('filename')..'",'
-        json = json..'"duration":"'..get_prop("duration")..'",'
-        json = json..'"position":"'..get_prop("time-pos")..'",'
-        json = json..'"pause":"'..get_prop("pause")..'",'
-        json = json..'"remaining":"'..get_prop("playtime-remaining")..'",'
-        json = json..'"sub-delay":"'..get_prop("sub-delay")..'",'
-        json = json..'"audio-delay":"'..get_prop("audio-delay")..'",'
-        json = json..'"metadata":'..get_prop("metadata")..','
-        json = json..'"volume":"'..get_prop("volume")..'"}'
+          local json = [[{"file":"]]..mp.get_property('filename')..'",'
+          json = json..'"duration":"'..duration..'",'
+          json = json..'"position":"'..mp.get_property("time-pos")..'",'
+          json = json..'"pause":"'..mp.get_property("pause")..'",'
+          json = json..'"remaining":"'..mp.get_property("playtime-remaining")..'",'
+          json = json..'"sub-delay":"'..mp.get_property_osd("sub-delay")..'",'
+          json = json..'"audio-delay":"'..mp.get_property_osd("audio-delay")..'",'
+          json = json..'"metadata":'..mp.get_property("metadata")..','
+          json = json..'"volume":"'..mp.get_property("volume")..'"}'
 
-        connection:send(json)
+          connection:send(json)
+        end
         connection:close()
         return
       else

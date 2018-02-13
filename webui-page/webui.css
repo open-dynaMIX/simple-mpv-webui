@@ -96,12 +96,65 @@ table td {
   padding: 0 17px 0 0;
 }
 
-.table-one {
-    float: left;
-    width: 50%;
+.slidecontainer {
+  width: 100%;
 }
 
-.table-two   {
-    width: 50%;
-    float: right;
-}​
+/* The slider itself */
+.slider {
+  -webkit-appearance: none;  /* Override default CSS styles */
+  appearance: none;
+  width: 100%;
+  height: 10px;
+  border-radius: 5px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+  margin-bottom: 15px;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+/* The slider handle */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: #66f;
+  cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: #66f;
+  cursor: pointer;
+}
+
+/* No idea if all of this works on IE, but if it does, hide tooltip. */
+.slider::-ms-tooltip {
+  display: none;
+}
+
+.sliderInfoContainer {
+  width: 100%;
+  text-align: center;
+  font-size: 4vmin;
+  margin-bottom: 20px;
+}
+
+.sliderCenter {
+  margin: 0 auto;
+  display: inline-block;
+}
+
+.sliderVolume {
+  margin-bottom: 20px;
+}

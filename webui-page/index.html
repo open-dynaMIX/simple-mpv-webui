@@ -16,23 +16,8 @@
   </head>
   <body>
     <h1 id="filename">Title</h1>
-    <div class="table-one">
-      <table>
-        <tr>
-          <td>Duration:</td>
-          <td id="duration"></td>
-        </tr>
-        <tr>
-          <td>Position:</td>
-          <td id="position"></td>
-        </tr>
-        <tr>
-          <td>Remaining:</td>
-          <td id="remaining"></td>
-        </tr>
-      </table>
-    </div>
-    <div class="table-two">
+
+    <div class="table">
       <table class="two">
         <tr>
           <td>Sub-delay:</td>
@@ -42,11 +27,25 @@
           <td>Audio-delay:</td>
           <td id="audio-delay"></td>
         </tr>
-        <tr>
-          <td>Volume:</td>
-          <td id="volume"></td>
-        </tr>
       </table>
+    </div>
+
+    <div class="slidecontainer">
+      <input type="range" min="0" max="0" value="0" step="any" class="slider" id="mediaPosition">
+      <div class="sliderInfoContainer">
+        <div class="left" id="remaining"></div>
+        <div class="sliderCenter" id="position"></div>
+        <div class="right" id="duration"></div>
+      </div>
+    </div>
+
+    <div class="slidecontainer">
+      <input type="range" min="0" max="130" value="100" step="1" class="slider" id="mediaVolume">
+      <div class="sliderInfoContainer sliderVolume">
+        <div class="left sliderVolume"><i class="fas fa-volume-down"></i></div>
+        <div class="sliderCenter" id="volume"></div>
+        <div class="right"><i class="fas fa-volume-up"></i></div>
+      </div>
     </div>
 
     <div onClick="send('toggle_pause')" class="button play green">
@@ -74,17 +73,6 @@
     <div onClick="send('playlist_next')" class="button right blue">
       <div class="content icon-content">
         <i class="fas fa-fast-forward"></i>
-      </div>
-    </div>
-
-    <div onClick="send('volume', '-5')" class="button left red">
-      <div class="content icon-content">
-        <i class="fas fa-volume-down"></i>
-      </div>
-    </div>
-    <div onClick="send('volume', '5')" class="button right red">
-      <div class="content icon-content">
-        <i class="fas fa-volume-up"></i>
       </div>
     </div>
 
