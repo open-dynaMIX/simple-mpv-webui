@@ -2,7 +2,7 @@
 ...is a web based user interface with controls for the [mpv mediaplayer](https://mpv.io/).
 
 ## Usage
-To use it, simply copy `webui.lua` and the `webui-page`-folder to `~/.mpv/scripts`, mpv will then run it automatically.
+To use it, simply copy `webui.lua` and the `webui-page`-folder to `~/.config/mpv/scripts/`, mpv will then run it automatically.
 
 Alternatively you can also use the `--script` option from mpv or add something like `scripts-add=/path/to/simple-mpv-webui/webui.lua` to `mpv.conf`.
 
