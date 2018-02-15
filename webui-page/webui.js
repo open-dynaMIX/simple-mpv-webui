@@ -43,21 +43,6 @@ function format_time(seconds){
   return hours + ":" + minutes + ":" + seconds;
 }
 
-function setPlayPause(value) {
-  var playPause = document.getElementById("playPause");
-  if (value === 'yes') {
-    playPause.innerHTML = '<i class="fas fa-play"></i>';
-    if ('mediaSession' in navigator) {
-      audioPause();
-    }
-  } else {
-    playPause.innerHTML = '<i class="fas fa-pause"></i>';
-    if ('mediaSession' in navigator) {
-      audioPlay();
-    }
-  }
-}
-
 function getTitle() {
   if (window.metadata['title']) {
     return window.metadata['title'];
@@ -113,6 +98,21 @@ document.getElementById("mediaVolume").oninput = function() {
   vol.innerHTML = slider.value + "%";
 }
 
+function setPlayPause(value) {
+  var playPause = document.getElementById("playPause");
+  if (value === 'yes') {
+    playPause.innerHTML = '<i class="fas fa-play"></i>';
+    if ('mediaSession' in navigator) {
+      audioPause();
+    }
+  } else {
+    playPause.innerHTML = '<i class="fas fa-pause"></i>';
+    if ('mediaSession' in navigator) {
+      audioPlay();
+    }
+  }
+}
+
 function status(bottom = false){
   var request = new XMLHttpRequest();
   request.open("get", "/status");
@@ -140,8 +140,9 @@ function status(bottom = false){
       if (bottom) {
         window.scrollTo(0,document.body.scrollHeight);
       }
-    } else {
+    } else if (request.status == 0) {
       document.getElementById("filename").innerHTML = "<error>Couldn't connect to MPV!</error>";
+      setPlayPause('yes');
     }
   }
   request.send(null);
