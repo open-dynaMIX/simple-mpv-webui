@@ -17,11 +17,12 @@ function send(command, param){
   var request = new XMLHttpRequest();
   request.open("post", path);
 
-  request.onreadystatechange = function(){
-    if (request.readyState == 4 && request.status == 200){
-      status();
-    }
-  }
+  // This should not be needed, since we poll every second anyway
+  // request.onreadystatechange = function(){
+  //   if (request.readyState == 4 && request.status == 200){
+  //     status();
+  //   }
+  // }
 
   request.send(null);
 }

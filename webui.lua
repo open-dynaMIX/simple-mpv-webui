@@ -144,6 +144,10 @@ local function header(code, content_type)
   return h.."Connection: close\n\n"
 end
 
+function round(a)
+  return (a - a % 1) / 1
+end
+
 local function listen()
   local connection = server:accept()
   if connection == nil then
@@ -176,7 +180,7 @@ local function listen()
 
       if (path == "status") then
         socket.sleep(.2)
-        local duration = mp.get_property("duration")
+        local duration = round(mp.get_property("duration"))
         if (duration == nil) then
           connection:send(header(503, nil))
         else
@@ -184,13 +188,13 @@ local function listen()
 
           local json = [[{"file":"]]..mp.get_property('filename')..'",'
           json = json..'"duration":"'..duration..'",'
-          json = json..'"position":"'..mp.get_property("time-pos")..'",'
+          json = json..'"position":"'..round(mp.get_property("time-pos"))..'",'
           json = json..'"pause":"'..mp.get_property("pause")..'",'
-          json = json..'"remaining":"'..mp.get_property("playtime-remaining")..'",'
+          json = json..'"remaining":"'..round(mp.get_property("playtime-remaining"))..'",'
           json = json..'"sub-delay":"'..mp.get_property_osd("sub-delay")..'",'
           json = json..'"audio-delay":"'..mp.get_property_osd("audio-delay")..'",'
           json = json..'"metadata":'..mp.get_property("metadata")..','
-          json = json..'"volume":"'..mp.get_property("volume")..'"}'
+          json = json..'"volume":"'..round(mp.get_property("volume"))..'"}'
 
           connection:send(json)
         end
