@@ -2,7 +2,7 @@ socket = require("socket")
 require 'mp.options'
 
 local options = {
-    port = 8080,
+  port = 8080,
 }
 read_options(options, "webui")
 
@@ -30,7 +30,7 @@ local commands = {
   end,
 
   set_position = function(t)
-    mp.set_property("time-pos", t)
+    mp.command("seek "..t.." absolute")
   end,
 
   playlist_prev = function()

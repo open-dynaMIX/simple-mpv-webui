@@ -1,8 +1,6 @@
 var DEBUG = false;
 var loaded = false;
-var title = null;
-var artist = null;
-var album = null;
+var metadata = {};
 var blockPosSlider = false;
 var blockVolSlider = false;
 
@@ -22,20 +20,9 @@ function send(command, param){
 }
 
 function format_time(seconds){
-  var hours = Math.floor(seconds / 3600);
-  var minutes = Math.floor((seconds - (hours * 3600)) / 60);
-  var seconds = Math.floor(seconds - hours * 3600 - minutes * 60)
-
-  if (hours < 10)
-    hours = "0" + hours;
-
-  if (minutes < 10)
-    minutes = "0" + minutes;
-
-  if (seconds < 10)
-    seconds = "0" + seconds;
-
-  return hours + ":" + minutes + ":" + seconds;
+  var date = new Date(null);
+  date.setSeconds(seconds);
+  return date.toISOString().substr(11, 8);
 }
 
 function setMetadata(metadata, filename) {
@@ -47,21 +34,21 @@ function setMetadata(metadata, filename) {
   if (metadata['title']) {
     window.title = track + metadata['title'];
   } else if (metadata['TITLE']) {
-    window.title = track + metadata['TITLE'];
+    window.metadata.title = track + metadata['TITLE'];
   } else {
-    window.title = track + filename;
+    window.metadata.title = track + filename;
   }
 
   if (metadata['artist']) {
-    window.artist = metadata['artist'];
+    window.metadata.artist = metadata['artist'];
   } else {
-    window.artist = ''
+    window.metadata.artist = ''
   }
 
   if (metadata['album']) {
-    window.album = metadata['album'];
+    window.metadata.album = metadata['album'];
   } else {
-    window.album = ''
+    window.metadata.album = ''
   }
 }
 
@@ -133,9 +120,9 @@ function status(bottom = false){
     if (request.readyState == 4 && request.status == 200) {
       var json = JSON.parse(request.responseText)
       setMetadata(json['metadata'], json['file']);
-      document.getElementById("title").innerHTML = window.title;
-      document.getElementById("artist").innerHTML = window.artist;
-      document.getElementById("album").innerHTML = window.album;
+      document.getElementById("title").innerHTML = window.metadata.title;
+      document.getElementById("artist").innerHTML = window.metadata.artist;
+      document.getElementById("album").innerHTML = window.metadata.album;
       document.getElementById("duration").innerHTML =
         '&nbsp;'+ format_time(json['duration']);
       document.getElementById("remaining").innerHTML =
@@ -188,9 +175,9 @@ function audioPause() {
 function setupNotification() {
   if ('mediaSession' in navigator) {
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: window.title,
-      artist: window.artist,
-      album: window.album,
+      title: window.metadata.title,
+      artist: window.metadata.artist,
+      album: window.metadata.album,
       artwork: [
         { src: '/favicons/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
         { src: '/favicons/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
