@@ -144,7 +144,7 @@ local function header(code, content_type)
   return h.."Connection: close\n\n"
 end
 
-function round(a)
+local function round(a)
   return (a - a % 1) / 1
 end
 
@@ -187,14 +187,14 @@ local function listen()
           connection:send(header(200, get_content_type("json")))
 
           local json = [[{"file":"]]..mp.get_property('filename')..'",'
-          json = json..'"duration":"'..duration..'",'
-          json = json..'"position":"'..round(mp.get_property("time-pos"))..'",'
-          json = json..'"pause":"'..mp.get_property("pause")..'",'
-          json = json..'"remaining":"'..round(mp.get_property("playtime-remaining"))..'",'
-          json = json..'"sub-delay":"'..mp.get_property_osd("sub-delay")..'",'
-          json = json..'"audio-delay":"'..mp.get_property_osd("audio-delay")..'",'
-          json = json..'"metadata":'..mp.get_property("metadata")..','
-          json = json..'"volume":"'..round(mp.get_property("volume"))..'"}'
+          local json = json..'"duration":"'..duration..'",'
+          local json = json..'"position":"'..round(mp.get_property("time-pos"))..'",'
+          local json = json..'"pause":"'..mp.get_property("pause")..'",'
+          local json = json..'"remaining":"'..round(mp.get_property("playtime-remaining"))..'",'
+          local json = json..'"sub-delay":"'..mp.get_property_osd("sub-delay")..'",'
+          local json = json..'"audio-delay":"'..mp.get_property_osd("audio-delay")..'",'
+          local json = json..'"metadata":'..mp.get_property("metadata")..','
+          local json = json..'"volume":"'..round(mp.get_property("volume"))..'"}'
 
           connection:send(json)
         end

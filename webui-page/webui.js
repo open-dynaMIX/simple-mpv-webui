@@ -1,7 +1,8 @@
 var DEBUG = false;
 var loaded = false;
-var metadata = null;
-var filename = null;
+var title = null;
+var artist = null;
+var album = null;
 var blockPosSlider = false;
 var blockVolSlider = false;
 
@@ -16,13 +17,6 @@ function send(command, param){
 
   var request = new XMLHttpRequest();
   request.open("post", path);
-
-  // This should not be needed, since we poll every second anyway
-  // request.onreadystatechange = function(){
-  //   if (request.readyState == 4 && request.status == 200){
-  //     status();
-  //   }
-  // }
 
   request.send(null);
 }
@@ -44,13 +38,30 @@ function format_time(seconds){
   return hours + ":" + minutes + ":" + seconds;
 }
 
-function getTitle() {
-  if (window.metadata['title']) {
-    return window.metadata['title'];
-  } else if (window.metadata['TITLE']) {
-    return window.metadata['TITLE'];
-  } else if (window.filename) {
-    return window.filename;
+function setMetadata(metadata, filename) {
+  if (metadata['track']) {
+    var track = metadata['track'] + ' - ';
+  } else {
+    track = '';
+  }
+  if (metadata['title']) {
+    window.title = track + metadata['title'];
+  } else if (metadata['TITLE']) {
+    window.title = track + metadata['TITLE'];
+  } else {
+    window.title = track + filename;
+  }
+
+  if (metadata['artist']) {
+    window.artist = metadata['artist'];
+  } else {
+    window.artist = ''
+  }
+
+  if (metadata['album']) {
+    window.album = metadata['album'];
+  } else {
+    window.album = ''
   }
 }
 
@@ -121,9 +132,10 @@ function status(bottom = false){
   request.onreadystatechange = function(){
     if (request.readyState == 4 && request.status == 200) {
       var json = JSON.parse(request.responseText)
-      window.metadata = json['metadata'];
-      window.filename = json['file'];
-      document.getElementById("filename").innerHTML = getTitle();
+      setMetadata(json['metadata'], json['file']);
+      document.getElementById("filename").innerHTML = window.title;
+      document.getElementById("artist").innerHTML = window.artist;
+      document.getElementById("album").innerHTML = window.album;
       document.getElementById("duration").innerHTML =
         '&nbsp;'+ format_time(json['duration']);
       document.getElementById("remaining").innerHTML =
@@ -175,16 +187,10 @@ function audioPause() {
 
 function setupNotification() {
   if ('mediaSession' in navigator) {
-    if (window.metadata['artist']) {
-      var artist = window.metadata['artist'];
-    }
-    if (window.metadata['album']) {
-      var album = window.metadata['album'];
-    }
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: getTitle(),
-      artist: artist,
-      album: album,
+      title: window.title,
+      artist: window.artist,
+      album: window.album,
       artwork: [
         { src: '/favicons/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
         { src: '/favicons/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },

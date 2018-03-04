@@ -5,15 +5,30 @@ body {
   color: #a0a0a0;
 }
 
-h1 {
-  font-size: 5vmin;
+h1, h2, h3 {
   word-wrap: break-word;
 }
 
+h1 {
+  font-size: 5vmin;
+  margin-bottom: 2px;
+}
+
 h1 error {
-    background-color: red;
-    color: #000000;
-    padding: 5px;
+  background-color: red;
+  color: #000000;
+  padding: 5px;
+}
+
+h2 {
+  font-size: 4vmin;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+h3 {
+  font-size: 4vmin;
+  margin-top: 2px;
 }
 
 .button {
