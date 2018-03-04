@@ -133,7 +133,7 @@ function status(bottom = false){
     if (request.readyState == 4 && request.status == 200) {
       var json = JSON.parse(request.responseText)
       setMetadata(json['metadata'], json['file']);
-      document.getElementById("filename").innerHTML = window.title;
+      document.getElementById("title").innerHTML = window.title;
       document.getElementById("artist").innerHTML = window.artist;
       document.getElementById("album").innerHTML = window.album;
       document.getElementById("duration").innerHTML =
@@ -154,7 +154,7 @@ function status(bottom = false){
         window.scrollTo(0,document.body.scrollHeight);
       }
     } else if (request.status == 0) {
-      document.getElementById("filename").innerHTML = "<error>Couldn't connect to MPV!</error>";
+      document.getElementById("title").innerHTML = "<error>Couldn't connect to MPV!</error>";
       setPlayPause('yes');
     }
   }
