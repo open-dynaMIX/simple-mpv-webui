@@ -32,7 +32,7 @@ function setMetadata(metadata, filename) {
     track = '';
   }
   if (metadata['title']) {
-    window.title = track + metadata['title'];
+    window.metadata.title = track + metadata['title'];
   } else if (metadata['TITLE']) {
     window.metadata.title = track + metadata['TITLE'];
   } else {
@@ -66,14 +66,14 @@ document.getElementById("mediaPosition").onchange = function() {
   var slider = document.getElementById("mediaPosition");
   send("set_position", slider.value);
   window.blockPosSlider = false;
-}
+};
 
 document.getElementById("mediaPosition").oninput = function() {
   window.blockPosSlider = true;
   var slider = document.getElementById("mediaPosition");
   var pos = document.getElementById("position");
   pos.innerHTML = format_time(slider.value);
-}
+};
 
 function setVolumeSlider(volume) {
   var slider = document.getElementById("mediaVolume");
@@ -88,14 +88,14 @@ document.getElementById("mediaVolume").onchange = function() {
   var slider = document.getElementById("mediaVolume");
   send("set_volume", slider.value);
   window.blockVolSlider = false;
-}
+};
 
 document.getElementById("mediaVolume").oninput = function() {
   window.blockVolSlider = true;
   var slider = document.getElementById("mediaVolume");
   var vol = document.getElementById("volume");
   vol.innerHTML = slider.value + "%";
-}
+};
 
 function setPlayPause(value) {
   var playPause = document.getElementById("playPause");
@@ -112,13 +112,13 @@ function setPlayPause(value) {
   }
 }
 
-function status(bottom = false){
+function status(){
   var request = new XMLHttpRequest();
   request.open("get", "/status");
 
-  request.onreadystatechange = function(){
-    if (request.readyState == 4 && request.status == 200) {
-      var json = JSON.parse(request.responseText)
+  request.onreadystatechange = function() {
+    if (request.readyState === 4 && request.status === 200) {
+      var json = JSON.parse(request.responseText);
       setMetadata(json['metadata'], json['file']);
       document.getElementById("title").innerHTML = window.metadata.title;
       document.getElementById("artist").innerHTML = window.metadata.artist;
@@ -137,14 +137,11 @@ function status(bottom = false){
       if ('mediaSession' in navigator) {
         setupNotification();
       }
-      if (bottom) {
-        window.scrollTo(0,document.body.scrollHeight);
-      }
-    } else if (request.status == 0) {
+    } else if (request.status === 0) {
       document.getElementById("title").innerHTML = "<error>Couldn't connect to MPV!</error>";
       setPlayPause('yes');
     }
-  }
+  };
   request.send(null);
 }
 
@@ -180,7 +177,7 @@ function setupNotification() {
       album: window.metadata.album,
       artwork: [
         { src: '/favicons/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
-        { src: '/favicons/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' },
+        { src: '/favicons/android-chrome-512x512.png', sizes: '512x512', type: 'image/png' }
       ]
     });
 

@@ -80,7 +80,7 @@ local function init_server()
 
   local host = "0.0.0.0"
 
-  server = socket.bind(host, options.port)
+  local server = socket.bind(host, options.port)
 
   if server == nil then
     mp.osd_message("osd-msg1", msg_prefix..
@@ -91,6 +91,7 @@ local function init_server()
   assert(server)
 
   server:settimeout(0)
+  return server
 end
 
 local function script_path()
@@ -148,7 +149,7 @@ local function round(a)
   return (a - a % 1) / 1
 end
 
-local function listen()
+local function listen(server)
   local connection = server:accept()
   if connection == nil then
     return
@@ -186,15 +187,15 @@ local function listen()
         else
           connection:send(header(200, get_content_type("json")))
 
-          local json = [[{"file":"]]..mp.get_property('filename')..'",'
-          local json = json..'"duration":"'..duration..'",'
-          local json = json..'"position":"'..round(mp.get_property("time-pos"))..'",'
-          local json = json..'"pause":"'..mp.get_property("pause")..'",'
-          local json = json..'"remaining":"'..round(mp.get_property("playtime-remaining"))..'",'
-          local json = json..'"sub-delay":"'..mp.get_property_osd("sub-delay")..'",'
-          local json = json..'"audio-delay":"'..mp.get_property_osd("audio-delay")..'",'
-          local json = json..'"metadata":'..mp.get_property("metadata")..','
-          local json = json..'"volume":"'..round(mp.get_property("volume"))..'"}'
+          local json = '{"file":"'..mp.get_property('filename')..'",' ..
+          '"duration":"'..duration..'",' ..
+          '"position":"'..round(mp.get_property("time-pos"))..'",' ..
+          '"pause":"'..mp.get_property("pause")..'",' ..
+          '"remaining":"'..round(mp.get_property("playtime-remaining"))..'",' ..
+          '"sub-delay":"'..mp.get_property_osd("sub-delay")..'",' ..
+          '"audio-delay":"'..mp.get_property_osd("audio-delay")..'",' ..
+          '"metadata":'..mp.get_property("metadata")..',' ..
+          '"volume":"'..round(mp.get_property("volume"))..'"}'
 
           connection:send(json)
         end
@@ -220,6 +221,5 @@ local function listen()
   end
 end
 
-
-init_server()
-mp.add_periodic_timer(0.2, listen)
+local server = init_server()
+mp.add_periodic_timer(0.2, function() listen(server) end)
