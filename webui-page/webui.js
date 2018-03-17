@@ -19,6 +19,21 @@ function send(command, param){
   request.send(null);
 }
 
+window.onkeydown = function(e) {
+  if (e.keyCode === 32 || e.key === ' ') {
+    send('toggle_pause');
+    return false;
+  }
+  if (e.keyCode === 39 || e.key === 'ArrowRight') {
+    send('seek', '10');
+    return false;
+  }
+  if (e.keyCode === 37 || e.key === 'ArrowLeft') {
+    send('seek', '-10');
+    return false;
+  }
+};
+
 function format_time(seconds){
   var date = new Date(null);
   date.setSeconds(seconds);
@@ -156,8 +171,9 @@ function audioLoad() {
 function audioPlay() {
   var audio = document.getElementById("audio");
   if (audio.paused) {
-    DEBUG && console.log('Playing dummy audio');
-    audio.play();
+    audio.play().then(function() {
+      DEBUG && console.log('Playing dummy audio');
+    });
   }
 }
 

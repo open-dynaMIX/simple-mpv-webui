@@ -180,21 +180,20 @@ local function listen(server)
     elseif method == "GET" then
 
       if (path == "status") then
-        socket.sleep(.2)
-        local duration = round(mp.get_property("duration"))
-        if (duration == nil) then
+        local metadata = mp.get_property("metadata")
+        if (metadata == nil) then
           connection:send(header(503, nil))
         else
           connection:send(header(200, get_content_type("json")))
 
           local json = '{"file":"'..mp.get_property('filename')..'",' ..
-          '"duration":"'..duration..'",' ..
+          '"duration":"'..round(mp.get_property("duration"))..'",' ..
           '"position":"'..round(mp.get_property("time-pos"))..'",' ..
           '"pause":"'..mp.get_property("pause")..'",' ..
           '"remaining":"'..round(mp.get_property("playtime-remaining"))..'",' ..
           '"sub-delay":"'..mp.get_property_osd("sub-delay")..'",' ..
           '"audio-delay":"'..mp.get_property_osd("audio-delay")..'",' ..
-          '"metadata":'..mp.get_property("metadata")..',' ..
+          '"metadata":'..metadata..',' ..
           '"volume":"'..round(mp.get_property("volume"))..'"}'
 
           connection:send(json)

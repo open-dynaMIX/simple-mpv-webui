@@ -4,12 +4,12 @@
     <meta name="viewport" content="user-scalable=no">
     <meta name="author" content="Fabio R&auml;mi">
     <title>simple-mpv-webui</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
-    <link rel="manifest" href="/favicons/manifest.json">
-    <link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#000000">
-    <link rel="shortcut icon" href="/favicons/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
+    <link rel="manifest" href="favicons/manifest.json">
+    <link rel="mask-icon" href="favicons/safari-pinned-tab.svg" color="#000000">
+    <link rel="shortcut icon" href="favicons/favicon.ico">
     <meta name="msapplication-config" content="/favicons/browserconfig.xml">
     <meta name="theme-color" content="#000000">
     <link rel="stylesheet" type="text/css" href="webui.css">
@@ -34,7 +34,7 @@
     </div>
 
     <div class="slidecontainer">
-      <input type="range" min="0" max="0" value="0" step="any" class="slider" id="mediaPosition">
+      <input type="range" min="0" max="0" value="0" step="any" class="slider" id="mediaPosition" title="posSlider">
       <div class="sliderInfoContainer">
         <div class="left" id="remaining"></div>
         <div class="sliderCenter" id="position"></div>
@@ -43,7 +43,7 @@
     </div>
 
     <div class="slidecontainer">
-      <input type="range" min="0" max="130" value="100" step="1" class="slider" id="mediaVolume">
+      <input type="range" min="0" max="130" value="100" step="1" class="slider" id="mediaVolume" title="volSlider">
       <div class="sliderInfoContainer sliderVolume">
         <div class="left sliderVolume"><i class="fas fa-volume-down"></i></div>
         <div class="sliderCenter" id="volume"></div>
@@ -52,7 +52,7 @@
     </div>
 
     <div onClick="send('toggle_pause')" class="button play green">
-      <div class="content icon-content" id="playPause" value='none'>
+      <div class="content icon-content" id="playPause">
         <i class="fas fa-play"></i><i class="fas fa-pause"></i>
       </div>
     </div>
@@ -123,7 +123,7 @@
       </div>
     </div>
 
-    <audio id="audio" src="/audio/silence.mp3" display="none" loop></audio>
+    <audio id="audio" src="audio/silence.mp3" loop></audio>
 
   </body>
   <script src="webui.js"></script>
