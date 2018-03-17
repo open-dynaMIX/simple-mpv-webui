@@ -179,9 +179,9 @@ local function listen(server)
 
     elseif method == "GET" then
 
-      if (path == "status") then
+      if path == "status" then
         local metadata = mp.get_property("metadata")
-        if (metadata == nil) then
+        if metadata == nil then
           connection:send(header(503, nil))
         else
           connection:send(header(200, get_content_type("json")))
