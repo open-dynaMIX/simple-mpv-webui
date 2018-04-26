@@ -90,11 +90,12 @@ document.getElementById("mediaPosition").oninput = function() {
   pos.innerHTML = format_time(slider.value);
 };
 
-function setVolumeSlider(volume) {
+function setVolumeSlider(volume, volumeMax) {
   var slider = document.getElementById("mediaVolume");
   var vol = document.getElementById("volume");
   if (!window.blockVolSlider) {
     slider.value = volume;
+    slider.max = volumeMax;
   }
   vol.innerHTML = slider.value + "%";
 }
@@ -148,7 +149,7 @@ function status(){
         json['audio-delay'];
       setPlayPause(json['pause']);
       setPosSlider(json['duration'], json['position']);
-      setVolumeSlider(json['volume']);
+      setVolumeSlider(json['volume'], json['volume-max']);
       if ('mediaSession' in navigator) {
         setupNotification();
       }

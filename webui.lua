@@ -194,7 +194,8 @@ local function listen(server)
           '"sub-delay":"'..mp.get_property_osd("sub-delay")..'",' ..
           '"audio-delay":"'..mp.get_property_osd("audio-delay")..'",' ..
           '"metadata":'..metadata..',' ..
-          '"volume":"'..round(mp.get_property("volume"))..'"}'
+          '"volume":"'..round(mp.get_property("volume"))..'",' ..
+          '"volume-max":"'..round(mp.get_property("volume-max"))..'"}'
 
           connection:send(json)
         end
