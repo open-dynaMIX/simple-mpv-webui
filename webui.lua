@@ -1,8 +1,11 @@
 socket = require("socket")
 require 'mp.options'
 
+msg_prefix = "[webui] "
+
 local options = {
   port = 8080,
+  disable = false,
 }
 read_options(options, "webui")
 
@@ -76,17 +79,15 @@ local commands = {
 }
 
 local function init_server()
-  local msg_prefix = "[webui]"
-
   local host = "0.0.0.0"
 
   local server = socket.bind(host, options.port)
 
   if server == nil then
     mp.osd_message("osd-msg1", msg_prefix..
-      " couldn't spawn server on port "..options.port, 2)
+      "couldn't spawn server on port "..options.port, 2)
   else
-    mp.osd_message(msg_prefix.." serving on port "..options.port, 2)
+    mp.osd_message(msg_prefix.."serving on port "..options.port, 2)
   end
   assert(server)
 
@@ -132,14 +133,13 @@ local function read_file(path)
 end
 
 local function header(code, content_type)
-  local h = ""
+  local close = "\nConnection: close\n\n"
   if code == 200 then
-    h = h.."HTTP/1.1 200 OK\n"
-
-    h = h.."Content-Type: "..content_type.."\n"
-
+    return "HTTP/1.1 200 OK\nContent-Type: "..content_type..close
   elseif code == 404 then
-    h = h.."HTTP/1.1 404 Not Found\n"
+    return "HTTP/1.1 404 Not Found"..close
+  else
+    return close
   end
 
   return h.."Connection: close\n\n"
@@ -147,6 +147,42 @@ end
 
 local function round(a)
   return (a - a % 1) / 1
+end
+
+function string.starts(String,Start)
+   return string.sub(String,1,string.len(Start))==Start
+end
+
+local function build_json_response()
+  local metadata = mp.get_property("metadata")
+  if metadata == nil then
+    return false
+  else
+    return '{"file":"'..mp.get_property('filename')..'",' ..
+            '"duration":"'..round(mp.get_property("duration"))..'",' ..
+            '"position":"'..round(mp.get_property("time-pos"))..'",' ..
+            '"pause":"'..mp.get_property("pause")..'",' ..
+            '"remaining":"'..round(mp.get_property("playtime-remaining"))..'",' ..
+            '"sub-delay":"'..mp.get_property_osd("sub-delay")..'",' ..
+            '"audio-delay":"'..mp.get_property_osd("audio-delay")..'",' ..
+            '"metadata":'..metadata..',' ..
+            '"volume":"'..round(mp.get_property("volume"))..'",' ..
+            '"volume-max":"'..round(mp.get_property("volume-max"))..'"}'
+  end
+end
+
+local function build_static_response(path)
+  if string.starts(path, '../') then
+    return nil, nil
+  end
+  if path == "" then
+    path = 'index.html'
+  end
+
+  local content = read_file(script_path()..'webui-page/'..path)
+  local extension = path:match("[^.]+$") or ""
+  local content_type = get_content_type(extension)
+  return content, content_type
 end
 
 local function listen(server)
@@ -180,34 +216,17 @@ local function listen(server)
     elseif method == "GET" then
 
       if path == "status" then
-        local metadata = mp.get_property("metadata")
-        if metadata == nil then
-          connection:send(header(503, nil))
-        else
-          connection:send(header(200, get_content_type("json")))
-
-          local json = '{"file":"'..mp.get_property('filename')..'",' ..
-          '"duration":"'..round(mp.get_property("duration"))..'",' ..
-          '"position":"'..round(mp.get_property("time-pos"))..'",' ..
-          '"pause":"'..mp.get_property("pause")..'",' ..
-          '"remaining":"'..round(mp.get_property("playtime-remaining"))..'",' ..
-          '"sub-delay":"'..mp.get_property_osd("sub-delay")..'",' ..
-          '"audio-delay":"'..mp.get_property_osd("audio-delay")..'",' ..
-          '"metadata":'..metadata..',' ..
-          '"volume":"'..round(mp.get_property("volume"))..'",' ..
-          '"volume-max":"'..round(mp.get_property("volume-max"))..'"}'
-
-          connection:send(json)
-        end
+          local json = build_json_response()
+          if not json then
+            connection:send(header(503, nil))
+          else
+            connection:send(header(200, get_content_type("json")))
+            connection:send(json)
+          end
         connection:close()
         return
       else
-        if path == "" then
-          path = 'index.html'
-        end
-        local extension = path:match("[^.]+$") or ""
-        local content = read_file(script_path()..'webui-page/'..path)
-        local content_type = get_content_type(extension)
+        local content, content_type = build_static_response(path)
         if content == nil or content_type == nil then
           connection:send(header(404, nil))
         else
@@ -221,5 +240,10 @@ local function listen(server)
   end
 end
 
-local server = init_server()
-mp.add_periodic_timer(0.2, function() listen(server) end)
+if options.disable then
+  mp.osd_message(msg_prefix.."disabled", 2)
+  return
+else
+  local server = init_server()
+  mp.add_periodic_timer(0.2, function() listen(server) end)
+end

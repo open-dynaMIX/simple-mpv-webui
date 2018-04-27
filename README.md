@@ -9,6 +9,8 @@ Alternatively you can also use the `--script` option from mpv or add something l
 By default it serves the webui on port 8080. You can change the port with 
 `--script-opts=webui-port=${PORT}`.
 
+If you want to disable the webui, you can pass `--script-opts=webui-disable=yes` to mpv.
+
 ## Dependencies
  - [luasocket](https://github.com/diegonehab/luasocket)
 
