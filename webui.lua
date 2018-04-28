@@ -172,7 +172,7 @@ local function build_json_response()
 end
 
 local function build_static_response(path)
-  if string.starts(path, '../') then
+  if string.find(path, '%.%./') then
     return nil, nil
   end
   if path == "" then
