@@ -25,7 +25,6 @@ contain data in the following format:
 ```
 user1:password1
 user2:password2
-
 ```
 Only plaintext `.htpasswd` entries are supported.
 
@@ -66,6 +65,9 @@ You can also directly talk to the endpoints:
 | /api/cycle_sub             | POST   |                                    | Cycle trough available subtitles                                        |
 | /api/cycle_audio           | POST   |                                    | Cycle trough available audio tracks                                     |
 | /api/cycle_audio_device    | POST   |                                    | Cycle trough audio devices. This is hardcoded to `alsa` and `alsa/hdmi` |
+
+All POST endpoints return a JSON message. If successful: `{"message": "success"}`, otherwise, the message will contain
+information about the error.
 
 ### /api/status
 `metadata` contains all the metadata mpv can see, below is just an example:

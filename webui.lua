@@ -11,80 +11,120 @@ local options = {
 }
 read_options(options, "webui")
 
+local function validate_number_param(param)
+  if not tonumber(param) then
+    return false, 'Parameter needs to be an integer or float'
+  else
+    return true, nil
+  end
+end
+
 local commands = {
   play = function()
-    mp.set_property_bool("pause", false)
+    return pcall(mp.set_property_bool, "pause", false)
   end,
 
   pause = function()
-    mp.set_property_bool("pause", true)
+    return pcall(mp.set_property_bool, "pause", true)
   end,
 
   toggle_pause = function()
     local curr = mp.get_property_bool("pause")
-    mp.set_property_bool("pause", not curr)
+    return pcall(mp.set_property_bool, "pause", not curr)
   end,
 
   fullscreen = function()
     local curr = mp.get_property_bool("fullscreen")
-    mp.set_property_bool("fullscreen", not curr)
+    return pcall(mp.set_property_bool, "fullscreen", not curr)
   end,
 
   seek = function(t)
-    mp.command("seek "..t)
+    local valid, msg = validate_number_param(t)
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.command, "seek "..t)
   end,
 
   set_position = function(t)
-    mp.command("seek "..t.." absolute")
+    local valid, msg = validate_number_param(t)
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.command, "seek "..t.." absolute")
   end,
 
   playlist_prev = function()
     local position = tonumber(mp.get_property("time-pos"))
     if position > 1 then
-      mp.command("seek "..-position)
+      return pcall(mp.command, "seek "..-position)
     else
-      mp.command("playlist-prev")
+      return pcall(mp.command, "playlist-prev")
     end
   end,
 
   playlist_next = function()
-    mp.command("playlist-next")
+    return pcall(mp.command, "playlist-next")
   end,
 
   add_volume = function(v)
-    mp.command('add volume '..v)
+    local valid, msg = validate_number_param(v)
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.command, 'add volume '..v)
   end,
 
   set_volume = function(v)
-    mp.command('set volume '..v)
+    local valid, msg = validate_number_param(v)
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.command, 'set volume '..v)
   end,
 
   add_sub_delay = function(ms)
-    mp.command('add sub-delay '..ms)
+    local valid, msg = validate_number_param(ms)
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.command, 'add sub-delay '..ms)
   end,
 
   set_sub_delay = function(ms)
-    mp.command('set sub-delay '..ms)
+    local valid, msg = validate_number_param(ms)
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.command, 'set sub-delay '..ms)
   end,
 
   add_audio_delay = function(ms)
-    mp.command('add audio-delay '..ms)
+    local valid, msg = validate_number_param(ms)
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.command, 'add audio-delay '..ms)
   end,
 
   set_audio_delay = function(ms)
-    mp.command('set audio-delay '..ms)
+    local valid, msg = validate_number_param(ms)
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.command, 'set audio-delay '..ms)
   end,
 
   cycle_sub = function()
-    mp.command("cycle sub")
+    return pcall(mp.command, "cycle sub")
   end,
 
   cycle_audio = function()
-    mp.command("cycle audio")
+    return pcall(mp.command, "cycle audio")
   end,
 
   cycle_audio_device = function()
-    mp.command("cycle_values audio-device alsa alsa/hdmi")
+    return pcall(mp.command, "cycle_values audio-device alsa alsa/hdmi")
   end
 }
 
@@ -113,27 +153,20 @@ local function get_content_type(file_type)
 end
 
 local function header(code, content_type)
-  local h = ''
-  local close = "\nConnection: close\n\n"
+  local close = '\nConnection: close\n\n'
   if code == 200 then
-    h = "HTTP/1.1 200 OK\nContent-Type: "..content_type
+    return 'HTTP/1.1 200 OK\nContent-Type: '..content_type..close
   elseif code == 400 then
-    h = "HTTP/1.1 400 Bad Request"
+    return 'HTTP/1.1 400 Bad Request'..close
   elseif code == 401 then
-    h = "HTTP/1.1 401 Unauthorized"
+    return 'HTTP/1.1 401 Unauthorized\nWWW-Authenticate: Basic realm="Simple MPV WebUI"'..close
   elseif code == 404 then
-    h = "HTTP/1.1 404 Not Found"
+    return 'HTTP/1.1 404 Not Found'..close
   elseif code == 405 then
-    h = "HTTP/1.1 405 Method Not Allowed"
+    return 'HTTP/1.1 405 Method Not Allowed'..close
   elseif code == 503 then
-    h = "HTTP/1.1 503 Service Unavailable"
-  else
-    return close
+    return 'HTTP/1.1 503 Service Unavailable'..close
   end
-  if passwd ~= nil then
-    h = h..'\nWWW-Authenticate: Basic realm="Simple MPV WebUI"'
-  end
-  return h..close
 end
 
 local function round(a)
@@ -224,18 +257,16 @@ local function handle_post(path)
     return 404, nil, nil
   end
   local command = components() or path
-
   local param = components() or ""
-  if param ~= "" then
-    if not tonumber(param) then
-      return 400, nil, nil
-    end
-  end
 
   local f = commands[command]
   if f ~= nil then
-    f(param);
-    return 200, get_content_type("html")
+    local status, err, ret = f(param)
+    if err then
+      return 200, get_content_type('json'), '{"message": "success"}'
+    else
+      return 400, get_content_type('json'), '{"message": "'..ret..'"}'
+    end
   else
     return 404, nil, nil
   end
