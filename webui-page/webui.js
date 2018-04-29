@@ -9,7 +9,7 @@ function send(command, param){
   if ('mediaSession' in navigator) {
     audioLoad();
   }
-  var path = command;
+  var path = 'api/' + command;
   if (param !== undefined)
     path += "/" + param;
 
@@ -130,7 +130,7 @@ function setPlayPause(value) {
 
 function status(){
   var request = new XMLHttpRequest();
-  request.open("get", "/status");
+  request.open("get", "/api/status");
 
   request.onreadystatechange = function() {
     if (request.readyState === 4 && request.status === 200) {

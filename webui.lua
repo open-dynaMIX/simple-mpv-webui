@@ -1,4 +1,4 @@
-socket = require("socket")
+local socket = require("socket")
 require 'mp.options'
 
 msg_prefix = "[webui] "
@@ -6,6 +6,7 @@ msg_prefix = "[webui] "
 local options = {
   port = 8080,
   disable = false,
+  logging = false,
 }
 read_options(options, "webui")
 
@@ -57,12 +58,20 @@ local commands = {
     mp.command('set volume '..v)
   end,
 
-  sub_delay = function(ms)
+  add_sub_delay = function(ms)
     mp.command('add sub-delay '..ms)
   end,
 
-  audio_delay = function(ms)
+  set_sub_delay = function(ms)
+    mp.command('set sub-delay '..ms)
+  end,
+
+  add_audio_delay = function(ms)
     mp.command('add audio-delay '..ms)
+  end,
+
+  set_audio_delay = function(ms)
+    mp.command('set audio-delay '..ms)
   end,
 
   cycle_sub = function()
@@ -77,28 +86,6 @@ local commands = {
     mp.command("cycle_values audio-device alsa alsa/hdmi")
   end
 }
-
-local function init_server()
-  local host = "0.0.0.0"
-
-  local server = socket.bind(host, options.port)
-
-  if server == nil then
-    mp.osd_message("osd-msg1", msg_prefix..
-      "couldn't spawn server on port "..options.port, 2)
-  else
-    mp.osd_message(msg_prefix.."serving on port "..options.port, 2)
-  end
-  assert(server)
-
-  server:settimeout(0)
-  return server
-end
-
-local function script_path()
-   local str = debug.getinfo(2, "S").source:sub(2)
-   return str:match("(.*/)")
-end
 
 local function get_content_type(file_type)
   if file_type == 'html' then
@@ -138,6 +125,12 @@ local function header(code, content_type)
     return "HTTP/1.1 200 OK\nContent-Type: "..content_type..close
   elseif code == 404 then
     return "HTTP/1.1 404 Not Found"..close
+  elseif code == 400 then
+    return "HTTP/1.1 400 Bad Request"..close
+  elseif code == 503 then
+    return "HTTP/1.1 503 Service Unavailable"..close
+  elseif code == 405 then
+    return "HTTP/1.1 405 Method Not Allowed"..close
   else
     return close
   end
@@ -151,6 +144,22 @@ end
 
 function string.starts(String,Start)
    return string.sub(String,1,string.len(Start))==Start
+end
+
+local function script_path()
+   local str = debug.getinfo(2, "S").source:sub(2)
+   return str:match("(.*/)")
+end
+
+local function log_line(headers, code)
+  if not options.logging then
+    return
+  end
+
+  local referer = headers['referer'] or '-'
+  local agent = headers['agent'] or '-'
+  local time = os.date('%d/%b/%Y:%H:%M:%S %z', os.time())
+  print(headers["clientip"]..' - - ['..time..'] "'..headers['request']..'" '..code..' - "'..referer..'" "'..agent..'"')
 end
 
 local function build_json_response()
@@ -171,7 +180,40 @@ local function build_json_response()
   end
 end
 
-local function build_static_response(path)
+local function handle_post(path)
+  local components = string.gmatch(path, "[^/]+")
+  local api_prefix = components() or ""
+  if api_prefix ~= 'api' then
+    return 404, nil, nil
+  end
+  local command = components() or path
+
+  local param = components() or ""
+  if param ~= "" then
+    if not tonumber(param) then
+      return 400, nil, nil
+    end
+  end
+
+  local f = commands[command]
+  if f ~= nil then
+    f(param);
+    return 200, get_content_type("html")
+  else
+    return 404, nil, nil
+  end
+end
+
+local function handle_status_get()
+  local json = build_json_response()
+  if not json then
+    return 503, nil, nil
+  else
+    return 200, get_content_type("json"), json
+  end
+end
+
+local function handle_static_get(path)
   if string.find(path, '%.%./') then
     return nil, nil
   end
@@ -182,7 +224,50 @@ local function build_static_response(path)
   local content = read_file(script_path()..'webui-page/'..path)
   local extension = path:match("[^.]+$") or ""
   local content_type = get_content_type(extension)
-  return content, content_type
+  if content == nil or content_type == nil then
+    return 404, nil, nil
+  else
+    return 200, content_type, content
+  end
+end
+
+local function handle_request(headers)
+  if headers["method"] == "POST" then
+    return handle_post(headers['path'])
+
+  elseif headers["method"] == "GET" then
+    if headers["path"] == "api/status" or headers["path"] == "api/status/" then
+      return handle_status_get()
+
+    else
+      return handle_static_get(headers["path"])
+    end
+  else
+    return 405, nil, nil
+  end
+end
+
+local function parse_request(connection)
+  local headers = {}
+  headers['clientip'] = connection:getpeername()
+  while true do
+    local line = connection:receive()
+    if line == nil or line == "" then
+      break
+    end
+    if not headers['request'] then
+      local request = string.gmatch(line, "%S+")
+      headers["request"] = line
+      headers["method"] = request()
+      headers["path"] = string.sub(request(), 2)
+    end
+    if string.starts(line, "User-Agent") then
+      headers["agent"] = string.sub(line, 13)
+    elseif string.starts(line, "Referer") then
+      headers["referer"] = string.sub(line, 10)
+    end
+  end
+  return headers
 end
 
 local function listen(server)
@@ -191,53 +276,33 @@ local function listen(server)
     return
   end
 
-  local line = connection:receive()
-  while line ~= nil and line ~= "" do
-    local request = string.gmatch(line, "%S+")
-    local method = request()
-    local path = string.sub(request(), 2)
+  local headers = parse_request(connection)
+  local code, content_type, content = handle_request(headers)
 
-    if method == "POST" then
-      local components = string.gmatch(path, "[^/]+")
-      local command = components() or path
-      local param = components() or ""
-
-      local f = commands[command]
-      if f ~= nil then
-        f(param);
-        connection:send(header(200, get_content_type("html")))
-      else
-        connection:send(header(404, nil))
-      end
-
-      connection:close()
-      return
-
-    elseif method == "GET" then
-
-      if path == "status" then
-          local json = build_json_response()
-          if not json then
-            connection:send(header(503, nil))
-          else
-            connection:send(header(200, get_content_type("json")))
-            connection:send(json)
-          end
-        connection:close()
-        return
-      else
-        local content, content_type = build_static_response(path)
-        if content == nil or content_type == nil then
-          connection:send(header(404, nil))
-        else
-          connection:send(header(200, content_type))
-          connection:send(content)
-        end
-        connection:close()
-        return
-      end
-    end
+  connection:send(header(code, content_type))
+  if content then
+    connection:send(content)
   end
+  connection:close()
+  log_line(headers, code)
+  return
+end
+
+local function init_server()
+  local host = "0.0.0.0"
+
+  local server = socket.bind(host, options.port)
+
+  if server == nil then
+    mp.osd_message("osd-msg1", msg_prefix..
+      "couldn't spawn server on port "..options.port, 2)
+  else
+    mp.osd_message(msg_prefix.."serving on port "..options.port, 2)
+  end
+  assert(server)
+
+  server:settimeout(0)
+  return server
 end
 
 if options.disable then
