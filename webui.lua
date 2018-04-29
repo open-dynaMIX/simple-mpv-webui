@@ -1,7 +1,8 @@
 local socket = require("socket")
 require 'mp.options'
 
-msg_prefix = "[webui] "
+local msg_prefix = "[webui] "
+local passwd = nil
 
 local options = {
   port = 8080,
@@ -111,31 +112,28 @@ local function get_content_type(file_type)
   end
 end
 
-local function read_file(path)
-    local file = io.open(path, "rb")
-    if not file then return nil end
-    local content = file:read "*a"
-    file:close()
-    return content
-end
-
 local function header(code, content_type)
+  local h = ''
   local close = "\nConnection: close\n\n"
   if code == 200 then
-    return "HTTP/1.1 200 OK\nContent-Type: "..content_type..close
-  elseif code == 404 then
-    return "HTTP/1.1 404 Not Found"..close
+    h = "HTTP/1.1 200 OK\nContent-Type: "..content_type
   elseif code == 400 then
-    return "HTTP/1.1 400 Bad Request"..close
-  elseif code == 503 then
-    return "HTTP/1.1 503 Service Unavailable"..close
+    h = "HTTP/1.1 400 Bad Request"
+  elseif code == 401 then
+    h = "HTTP/1.1 401 Unauthorized"
+  elseif code == 404 then
+    h = "HTTP/1.1 404 Not Found"
   elseif code == 405 then
-    return "HTTP/1.1 405 Method Not Allowed"..close
+    h = "HTTP/1.1 405 Method Not Allowed"
+  elseif code == 503 then
+    h = "HTTP/1.1 503 Service Unavailable"
   else
     return close
   end
-
-  return h.."Connection: close\n\n"
+  if passwd ~= nil then
+    h = h..'\nWWW-Authenticate: Basic realm="Simple MPV WebUI"'
+  end
+  return h..close
 end
 
 local function round(a)
@@ -149,6 +147,45 @@ end
 local function script_path()
    local str = debug.getinfo(2, "S").source:sub(2)
    return str:match("(.*/)")
+end
+
+local function file_exists(file)
+  local f = io.open(file, "rb")
+  if f then f:close() end
+  return f ~= nil
+end
+
+local function lines_from(file)
+  if not file_exists(file) then return {} end
+  local lines = {}
+  for line in io.lines(file) do
+    lines[#lines + 1] = line
+  end
+  return lines
+end
+
+local function read_file(path)
+    local file = io.open(path, "rb")
+    if not file then return nil end
+    local content = file:read "*a"
+    file:close()
+    return content
+end
+
+local function dec64(data)
+  local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+  data = string.gsub(data, '[^'..b..'=]', '')
+  return (data:gsub('.', function(x)
+    if (x == '=') then return '' end
+      local r,f='',(b:find(x)-1)
+      for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end
+      return r;
+  end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
+    if (#x ~= 8) then return '' end
+    local c=0
+    for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end
+    return string.char(c)
+  end))
 end
 
 local function log_line(headers, code)
@@ -231,7 +268,24 @@ local function handle_static_get(path)
   end
 end
 
+local function is_authenticated(headers)
+  if not headers['user'] or not headers['password'] then
+    return false
+  end
+  for k,line in pairs(passwd) do
+    if line == headers['user']..':'..headers['password'] then
+      return true
+    end
+  end
+  return false
+end
+
 local function handle_request(headers)
+  if passwd ~= nil then
+    if not is_authenticated(headers) then
+      return 401, nil, nil
+    end
+  end
   if headers["method"] == "POST" then
     return handle_post(headers['path'])
 
@@ -265,6 +319,11 @@ local function parse_request(connection)
       headers["agent"] = string.sub(line, 13)
     elseif string.starts(line, "Referer") then
       headers["referer"] = string.sub(line, 10)
+    elseif string.starts(line, "Authorization: Basic ") then
+      local auth64 = string.sub(line, 22)
+      local auth_components = string.gmatch(dec64(auth64), "[^:]+")
+      headers["user"] = auth_components()
+      headers["password"] = auth_components()
     end
   end
   return headers
@@ -309,6 +368,11 @@ if options.disable then
   mp.osd_message(msg_prefix.."disabled", 2)
   return
 else
+  if file_exists(script_path()..".htpasswd") then
+    print('Found .htpasswd file. Basic authentication is enabled.')
+    passwd = lines_from(script_path()..".htpasswd")
+  end
+
   local server = init_server()
   mp.add_periodic_timer(0.2, function() listen(server) end)
 end

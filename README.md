@@ -3,16 +3,31 @@
 
 ## Usage
 To use it, simply copy `webui.lua` and the `webui-page`-folder to `~/.config/mpv/scripts/`, mpv will then run it 
-automatically and you can access the webui when accessing [http://127.0.0.1:8080](http://127.0.0.1:8080) in your 
-webbrowser.
+automatically.
 
 Alternatively you can also use the `--script` option from mpv or add something like 
 `scripts-add=/path/to/simple-mpv-webui/webui.lua` to `mpv.conf`.
 
+You can access the webui when accessing [http://127.0.0.1:8080](http://127.0.0.1:8080) in your
+webbrowser.
+
 ### Options
  - `--script-opts=webui-port=${PORT}`: Set the port to serve the webui (default: 8080)
- - `--script-opts=webui-disblae=yes`: Disable webui (default: no)
+ - `--script-opts=webui-disable=yes`: Disable webui (default: no)
  - `--script-opts=webui-logging=yes`: Log requests in terminal (default: no)
+
+### Authentication
+There is a very simple implementation of
+[Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication). It will be enabled, if a file
+`.htpasswd` exists in the same directory as `webui.lua`. The file needs to
+contain data in the following format:
+
+```
+user1:password1
+user2:password2
+
+```
+Only plaintext `.htpasswd` entries are supported.
 
 ## Dependencies
  - [luasocket](https://github.com/diegonehab/luasocket)
@@ -81,9 +96,6 @@ Thanks to [makedin](https://github.com/makedin) for his work on this.
  - Some styles and font-awesome
  - Option to set the port being used (defaults to 8080)
  - Using the Media Session API
-
-## Security
-At this point simple-mpv-webui does not provide any form of authentication. So anyone in your local network can access it.
 
 ## Warning
 These are my first steps with lua, so I'm just happy it works.
