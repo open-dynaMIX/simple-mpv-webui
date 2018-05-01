@@ -1,5 +1,6 @@
 local socket = require("socket")
 require 'mp.options'
+require 'mp.msg'
 
 local msg_prefix = "[webui] "
 local passwd = nil
@@ -229,7 +230,8 @@ local function log_line(headers, code)
   local referer = headers['referer'] or '-'
   local agent = headers['agent'] or '-'
   local time = os.date('%d/%b/%Y:%H:%M:%S %z', os.time())
-  print(headers["clientip"]..' - - ['..time..'] "'..headers['request']..'" '..code..' - "'..referer..'" "'..agent..'"')
+  mp.msg.info(
+    headers["clientip"]..' - - ['..time..'] "'..headers['request']..'" '..code..' - "'..referer..'" "'..agent..'"')
 end
 
 local function build_json_response()
@@ -252,11 +254,11 @@ end
 
 local function handle_post(path)
   local components = string.gmatch(path, "[^/]+")
-  local api_prefix = components() or ""
+  local api_prefix = components()
   if api_prefix ~= 'api' then
     return 404, nil, nil
   end
-  local command = components() or path
+  local command = components()
   local param = components() or ""
 
   local f = commands[command]
@@ -383,15 +385,6 @@ local function init_server()
 
   local server = socket.bind(host, options.port)
 
-  if server == nil then
-    mp.osd_message("osd-msg1", msg_prefix..
-      "couldn't spawn server on port "..options.port, 2)
-  else
-    mp.osd_message(msg_prefix.."serving on port "..options.port, 2)
-  end
-  assert(server)
-
-  server:settimeout(0)
   return server
 end
 
@@ -400,10 +393,16 @@ if options.disable then
   return
 else
   if file_exists(script_path()..".htpasswd") then
-    print('Found .htpasswd file. Basic authentication is enabled.')
+    mp.msg.info('Found .htpasswd file. Basic authentication is enabled.')
     passwd = lines_from(script_path()..".htpasswd")
   end
 
   local server = init_server()
-  mp.add_periodic_timer(0.2, function() listen(server) end)
+  if server == nil then
+    mp.msg.error("Error: couldn't spawn server on port "..options.port)
+  else
+    mp.osd_message(msg_prefix.."serving on port "..options.port, 2)
+    server:settimeout(0)
+    mp.add_periodic_timer(0.2, function() listen(server) end)
+  end
 end
