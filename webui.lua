@@ -3,7 +3,6 @@ require 'mp.options'
 require 'mp.msg'
 
 local msg_prefix = "[webui] "
-local passwd = nil
 
 local options = {
   port = 8080,
@@ -301,7 +300,7 @@ local function handle_static_get(path)
   end
 end
 
-local function is_authenticated(headers)
+local function is_authenticated(headers, passwd)
   if not headers['user'] or not headers['password'] then
     return false
   end
@@ -313,9 +312,9 @@ local function is_authenticated(headers)
   return false
 end
 
-local function handle_request(headers)
+local function handle_request(headers, passwd)
   if passwd ~= nil then
-    if not is_authenticated(headers) then
+    if not is_authenticated(headers, passwd) then
       return 401, nil, nil
     end
   end
@@ -362,14 +361,14 @@ local function parse_request(connection)
   return headers
 end
 
-local function listen(server)
+local function listen(server, passwd)
   local connection = server:accept()
   if connection == nil then
     return
   end
 
   local headers = parse_request(connection)
-  local code, content_type, content = handle_request(headers)
+  local code, content_type, content = handle_request(headers, passwd)
 
   connection:send(header(code, content_type))
   if content then
@@ -378,6 +377,13 @@ local function listen(server)
   connection:close()
   log_line(headers, code)
   return
+end
+
+local function get_passwd()
+  if file_exists(script_path()..".htpasswd") then
+    mp.msg.info('Found .htpasswd file. Basic authentication is enabled.')
+    return lines_from(script_path()..".htpasswd")
+  end
 end
 
 local function init_server()
@@ -392,17 +398,13 @@ if options.disable then
   mp.osd_message(msg_prefix.."disabled", 2)
   return
 else
-  if file_exists(script_path()..".htpasswd") then
-    mp.msg.info('Found .htpasswd file. Basic authentication is enabled.')
-    passwd = lines_from(script_path()..".htpasswd")
-  end
-
   local server = init_server()
   if server == nil then
     mp.msg.error("Error: couldn't spawn server on port "..options.port)
   else
     mp.osd_message(msg_prefix.."serving on port "..options.port, 2)
     server:settimeout(0)
-    mp.add_periodic_timer(0.2, function() listen(server) end)
+    local passwd = get_passwd()
+    mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
   end
 end
