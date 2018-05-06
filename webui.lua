@@ -55,7 +55,7 @@ local commands = {
   end,
 
   playlist_prev = function()
-    local position = tonumber(mp.get_property("time-pos"))
+    local position = tonumber(mp.get_property("time-pos") or 0)
     if position > 1 then
       return pcall(mp.command, "seek "..-position)
     else
@@ -235,21 +235,37 @@ local function log_line(headers, code)
 end
 
 local function build_json_response()
-  local metadata = mp.get_property("metadata")
-  if metadata == nil then
-    return false
-  else
-    return '{"file":"'..mp.get_property('filename')..'",' ..
-            '"duration":"'..round(mp.get_property("duration"))..'",' ..
-            '"position":"'..round(mp.get_property("time-pos"))..'",' ..
-            '"pause":"'..mp.get_property("pause")..'",' ..
-            '"remaining":"'..round(mp.get_property("playtime-remaining"))..'",' ..
-            '"sub-delay":"'..mp.get_property_osd("sub-delay")..'",' ..
-            '"audio-delay":"'..mp.get_property_osd("audio-delay")..'",' ..
-            '"metadata":'..metadata..',' ..
-            '"volume":"'..round(mp.get_property("volume"))..'",' ..
-            '"volume-max":"'..round(mp.get_property("volume-max"))..'"}'
+  local values = {
+    file = mp.get_property('filename') or '',
+    duration = mp.get_property("duration") or '',
+    position = mp.get_property("time-pos") or '',
+    pause = mp.get_property("pause") or '',
+    remaining = mp.get_property("playtime-remaining") or '',
+    sub_delay = mp.get_property_osd("sub-delay") or '',
+    audio_delay = mp.get_property_osd("audio-delay") or '',
+    metadata = mp.get_property("metadata") or '',
+    volume = mp.get_property("volume") or '',
+    volume_max = mp.get_property("volume-max") or ''
+  }
+
+  -- We need to check if the value is available.
+  -- If the file just started playing, mp-functions return nil for a short time.
+  for k, v in pairs(values) do
+    if v == '' then
+      return false
+    end
   end
+
+  return '{"file":"'..values['file']..'",' ..
+          '"duration":"'..round(values['duration'])..'",' ..
+          '"position":"'..round(values['position'])..'",' ..
+          '"pause":"'..values['pause']..'",' ..
+          '"remaining":"'..round(values['remaining'])..'",' ..
+          '"sub-delay":"'..values['sub_delay']..'",' ..
+          '"audio-delay":"'..values['audio_delay']..'",' ..
+          '"metadata":'..values['metadata']..',' ..
+          '"volume":"'..round(values['volume'])..'",' ..
+          '"volume-max":"'..round(values['volume_max'])..'"}'
 end
 
 local function handle_post(path)
