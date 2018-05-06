@@ -154,18 +154,19 @@ end
 
 local function header(code, content_type)
   local close = '\nConnection: close\n\n'
+  local cors = '\nAccess-Control-Allow-Origin: *\n'
   if code == 200 then
-    return 'HTTP/1.1 200 OK\nContent-Type: '..content_type..close
+    return 'HTTP/1.1 200 OK'..cors..'Content-Type: '..content_type..close
   elseif code == 400 then
-    return 'HTTP/1.1 400 Bad Request'..close
+    return 'HTTP/1.1 400 Bad Request'..cors..close
   elseif code == 401 then
-    return 'HTTP/1.1 401 Unauthorized\nWWW-Authenticate: Basic realm="Simple MPV WebUI"'..close
+    return 'HTTP/1.1 401 Unauthorized\n'..cors..'WWW-Authenticate: Basic realm="Simple MPV WebUI"'..close
   elseif code == 404 then
-    return 'HTTP/1.1 404 Not Found'..close
+    return 'HTTP/1.1 404 Not Found'..cors..close
   elseif code == 405 then
-    return 'HTTP/1.1 405 Method Not Allowed'..close
+    return 'HTTP/1.1 405 Method Not Allowed'..cors..close
   elseif code == 503 then
-    return 'HTTP/1.1 503 Service Unavailable'..close
+    return 'HTTP/1.1 503 Service Unavailable'..cors..close
   end
 end
 
