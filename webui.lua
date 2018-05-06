@@ -160,7 +160,7 @@ local function header(code, content_type)
   elseif code == 400 then
     return 'HTTP/1.1 400 Bad Request'..cors..close
   elseif code == 401 then
-    return 'HTTP/1.1 401 Unauthorized\n'..cors..'WWW-Authenticate: Basic realm="Simple MPV WebUI"'..close
+    return 'HTTP/1.1 401 Unauthorized\nWWW-Authenticate: Basic realm="Simple MPV WebUI"'..cors..close
   elseif code == 404 then
     return 'HTTP/1.1 404 Not Found'..cors..close
   elseif code == 405 then
