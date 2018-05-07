@@ -8,11 +8,15 @@ automatically.
 Alternatively you can also use the `--script` option from mpv or add something like 
 `scripts-add=/path/to/simple-mpv-webui/webui.lua` to `mpv.conf`.
 
-You can access the webui when accessing [http://127.0.0.1:8080](http://127.0.0.1:8080) in your
-webbrowser.
+You can access the webui when accessing [http://127.0.0.1:8080](http://127.0.0.1:8080) or
+[http://[::1]:8080](http://[::1]:8080) in your webbrowser.
+
+By default it listens on `0.0.0.0:8080` and `[::0]:8080`. As described below, this can be changed.
 
 ### Options
  - `--script-opts=webui-port=${PORT}`: Set the port to serve the webui (default: 8080)
+ - `--script-opts=webui-ipv4=no`: Disable listening on ipv4 (default: yes)
+ - `--script-opts=webui-ipv6=no`: Disable listening on ipv6 (default: yes)
  - `--script-opts=webui-disable=yes`: Disable webui (default: no)
  - `--script-opts=webui-logging=yes`: Log requests in terminal (default: no)
 
@@ -96,6 +100,7 @@ Thanks to [makedin](https://github.com/makedin) for his work on this.
 ## Differences to mpv-web-ui
  - More controls
  - Some styles and font-awesome
+ - ipv6 support
  - Option to set the port being used (defaults to 8080)
  - Using the Media Session API
 

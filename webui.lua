@@ -9,6 +9,8 @@ local options = {
   port = 8080,
   disable = false,
   logging = false,
+  ipv4 = true,
+  ipv6 = true,
 }
 read_options(options, "webui")
 
@@ -181,12 +183,20 @@ local function round(a)
 end
 
 function string.starts(String,Start)
-   return string.sub(String,1,string.len(Start))==Start
+  return string.sub(String,1,string.len(Start))==Start
+end
+
+local function concatkeys(tab, sep)
+  local inter = {}
+  for key,_ in pairs(tab) do
+    inter[#inter+1] = key
+  end
+  return table.concat(inter, sep)
 end
 
 local function script_path()
-   local str = debug.getinfo(2, "S").source:sub(2)
-   return str:match("(.*/)")
+  local str = debug.getinfo(2, "S").source:sub(2)
+  return str:match("(.*/)")
 end
 
 local function file_exists(file)
@@ -204,11 +214,11 @@ local function lines_from(file)
 end
 
 local function read_file(path)
-    local file = io.open(path, "rb")
-    if not file then return nil end
-    local content = file:read "*a"
-    file:close()
-    return content
+  local file = io.open(path, "rb")
+  if not file then return nil end
+  local content = file:read "*a"
+  file:close()
+  return content
 end
 
 local function log_line(request, code, length)
@@ -239,7 +249,7 @@ local function build_json_response()
 
   -- We need to check if the value is available.
   -- If the file just started playing, mp-functions return nil for a short time.
-  for k, v in pairs(values) do
+  for _, v in ipairs(values) do
     if v == '' then
       return false
     end
@@ -268,7 +278,7 @@ local function handle_post(path)
 
   local f = commands[command]
   if f ~= nil then
-    local status, err, ret = f(param)
+    local _, err, ret = f(param)
     if err then
       return 200, get_content_type('json'), '{"message": "success"}'
     else
@@ -310,7 +320,7 @@ local function is_authenticated(request, passwd)
   if not request['user'] or not request['password'] then
     return false
   end
-  for k,line in pairs(passwd) do
+  for _,line in ipairs(passwd) do
     if line == request['user']..':'..request['password'] then
       return true
     end
@@ -388,25 +398,38 @@ local function get_passwd()
   end
 end
 
-local function init_server()
-  local host = "0.0.0.0"
+local function init_servers()
+  local servers = {}
+  if not options.ipv4 and not options.ipv6 then
+    mp.msg.error("Error: ipv4 and ipv6 is disabled!")
+    return servers
+  end
+  if options.ipv6 then
+    local address = '::0'
+    servers[address] = socket.bind(address, options.port)
+  end
+  if options.ipv4 then
+    local address = '0.0.0.0'
+    servers[address] = socket.bind(address, options.port)
+  end
 
-  local server = socket.bind(host, options.port)
-
-  return server
+  return servers
 end
 
 if options.disable then
   mp.osd_message(msg_prefix.."disabled", 2)
   return
 else
-  local server = init_server()
-  if server == nil then
-    mp.msg.error("Error: couldn't spawn server on port "..options.port)
+  local passwd = get_passwd()
+  local servers = init_servers()
+
+  if next(servers) == nil then
+    mp.msg.error("Error: Couldn't spawn server on port "..options.port)
   else
-    mp.osd_message(msg_prefix.."serving on port "..options.port, 2)
-    server:settimeout(0)
-    local passwd = get_passwd()
-    mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
+    for _, server in pairs(servers) do
+      server:settimeout(0)
+      mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
+    end
+    mp.osd_message(msg_prefix.."Serving on "..concatkeys(servers, ' and ').." port "..options.port, 5)
   end
 end
