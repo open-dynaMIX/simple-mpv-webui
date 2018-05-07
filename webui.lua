@@ -131,6 +131,8 @@ local commands = {
 local function get_content_type(file_type)
   if file_type == 'html' then
     return 'text/html; charset=UTF-8'
+  elseif file_type == 'plain' then
+    return 'text/plain; charset=UTF-8'
   elseif file_type == 'json' then
     return 'application/json; charset=UTF-8'
   elseif file_type == 'js' then
@@ -152,21 +154,24 @@ local function get_content_type(file_type)
   end
 end
 
-local function header(code, content_type)
-  local close = '\nConnection: close\n\n'
-  local cors = '\nAccess-Control-Allow-Origin: *\n'
+local function header(code, content_type, content_length)
+  local common = '\nAccess-Control-Allow-Origin: *'..
+          '\nContent-Type: '.. content_type..
+          '\nContent-Length: '..content_length..
+          '\nServer: simple-mpv-webui'..
+          '\nConnection: close\n\n'
   if code == 200 then
-    return 'HTTP/1.1 200 OK'..cors..'Content-Type: '..content_type..close
+    return 'HTTP/1.1 200 OK'..common
   elseif code == 400 then
-    return 'HTTP/1.1 400 Bad Request'..cors..close
+    return 'HTTP/1.1 400 Bad Request'..common
   elseif code == 401 then
-    return 'HTTP/1.1 401 Unauthorized\nWWW-Authenticate: Basic realm="Simple MPV WebUI"'..cors..close
+    return 'HTTP/1.1 401 Unauthorized\nWWW-Authenticate: Basic realm="Simple MPV WebUI"'..common
   elseif code == 404 then
-    return 'HTTP/1.1 404 Not Found'..cors..close
+    return 'HTTP/1.1 404 Not Found'..common
   elseif code == 405 then
-    return 'HTTP/1.1 405 Method Not Allowed'..cors..close
+    return 'HTTP/1.1 405 Method Not Allowed\nAllow: GET,POST'..common
   elseif code == 503 then
-    return 'HTTP/1.1 503 Service Unavailable'..cors..close
+    return 'HTTP/1.1 503 Service Unavailable'..common
   end
 end
 
@@ -272,7 +277,7 @@ local function handle_post(path)
   local components = string.gmatch(path, "[^/]+")
   local api_prefix = components()
   if api_prefix ~= 'api' then
-    return 404, nil, nil
+    return 404, get_content_type('plain'), "Error: Requested URL /"..path.." not found"
   end
   local command = components()
   local param = components() or ""
@@ -286,14 +291,14 @@ local function handle_post(path)
       return 400, get_content_type('json'), '{"message": "'..ret..'"}'
     end
   else
-    return 404, nil, nil
+    return 404, get_content_type('plain'), "Error: Requested URL /"..path.." not found"
   end
 end
 
 local function handle_status_get()
   local json = build_json_response()
   if not json then
-    return 503, nil, nil
+    return 503, get_content_type('plain'), "Error: Not ready to handle requests."
   else
     return 200, get_content_type("json"), json
   end
@@ -311,7 +316,7 @@ local function handle_static_get(path)
   local extension = path:match("[^.]+$") or ""
   local content_type = get_content_type(extension)
   if content == nil or content_type == nil then
-    return 404, nil, nil
+    return 404, get_content_type('plain'), "Error: Requested URL /"..path.." not found"
   else
     return 200, content_type, content
   end
@@ -332,7 +337,7 @@ end
 local function handle_request(headers, passwd)
   if passwd ~= nil then
     if not is_authenticated(headers, passwd) then
-      return 401, nil, nil
+      return 401, get_content_type('plain'), "Authentication required."
     end
   end
   if headers["method"] == "POST" then
@@ -346,7 +351,7 @@ local function handle_request(headers, passwd)
       return handle_static_get(headers["path"])
     end
   else
-    return 405, nil, nil
+    return 405, get_content_type('plain'), "Error: Method not allowed"
   end
 end
 
@@ -387,10 +392,8 @@ local function listen(server, passwd)
   local headers = parse_request(connection)
   local code, content_type, content = handle_request(headers, passwd)
 
-  connection:send(header(code, content_type))
-  if content then
-    connection:send(content)
-  end
+  connection:send(header(code, content_type, #content))
+  connection:send(content)
   connection:close()
   log_line(headers, code)
   return
