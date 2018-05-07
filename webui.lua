@@ -227,7 +227,7 @@ local function dec64(data)
   end))
 end
 
-local function log_line(headers, code)
+local function log_line(headers, code, length)
   if not options.logging then
     return
   end
@@ -236,7 +236,7 @@ local function log_line(headers, code)
   local agent = headers['agent'] or '-'
   local time = os.date('%d/%b/%Y:%H:%M:%S %z', os.time())
   mp.msg.info(
-    headers["clientip"]..' - - ['..time..'] "'..headers['request']..'" '..code..' - "'..referer..'" "'..agent..'"')
+    headers["clientip"]..' - - ['..time..'] "'..headers['request']..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
 end
 
 local function build_json_response()
@@ -395,7 +395,7 @@ local function listen(server, passwd)
   connection:send(header(code, content_type, #content))
   connection:send(content)
   connection:close()
-  log_line(headers, code)
+  log_line(headers, code, #content)
   return
 end
 
