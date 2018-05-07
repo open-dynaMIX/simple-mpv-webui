@@ -156,7 +156,7 @@ end
 
 local function header(code, content_type, content_length)
   local common = '\nAccess-Control-Allow-Origin: *'..
-          '\nContent-Type: '.. content_type..
+          '\nContent-Type: '..content_type..
           '\nContent-Length: '..content_length..
           '\nServer: simple-mpv-webui'..
           '\nConnection: close\n\n'
@@ -195,7 +195,6 @@ local function file_exists(file)
 end
 
 local function lines_from(file)
-  if not file_exists(file) then return {} end
   local lines = {}
   for line in io.lines(file) do
     lines[#lines + 1] = line
@@ -227,16 +226,16 @@ local function dec64(data)
   end))
 end
 
-local function log_line(headers, code, length)
+local function log_line(request, code, length)
   if not options.logging then
     return
   end
 
-  local referer = headers['referer'] or '-'
-  local agent = headers['agent'] or '-'
+  local referer = request['referer'] or '-'
+  local agent = request['agent'] or '-'
   local time = os.date('%d/%b/%Y:%H:%M:%S %z', os.time())
   mp.msg.info(
-    headers["clientip"]..' - - ['..time..'] "'..headers['request']..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
+    request["clientip"]..' - - ['..time..'] "'..request['request']..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
 end
 
 local function build_json_response()
@@ -322,33 +321,33 @@ local function handle_static_get(path)
   end
 end
 
-local function is_authenticated(headers, passwd)
-  if not headers['user'] or not headers['password'] then
+local function is_authenticated(request, passwd)
+  if not request['user'] or not request['password'] then
     return false
   end
   for k,line in pairs(passwd) do
-    if line == headers['user']..':'..headers['password'] then
+    if line == request['user']..':'..request['password'] then
       return true
     end
   end
   return false
 end
 
-local function handle_request(headers, passwd)
+local function handle_request(request, passwd)
   if passwd ~= nil then
-    if not is_authenticated(headers, passwd) then
+    if not is_authenticated(request, passwd) then
       return 401, get_content_type('plain'), "Authentication required."
     end
   end
-  if headers["method"] == "POST" then
-    return handle_post(headers['path'])
+  if request["method"] == "POST" then
+    return handle_post(request['path'])
 
-  elseif headers["method"] == "GET" then
-    if headers["path"] == "api/status" or headers["path"] == "api/status/" then
+  elseif request["method"] == "GET" then
+    if request["path"] == "api/status" or request["path"] == "api/status/" then
       return handle_status_get()
 
     else
-      return handle_static_get(headers["path"])
+      return handle_static_get(request["path"])
     end
   else
     return 405, get_content_type('plain'), "Error: Method not allowed"
@@ -356,31 +355,29 @@ local function handle_request(headers, passwd)
 end
 
 local function parse_request(connection)
-  local headers = {}
-  headers['clientip'] = connection:getpeername()
-  while true do
-    local line = connection:receive()
-    if line == nil or line == "" then
-      break
-    end
-    if not headers['request'] then
-      local request = string.gmatch(line, "%S+")
-      headers["request"] = line
-      headers["method"] = request()
-      headers["path"] = string.sub(request(), 2)
+  local request = {}
+  request['clientip'] = connection:getpeername()
+  local line = connection:receive()
+  while line ~= nil and line ~= "" do
+    if not request['request'] then
+      local raw_request = string.gmatch(line, "%S+")
+      request["request"] = line
+      request["method"] = raw_request()
+      request["path"] = string.sub(raw_request(), 2)
     end
     if string.starts(line, "User-Agent") then
-      headers["agent"] = string.sub(line, 13)
+      request["agent"] = string.sub(line, 13)
     elseif string.starts(line, "Referer") then
-      headers["referer"] = string.sub(line, 10)
+      request["referer"] = string.sub(line, 10)
     elseif string.starts(line, "Authorization: Basic ") then
       local auth64 = string.sub(line, 22)
       local auth_components = string.gmatch(dec64(auth64), "[^:]+")
-      headers["user"] = auth_components()
-      headers["password"] = auth_components()
+      request["user"] = auth_components()
+      request["password"] = auth_components()
     end
+    line = connection:receive()
   end
-  return headers
+  return request
 end
 
 local function listen(server, passwd)
@@ -389,13 +386,13 @@ local function listen(server, passwd)
     return
   end
 
-  local headers = parse_request(connection)
-  local code, content_type, content = handle_request(headers, passwd)
+  local request = parse_request(connection)
+  local code, content_type, content = handle_request(request, passwd)
 
   connection:send(header(code, content_type, #content))
   connection:send(content)
   connection:close()
-  log_line(headers, code, #content)
+  log_line(request, code, #content)
   return
 end
 
