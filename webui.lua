@@ -70,6 +70,14 @@ local commands = {
     return pcall(mp.command, "playlist-next")
   end,
 
+  playlist_jump = function(p)
+    local valid, msg = validate_number_param(p)
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.set_property('playlist-pos', p))
+  end,
+
   add_volume = function(v)
     local valid, msg = validate_number_param(v)
     if not valid then
@@ -233,38 +241,44 @@ local function log_line(request, code, length)
     request["clientip"]..' - - ['..time..'] "'..request['request']..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
 end
 
-local function build_json_response()
+local function build_status_response()
   local values = {
-    file = mp.get_property('filename') or '',
+    filename = mp.get_property('filename') or '',
     duration = mp.get_property("duration") or '',
     position = mp.get_property("time-pos") or '',
-    pause = mp.get_property("pause") or '',
+    pause = tostring(mp.get_property_native("pause")) or '',
     remaining = mp.get_property("playtime-remaining") or '',
     sub_delay = mp.get_property_osd("sub-delay") or '',
     audio_delay = mp.get_property_osd("audio-delay") or '',
     metadata = mp.get_property("metadata") or '',
     volume = mp.get_property("volume") or '',
-    volume_max = mp.get_property("volume-max") or ''
+    volume_max = mp.get_property("volume-max") or '',
+    playlist = mp.get_property("playlist") or '',
+    track_list = mp.get_property("track-list") or '',
+    fullscreen = tostring(mp.get_property_native("fullscreen")) or ''
   }
 
   -- We need to check if the value is available.
   -- If the file just started playing, mp-functions return nil for a short time.
-  for _, v in ipairs(values) do
+  for _, v in pairs(values) do
     if v == '' then
       return false
     end
   end
 
-  return '{"file":"'..values['file']..'",' ..
-          '"duration":"'..round(values['duration'])..'",' ..
-          '"position":"'..round(values['position'])..'",' ..
-          '"pause":"'..values['pause']..'",' ..
-          '"remaining":"'..round(values['remaining'])..'",' ..
-          '"sub-delay":"'..values['sub_delay']..'",' ..
-          '"audio-delay":"'..values['audio_delay']..'",' ..
+  return '{"audio-delay":'..values['audio_delay']:sub(1, -4)..',' ..
+          '"duration":'..round(values['duration'])..',' ..
+          '"filename":"'..values['filename']..'",' ..
+          '"fullscreen":'..values['fullscreen']..',' ..
           '"metadata":'..values['metadata']..',' ..
-          '"volume":"'..round(values['volume'])..'",' ..
-          '"volume-max":"'..round(values['volume_max'])..'"}'
+          '"pause":'..values['pause']..',' ..
+          '"playlist":'..values['playlist']..',' ..
+          '"position":'..round(values['position'])..',' ..
+          '"remaining":'..round(values['remaining'])..',' ..
+          '"sub-delay":'..values['sub_delay']:sub(1, -4)..',' ..
+          '"track-list":'..values['track_list']..',' ..
+          '"volume":'..round(values['volume'])..',' ..
+          '"volume-max":'..round(values['volume_max'])..'}'
 end
 
 local function handle_post(path)
@@ -290,7 +304,7 @@ local function handle_post(path)
 end
 
 local function handle_status_get()
-  local json = build_json_response()
+  local json = build_status_response()
   if not json then
     return 503, get_content_type('plain'), "Error: Not ready to handle requests."
   else
@@ -340,7 +354,6 @@ local function handle_request(request, passwd)
   elseif request["method"] == "GET" then
     if request["path"] == "api/status" or request["path"] == "api/status/" then
       return handle_status_get()
-
     else
       return handle_static_get(request["path"])
     end

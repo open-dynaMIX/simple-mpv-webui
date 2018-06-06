@@ -35,8 +35,10 @@ Only plaintext `.htpasswd` entries are supported.
 ## Dependencies
  - [luasocket](https://github.com/diegonehab/luasocket)
 
-## Screenshot
-![screenshot](screenshots/webui.png#1)
+## Screenshots
+![screenshot](screenshots/webui.png#2)
+
+![screenshot](screenshots/playlist.png#1)
 
 ## Media Session API
 When using a browser that supports it, simple-mpv-webui uses the Media Session
@@ -60,6 +62,7 @@ You can also directly talk to the endpoints:
 | /api/set_position/:seconds | POST   |                                    | Go to position :seconds                                                 |
 | /api/playlist_prev         | POST   |                                    | Go to previous media in playlist                                        |
 | /api/playlist_next         | POST   |                                    | Go to next media in playlist                                            |
+| /api/playlist_jump/:pos    | POST   | `int`                              | Jump to playlist item at position `:pos`                                |
 | /api/add_volume/:percent   | POST   | `int` or `float` (can be negative) | Add :percent% volume                                                    |
 | /api/set_volume/:percent   | POST   | `int` or `float`                   | Set volume to :percent%                                                 |
 | /api/add_sub_delay/:ms     | POST   | `int` or `float` (can be negative) | Add :ms milliseconds subtitles delay                                    |
@@ -76,29 +79,69 @@ information about the error.
 ### /api/status
 `metadata` contains all the metadata mpv can see, below is just an example:
 
-```
-{'audio-delay': '0 ms',
- 'duration': '208',
- 'file': '1 - Never Gonna Give You Up.mp3',
- 'metadata': {'album': 'Whenever You Need Somebody',
-              'artist': 'Rick Astley',
-              'date': '1987',
-              'title': 'Never Gonna Give You Up',
-              'track': '1'},
- 'pause': 'no',
- 'position': '10',
- 'remaining': '197',
- 'sub-delay': '0 ms',
- 'volume': '100',
- 'volume-max': '130'}
-
+``` json
+{
+    "filename": "big_buck_bunny_1080p_stereo.ogg",
+    "duration": 596,      # <-- seconds
+    "position": 122,      # <-- seconds
+    "pause": true,
+    "remaining": 474,     # <-- seconds
+    "sub-delay": 0,       # <-- milliseconds
+    "audio-delay": 0,     # <-- milliseconds
+    "fullscreen": false,
+    "metadata": {},       # <-- All metadata available to MPV
+    "track-list": [       # <-- All available video, audio and sub tracks
+        {
+            "id": 1,
+            "type": "video",
+            "src-id": 0,
+            "albumart": false,
+            "default": false,
+            "forced": false,
+            "external": false,
+            "selected": true,
+            "ff-index": 0,
+            "decoder-desc": "theora (Theora)",
+            "codec": "theora",
+            "demux-w": 1920,
+            "demux-h": 1080
+        },
+        {
+            "id": 1,
+            "type": "audio",
+            "src-id": 0,
+            "audio-channels": 2,
+            "albumart": false,
+            "default": false,
+            "forced": false,
+            "external": false,
+            "selected": true,
+            "ff-index": 1,
+            "decoder-desc": "vorbis (Vorbis)",
+            "codec": "vorbis",
+            "demux-channel-count": 2,
+            "demux-channels": "stereo",
+            "demux-samplerate": 48000
+        }
+    ],
+    "volume": 64,
+    "volume-max": 130,
+    "playlist": [         # <-- All files in the current playlist
+        {
+            "filename": "Videos/big_buck_bunny_1080p_stereo.ogg",
+            "current": true,
+            "playing": true
+        }
+    ]
+}
 ```
 
 ## Thanks
 Thanks to [makedin](https://github.com/makedin) for his work on this.
 
 ## Differences to mpv-web-ui
- - More controls
+ - More media controls
+ - Playlist controls
  - Some styles and font-awesome
  - ipv6 support
  - Option to set the port being used (defaults to 8080)

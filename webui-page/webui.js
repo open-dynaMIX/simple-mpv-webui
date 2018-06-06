@@ -1,8 +1,10 @@
 var DEBUG = false;
-var loaded = false;
-var metadata = {};
-var blockPosSlider = false;
-var blockVolSlider = false;
+    loaded = false;
+    metadata = {};
+    subs = {};
+    audios = {};
+    blockPosSlider = false;
+    blockVolSlider = false;
 
 function send(command, param){
   DEBUG && console.log('Sending command: ' + command + ' - param: ' + param);
@@ -17,6 +19,65 @@ function send(command, param){
   request.open("post", path);
 
   request.send(null);
+}
+
+function togglePlaylist() {
+  document.body.classList.toggle('noscroll');
+  var el = document.getElementById("overlay");
+  el.style.visibility = (el.style.visibility === "visible") ? "hidden" : "visible";
+}
+
+function createPlaylistTable(entry, position, pause) {
+  if (entry.title) {
+    var title = entry.title;
+  } else {
+    var filename_array = entry.filename.split('/');
+    title = filename_array[filename_array.length - 1];
+  }
+
+  var table = document.createElement('table');
+  var tr = document.createElement('tr');
+  var td_right = document.createElement('td');
+  var td_left = document.createElement('td');
+  table.className = 'playlist';
+  tr.className = 'playlist';
+  td_right.className = 'playlist';
+  td_left.className = 'playlist';
+  td_right.innerText = title;
+
+  if (entry.playing) {
+    if (pause) {
+      td_left.innerHTML = '<i class="fas fa-pause"></i>';
+    } else {
+      td_left.innerHTML = '<i class="fas fa-play"></i>';
+    }
+
+    table.classList.add('playing');
+    table.classList.add('violet');
+
+  } else {
+    table.classList.add('gray');
+    table.onclick = function(arg) {
+        return function() {
+            send("playlist_jump", arg);
+            status();
+            return false;
+        }
+    }(position);
+  }
+  tr.appendChild(td_left);
+  tr.appendChild(td_right);
+  table.appendChild(tr);
+  return table;
+}
+
+function populatePlaylist(json, pause) {
+  var playlist = document.getElementById('playlist');
+  playlist.innerHTML = "";
+
+  for(var i = 0; i < json.length; ++i) {
+      playlist.appendChild(createPlaylistTable(json[i], i, pause));
+  }
 }
 
 window.onkeydown = function(e) {
@@ -40,13 +101,60 @@ function format_time(seconds){
   return date.toISOString().substr(11, 8);
 }
 
-function setMetadata(metadata, filename) {
+function setFullscreenButton(fullscreen) {
+    if (fullscreen) {
+        var fullscreenText = 'Fullscreen off';
+    } else {
+        fullscreenText = 'Fullscreen on';
+    }
+    document.getElementById("fullscreenButton").innerText =
+        fullscreenText;
+}
+
+function setTrackList(tracklist) {
+  window.audios.selected = 0;
+  window.audios.count = 0;
+  window.subs.selected = 0;
+  window.subs.count = 0;
+  for (var i = 0; i < tracklist.length; i++){
+    if (tracklist[i].type === 'audio') {
+      window.audios.count++;
+      if (tracklist[i].selected) {
+          window.audios.selected = tracklist[i].id;
+      }
+    } else if (tracklist[i].type === 'sub') {
+      window.subs.count++;
+      if (tracklist[i].selected) {
+          window.subs.selected = tracklist[i].id;
+      }
+    }
+  }
+  document.getElementById("nextSub").innerText = 'Next sub ' + window.subs.selected + '/' + window.subs.count;
+  document.getElementById("nextAudio").innerText = 'Next audio ' + window.audios.selected + '/' + window.audios.count;
+}
+
+function setMetadata(metadata, playlist, filename) {
+  // try to gather the track number
   if (metadata['track']) {
     var track = metadata['track'] + ' - ';
   } else {
     track = '';
   }
-  if (metadata['title']) {
+
+  // try to gather the playing playlist element
+  for (var i = 0; i < playlist.length; i++){
+    if (playlist[i].playing) {
+       var pl_title = playlist[i].title;
+    }
+  }
+  // set the title. Try values in this order:
+  // 1. title set in playlist
+  // 2. metadata['title']
+  // 3. metadata['TITLE']
+  // 4. filename
+  if (pl_title) {
+    window.metadata.title = track + pl_title;
+  } else if (metadata['title']) {
     window.metadata.title = track + metadata['title'];
   } else if (metadata['TITLE']) {
     window.metadata.title = track + metadata['TITLE'];
@@ -54,17 +162,23 @@ function setMetadata(metadata, filename) {
     window.metadata.title = track + filename;
   }
 
+  // set the artist
   if (metadata['artist']) {
     window.metadata.artist = metadata['artist'];
   } else {
     window.metadata.artist = ''
   }
 
+  // set the album
   if (metadata['album']) {
     window.metadata.album = metadata['album'];
   } else {
     window.metadata.album = ''
   }
+
+  document.getElementById("title").innerHTML = window.metadata.title;
+  document.getElementById("artist").innerHTML = window.metadata.artist;
+  document.getElementById("album").innerHTML = window.metadata.album;
 }
 
 function setPosSlider(duration, position) {
@@ -114,17 +228,44 @@ document.getElementById("mediaVolume").oninput = function() {
 };
 
 function setPlayPause(value) {
-  var playPause = document.getElementById("playPause");
-  if (value === 'yes') {
-    playPause.innerHTML = '<i class="fas fa-play"></i>';
+  playPause = document.getElementsByClassName('playPauseButton');
+
+  // var playPause = document.getElementById("playPause");
+  if (value) {
+    [].slice.call(playPause).forEach(function (div) {
+      div.innerHTML = '<i class="fas fa-play"></i>';
+    });
     if ('mediaSession' in navigator) {
       audioPause();
     }
   } else {
-    playPause.innerHTML = '<i class="fas fa-pause"></i>';
+    [].slice.call(playPause).forEach(function (div) {
+      div.innerHTML = '<i class="fas fa-pause"></i>';
+    });
     if ('mediaSession' in navigator) {
       audioPlay();
     }
+  }
+}
+
+function handleStatusResponse(json) {
+  setMetadata(json['metadata'], json['playlist'], json['filename']);
+  setTrackList(json['track-list']);
+  document.getElementById("duration").innerHTML =
+    '&nbsp;'+ format_time(json['duration']);
+  document.getElementById("remaining").innerHTML =
+    "-" + format_time(json['remaining']);
+  document.getElementById("sub-delay").innerHTML =
+    json['sub-delay'] + ' ms';
+  document.getElementById("audio-delay").innerHTML =
+    json['audio-delay'] + ' ms';
+  setPlayPause(json['pause']);
+  setPosSlider(json['duration'], json['position']);
+  setVolumeSlider(json['volume'], json['volume-max']);
+  setFullscreenButton(json['fullscreen']);
+  populatePlaylist(json['playlist'], json['pause']);
+  if ('mediaSession' in navigator) {
+    setupNotification();
   }
 }
 
@@ -135,27 +276,10 @@ function status(){
   request.onreadystatechange = function() {
     if (request.readyState === 4 && request.status === 200) {
       var json = JSON.parse(request.responseText);
-      setMetadata(json['metadata'], json['file']);
-      document.getElementById("title").innerHTML = window.metadata.title;
-      document.getElementById("artist").innerHTML = window.metadata.artist;
-      document.getElementById("album").innerHTML = window.metadata.album;
-      document.getElementById("duration").innerHTML =
-        '&nbsp;'+ format_time(json['duration']);
-      document.getElementById("remaining").innerHTML =
-        "-" + format_time(json['remaining']);
-      document.getElementById("sub-delay").innerHTML =
-        json['sub-delay'];
-      document.getElementById("audio-delay").innerHTML =
-        json['audio-delay'];
-      setPlayPause(json['pause']);
-      setPosSlider(json['duration'], json['position']);
-      setVolumeSlider(json['volume'], json['volume-max']);
-      if ('mediaSession' in navigator) {
-        setupNotification();
-      }
+      handleStatusResponse(json);
     } else if (request.status === 0) {
       document.getElementById("title").innerHTML = "<error>Couldn't connect to MPV!</error>";
-      setPlayPause('yes');
+      setPlayPause(true);
     }
   };
   request.send(null);

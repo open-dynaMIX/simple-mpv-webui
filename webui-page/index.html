@@ -4,24 +4,41 @@
     <meta name="viewport" content="user-scalable=no">
     <meta name="author" content="Fabio R&auml;mi">
     <title>simple-mpv-webui</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
-    <link rel="manifest" href="favicons/manifest.json">
-    <link rel="mask-icon" href="favicons/safari-pinned-tab.svg" color="#000000">
-    <link rel="shortcut icon" href="favicons/favicon.ico">
-    <meta name="msapplication-config" content="/favicons/browserconfig.xml">
+    <link rel="apple-touch-icon" sizes="180x180" href="static/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="static/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="static/favicons/favicon-16x16.png">
+    <link rel="manifest" href="static/favicons/manifest.json">
+    <link rel="mask-icon" href="static/favicons/safari-pinned-tab.svg" color="#000000">
+    <link rel="shortcut icon" href="static/favicons/favicon.ico">
+    <meta name="msapplication-config" content="static/favicons/browserconfig.xml">
     <meta name="theme-color" content="#000000">
     <link rel="stylesheet" type="text/css" href="webui.css">
-    <link rel="stylesheet" href="fontawesome-free-5.0.2/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="static/fontawesome-free-5.0.2/css/fontawesome-all.min.css">
   </head>
   <body>
+    <div id="overlay">
+      <div onClick="togglePlaylist()" class="button left violet playlist-button">
+        <div class="content text-content">
+          Hide
+        </div>
+      </div>
+      <div onClick="send('toggle_pause')" class="button right green playlist-button">
+        <div class="content icon-content playPauseButton">
+          <i class="fas fa-play"></i><i class="fas fa-pause"></i>
+        </div>
+      </div>
+      <div id="playlist"></div>
+    </div>
+
+    <div class="burger">
+      <a href="#" onClick="togglePlaylist(); return false;"><i class="fas fa-list-ul"></i></a>
+    </div>
     <h1 id="title">Title</h1>
     <h2 id="artist">Artist</h2>
     <h3 id="album">Album</h3>
 
     <div class="table">
-      <table class="two">
+      <table class="prop-table">
         <tr>
           <td>Sub-delay:</td>
           <td id="sub-delay"></td>
@@ -51,8 +68,8 @@
       </div>
     </div>
 
-    <div onClick="send('toggle_pause')" class="button play green">
-      <div class="content icon-content" id="playPause">
+    <div onClick="send('toggle_pause')" class="button full-width green">
+      <div class="content icon-content playPauseButton">
         <i class="fas fa-play"></i><i class="fas fa-pause"></i>
       </div>
     </div>
@@ -80,12 +97,12 @@
     </div>
 
     <div onClick="send('cycle_sub')" class="button left violet">
-      <div class="content text-content">
+      <div id="nextSub" class="content text-content">
         Next sub
       </div>
     </div>
     <div onClick="send('cycle_audio')" class="button right violet">
-      <div class="content text-content">
+      <div id="nextAudio" class="content text-content">
         Next audio
       </div>
     </div>
@@ -113,7 +130,7 @@
     </div>
 
     <div onClick="send('fullscreen')" class="button left gray">
-      <div class="content text-content">
+      <div id="fullscreenButton" class="content text-content">
         Fullscreen
       </div>
     </div>
@@ -123,7 +140,7 @@
       </div>
     </div>
 
-    <audio id="audio" src="audio/silence.mp3" loop></audio>
+    <audio id="audio" src="static/audio/silence.mp3" loop></audio>
 
   </body>
   <script src="webui.js"></script>

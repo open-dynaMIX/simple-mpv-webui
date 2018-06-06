@@ -31,6 +31,17 @@ h3 {
   margin-top: 2px;
 }
 
+.burger {
+  float: right;
+  font-size: 8vw;
+  /*top right bottom left*/
+  margin: 0 30px 30px 30px;
+}
+
+.burger a {
+  color: #a0a0a0;
+}
+
 .button {
   text-align: center;
   display: inline-block;
@@ -43,12 +54,20 @@ h3 {
   font-size: 150px;
 }
 
-.button:hover {
+.button:hover, table.playlist:hover {
   filter: brightness(50%);
 }
 
-.button:active {
+.button:active, table.playlist:active {
   filter: brightness(30%);
+}
+
+table.playlist.playing:hover {
+  filter: brightness(100%);
+}
+
+table.playlist.playing:hover {
+  filter: brightness(100%);
 }
 
 .button .content, .button .content i {
@@ -90,7 +109,7 @@ h3 {
   background-color: #9135bc;
 }
 
-.play {
+.full-width {
   width: 100%;
 }
 
@@ -102,12 +121,12 @@ h3 {
   float: left;
 }
 
-table {
+table.prop-table {
   margin-bottom: 40px;
   font-size: 4vmin;
 }
 
-table td {
+table.prop-table td {
   padding: 0 17px 0 0;
 }
 
@@ -118,7 +137,6 @@ table td {
 /* The slider itself */
 .slider {
   -webkit-appearance: none;  /* Override default CSS styles */
-  appearance: none;
   width: 100%;
   height: 10px;
   border-radius: 5px;
@@ -137,7 +155,6 @@ table td {
 /* The slider handle */
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  appearance: none;
   width: 35px;
   height: 35px;
   border-radius: 50%;
@@ -172,4 +189,76 @@ table td {
 
 .sliderVolume {
   margin-bottom: 20px;
+}
+
+#overlay {
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  position: fixed;
+  visibility: hidden;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.85);
+}
+
+.noscroll {
+  overflow-y: hidden;
+}
+
+#playlist {
+  overflow: scroll;
+  max-height: 80vh;
+  padding-bottom: 100px;
+  margin-top: 175px;
+  position: absolute;
+  width: 100%;
+}
+
+#playlist::-webkit-scrollbar {
+  display: none;
+}
+
+.playlist-button {
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.playlist-button.left {
+  margin-left: 5px;
+}
+
+.playlist-button.right {
+  margin-right: 5px;
+}
+
+table.playlist {
+  width: 90%;
+  color: #000000;
+  font-size: 4vw;
+  margin-left: auto;
+  margin-right: auto;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+
+table.playlist.playing {
+  cursor: auto;
+}
+
+tr.playlist td.playlist:first-child {
+  width: 10%;
+  text-align: center;
+  font-size: 5vw;
+}
+
+td.playlist {
+  height: 150px;
 }
