@@ -45,7 +45,7 @@ function createPlaylistTable(entry, position, pause) {
   td_left.className = 'playlist';
   td_right.innerText = title;
 
-  if (entry.playing) {
+  if (entry.hasOwnProperty('playing')) {
     if (pause) {
       td_left.innerHTML = '<i class="fas fa-pause"></i>';
     } else {
@@ -143,7 +143,7 @@ function setMetadata(metadata, playlist, filename) {
 
   // try to gather the playing playlist element
   for (var i = 0; i < playlist.length; i++){
-    if (playlist[i].playing) {
+    if (playlist[i].hasOwnProperty('playing')) {
        var pl_title = playlist[i].title;
     }
   }
@@ -228,7 +228,7 @@ document.getElementById("mediaVolume").oninput = function() {
 };
 
 function setPlayPause(value) {
-  playPause = document.getElementsByClassName('playPauseButton');
+  var playPause = document.getElementsByClassName('playPauseButton');
 
   // var playPause = document.getElementById("playPause");
   if (value) {
@@ -278,7 +278,9 @@ function status(){
       var json = JSON.parse(request.responseText);
       handleStatusResponse(json);
     } else if (request.status === 0) {
-      document.getElementById("title").innerHTML = "<error>Couldn't connect to MPV!</error>";
+      document.getElementById("title").innerHTML = "<h1><span class='error'>Couldn't connect to MPV!</span></h1>";
+      document.getElementById("artist").innerHTML = "";
+      document.getElementById("album").innerHTML = "";
       setPlayPause(true);
     }
   };

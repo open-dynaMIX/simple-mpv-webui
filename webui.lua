@@ -162,6 +162,8 @@ local function get_content_type(file_type)
     return 'font/woff2; charset=UTF-8'
   elseif file_type == 'mp3' then
     return 'audio/mpeg'
+  elseif file_type == 'webmanifest' then
+    return 'application/manifest+json'
   end
 end
 
@@ -190,7 +192,7 @@ local function round(a)
   return (a - a % 1) / 1
 end
 
-function string.starts(String,Start)
+function string.starts(String, Start)
   return string.sub(String,1,string.len(Start))==Start
 end
 

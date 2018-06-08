@@ -14,7 +14,7 @@ h1 {
   margin-bottom: 2px;
 }
 
-h1 error {
+h1 span.error {
   background-color: red;
   color: #000000;
   padding: 5px;
@@ -237,6 +237,7 @@ table.prop-table td {
 
 table.playlist {
   width: 90%;
+  table-layout: fixed;
   color: #000000;
   font-size: 4vw;
   margin-left: auto;
@@ -256,7 +257,12 @@ table.playlist.playing {
 tr.playlist td.playlist:first-child {
   width: 10%;
   text-align: center;
-  font-size: 5vw;
+  font-size: 5.5vw;
+}
+
+tr.playlist td.playlist:last-child {
+  overflow-wrap: break-word;
+  padding-right: 20px;
 }
 
 td.playlist {
