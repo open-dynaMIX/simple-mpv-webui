@@ -1,8 +1,13 @@
+:root {
+  --main-bg-color: #000000;
+  --main-fg-color: #a0a0a0;
+}
+
 body {
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
   max-width: 100%;
   background-color: #000000;
-  color: #a0a0a0;
+  color: var(--main-fg-color);
 }
 
 h1, h2, h3 {
@@ -39,7 +44,7 @@ h3 {
 }
 
 .burger a {
-  color: #a0a0a0;
+  color: var(--main-fg-color);
 }
 
 .button {
@@ -49,7 +54,7 @@ h3 {
   width: 49%;
   border-radius: 6px;
   margin-bottom: 15px;
-  color: #000000;
+  color: var(--main-bg-color);
   cursor: pointer;
   font-size: 150px;
 }
@@ -238,7 +243,7 @@ table.prop-table td {
 table.playlist {
   width: 90%;
   table-layout: fixed;
-  color: #000000;
+  color: var(--main-bg-color);
   font-size: 4vw;
   margin-left: auto;
   margin-right: auto;
