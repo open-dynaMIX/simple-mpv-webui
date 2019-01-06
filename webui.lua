@@ -11,6 +11,7 @@ local options = {
   logging = false,
   ipv4 = true,
   ipv6 = true,
+  audio_devices = '',
 }
 read_options(options, "webui")
 
@@ -135,7 +136,7 @@ local commands = {
   end,
 
   cycle_audio_device = function()
-    return pcall(mp.command, "cycle_values audio-device alsa alsa/hdmi")
+    return pcall(mp.command, "cycle_values audio-device " .. options.audio_devices)
   end
 }
 
@@ -429,6 +430,12 @@ local function init_servers()
   end
 
   return servers
+end
+
+if options.audio_devices == '' then
+  for _, device in pairs(mp.get_property_native("audio-device-list")) do
+    options.audio_devices = options.audio_devices .. ' ' .. device['name']
+  end
 end
 
 if options.disable then

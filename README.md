@@ -14,11 +14,70 @@ You can access the webui when accessing [http://127.0.0.1:8080](http://127.0.0.1
 By default it listens on `0.0.0.0:8080` and `[::0]:8080`. As described below, this can be changed.
 
 ### Options
- - `--script-opts=webui-port=${PORT}`: Set the port to serve the webui (default: 8080)
- - `--script-opts=webui-ipv4=no`: Disable listening on ipv4 (default: yes)
- - `--script-opts=webui-ipv6=no`: Disable listening on ipv6 (default: yes)
- - `--script-opts=webui-disable=yes`: Disable webui (default: no)
- - `--script-opts=webui-logging=yes`: Log requests in terminal (default: no)
+Options can be set with [--script-opts](https://mpv.io/manual/master/#options-script-opts)
+with the prefix `webui-`.
+
+#### Port (int)
+Set the port to serve the webui (default: 8080). Setting this allows for
+running multiple instances on different ports.
+
+Example:
+
+```
+webui-port=8000
+```
+
+#### Ipv4 (bool)
+Disable listening on ipv4 (default: yes)
+
+Example:
+
+```
+webui-ipv4=no
+```
+
+#### Ipv6 (bool)
+Disable listening on ipv6 (default: yes)
+
+Example:
+
+```
+webui-ipv6=no
+```
+
+#### Disable (bool)
+Disable webui (default: no)
+
+Example:
+
+```
+webui-disable=yes
+```
+
+#### logging (bool)
+Log requests in to STDOUT (default: no)
+
+Example:
+
+```
+webui-logging=yes
+```
+
+#### audio-devices (string)
+Set the audio-devices used for cycling. By default it uses all interfaces it
+finds.
+
+You can see a list of them with following command:
+
+```shell
+mpv --audio-device=help
+```
+
+Example:
+
+```
+webui-audio-devices="pulse/alsa_output.pci-0000_00_1b.0.analog-stereo pulse/alsa_output.pci-0000_00_03.0.hdmi-stereo"
+```
 
 ### Authentication
 There is a very simple implementation of
@@ -36,15 +95,15 @@ Only plaintext `.htpasswd` entries are supported.
  - [luasocket](https://github.com/diegonehab/luasocket)
 
 ## Screenshots
-![screenshot](screenshots/webui.png#2)
+![webui screenshot](screenshots/webui.png#2)
 
-![screenshot](screenshots/playlist.png#1)
+![playlist screenshot](screenshots/playlist.png#1)
 
 ## Media Session API
 When using a browser that supports it, simple-mpv-webui uses the Media Session
 API to provide a notification with some metadata and controls:
 
-![notification](screenshots/notification.png#1)
+![notification screenshot](screenshots/notification.png#1)
 
 In order to have the notification work properly you need to at least once trigger play from the webui.
 
@@ -71,7 +130,7 @@ You can also directly talk to the endpoints:
 | /api/set_audio_delay/:ms   | POST   | `int` or `float` (can be negative) | Set audio delay to :ms milliseconds                                     |
 | /api/cycle_sub             | POST   |                                    | Cycle trough available subtitles                                        |
 | /api/cycle_audio           | POST   |                                    | Cycle trough available audio tracks                                     |
-| /api/cycle_audio_device    | POST   |                                    | Cycle trough audio devices. This is hardcoded to `alsa` and `alsa/hdmi` |
+| /api/cycle_audio_device    | POST   |                                    | Cycle trough audio devices. [More information.](#audio-devices-string)  |
 
 All POST endpoints return a JSON message. If successful: `{"message": "success"}`, otherwise, the message will contain
 information about the error.
