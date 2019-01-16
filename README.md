@@ -17,7 +17,7 @@ By default it listens on `0.0.0.0:8080` and `[::0]:8080`. As described below, th
 Options can be set with [--script-opts](https://mpv.io/manual/master/#options-script-opts)
 with the prefix `webui-`.
 
-#### Port (int)
+#### port (int)
 Set the port to serve the webui (default: 8080). Setting this allows for
 running multiple instances on different ports.
 
@@ -27,8 +27,8 @@ Example:
 webui-port=8000
 ```
 
-#### Ipv4 (bool)
-Disable listening on ipv4 (default: yes)
+#### ipv4 (bool)
+Enable listening on ipv4 (default: yes)
 
 Example:
 
@@ -36,8 +36,8 @@ Example:
 webui-ipv4=no
 ```
 
-#### Ipv6 (bool)
-Disable listening on ipv6 (default: yes)
+#### ipv6 (bool)
+Enable listening on ipv6 (default: yes)
 
 Example:
 
@@ -45,7 +45,7 @@ Example:
 webui-ipv6=no
 ```
 
-#### Disable (bool)
+#### disable (bool)
 Disable webui (default: no)
 
 Example:
