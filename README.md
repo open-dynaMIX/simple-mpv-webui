@@ -64,8 +64,8 @@ webui-logging=yes
 ```
 
 #### audio-devices (string)
-Set the audio-devices used for cycling. By default it uses all interfaces it
-finds.
+Set the audio-devices used for cycling. By default it uses all interfaces MPV 
+knows of.
 
 You can see a list of them with following command:
 
