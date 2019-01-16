@@ -254,7 +254,6 @@ table.playlist {
   cursor: pointer;
 }
 
-
 table.playlist.playing {
   cursor: auto;
 }
