@@ -263,10 +263,18 @@ local function build_status_response()
 
   -- We need to check if the value is available.
   -- If the file just started playing, mp-functions return nil for a short time.
-  for _, v in pairs(values) do
+
+  fail = false
+  for k, v in pairs(values) do
     if v == '' then
-      return false
+      mp.msg.log("WARN", 'Could not fetch "'.. k .. '" from mpv.')
+      fail = true
     end
+  end
+
+  if fail then
+      mp.msg.log("WARN", 'This is normal during startup.')
+      return false
   end
 
   return '{"audio-delay":'..values['audio_delay']:sub(1, -4)..',' ..
