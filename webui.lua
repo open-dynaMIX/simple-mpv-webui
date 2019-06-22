@@ -137,6 +137,14 @@ local commands = {
 
   cycle_audio_device = function()
     return pcall(mp.command, "cycle_values audio-device " .. options.audio_devices)
+  end,
+
+  add_chapter = function(num)
+    local valid, msg = validate_number_param(num)
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.command, 'add chapter '..num)
   end
 }
 
