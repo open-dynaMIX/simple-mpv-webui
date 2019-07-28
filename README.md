@@ -55,7 +55,7 @@ webui-disable=yes
 ```
 
 #### logging (bool)
-Log requests in to STDOUT (default: no)
+Log requests to STDOUT (default: no)
 
 Example:
 
@@ -122,6 +122,7 @@ You can also directly talk to the endpoints:
 | /api/playlist_prev         | POST   |                                    | Go to previous media in playlist                                        |
 | /api/playlist_next         | POST   |                                    | Go to next media in playlist                                            |
 | /api/playlist_jump/:pos    | POST   | `int`                              | Jump to playlist item at position `:pos`                                |
+| /api/add_chapter/:amount   | POST   | `int` (can be negative)            | Jump `:amount` chapters in current media                                |
 | /api/add_volume/:percent   | POST   | `int` or `float` (can be negative) | Add :percent% volume                                                    |
 | /api/set_volume/:percent   | POST   | `int` or `float`                   | Set volume to :percent%                                                 |
 | /api/add_sub_delay/:ms     | POST   | `int` or `float` (can be negative) | Add :ms milliseconds subtitles delay                                    |
