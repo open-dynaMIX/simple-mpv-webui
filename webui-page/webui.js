@@ -346,3 +346,6 @@ document.addEventListener('touchend', function (event) {
   }
   lastTouchEnd = now;
 }, false);
+
+// https://stackoverflow.com/questions/33343854/input-range-slider-not-working-on-ios-safari-when-clicking-on-track#comment103640266_33343854
+RangeTouch.setup('.range-touch', { thumbWidth: 20 });

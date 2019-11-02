@@ -20,6 +20,15 @@
     <meta name="format-detection" content="telephone=no">
     <link rel="stylesheet" type="text/css" href="webui.css">
     <link rel="stylesheet" href="static/fontawesome-free-5.0.2/css/fontawesome-all.min.css">
+    <script>
+        (function() {
+            try {
+                document.documentElement.classList.add(
+                    'ontouchstart' in document.documentElement ? 'touch' : 'no-touch',
+                );
+            } catch (e) {}
+        })();
+    </script>
   </head>
   <body>
     <div id="overlay">
@@ -57,21 +66,21 @@
     </div>
 
     <div class="slidecontainer">
-      <input type="range" min="0" max="0" value="0" step="any" class="slider" id="mediaPosition" title="posSlider">
       <div class="sliderInfoContainer">
         <div class="left" id="remaining"></div>
         <div class="sliderCenter" id="position"></div>
         <div class="right" id="duration"></div>
       </div>
+      <input type="range" min="0" max="0" value="0" step="any" class="slider range-touch" id="mediaPosition" title="posSlider">
     </div>
 
     <div class="slidecontainer">
-      <input type="range" min="0" max="130" value="100" step="1" class="slider" id="mediaVolume" title="volSlider">
-      <div class="sliderInfoContainer sliderVolume">
+      <div class="sliderInfoContainer">
         <div class="left sliderVolume"><i class="fas fa-volume-down"></i></div>
         <div class="sliderCenter" id="volume"></div>
         <div class="right"><i class="fas fa-volume-up"></i></div>
       </div>
+      <input type="range" min="0" max="130" value="100" step="1" class="slider range-touch" id="mediaVolume" title="volSlider">
     </div>
 
     <div onClick="send('toggle_pause')" class="button full-width green">
@@ -160,5 +169,6 @@
     <audio id="audio" src="static/audio/silence.mp3" loop></audio>
 
   </body>
+  <script src="https://cdn.rangetouch.com/2.0.0/rangetouch.js"></script>
   <script src="webui.js"></script>
 </html>

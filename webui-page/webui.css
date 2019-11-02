@@ -8,6 +8,7 @@ body {
   max-width: 100%;
   background-color: #000000;
   color: var(--main-fg-color);
+  padding: 60px;
 }
 
 h1, h2, h3 {
@@ -137,6 +138,8 @@ table.prop-table td {
 
 .slidecontainer {
   width: 100%;
+  height: 150px;
+  margin: 60px 0;
 }
 
 /* The slider itself */
@@ -150,21 +153,28 @@ table.prop-table td {
   opacity: 0.7;
   -webkit-transition: .2s;
   transition: opacity .2s;
-  margin-bottom: 15px;
+  margin: 70px 0 15px 0;
 }
 
 .slider:hover {
   opacity: 1;
 }
 
+slider:focus {
+  outline: none;
+}
+
 /* The slider handle */
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
+  width: 70px;
+  height: 150px;
+  border-radius: 6px;
   background: #66f;
   cursor: pointer; /* Cursor on hover */
+  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+  border: 0px solid #000000;
+  margin-top: 0px;
 }
 
 .slider::-moz-range-thumb {
@@ -175,25 +185,50 @@ table.prop-table td {
   cursor: pointer;
 }
 
-/* No idea if all of this works on IE, but if it does, hide tooltip. */
-.slider::-ms-tooltip {
-  display: none;
+.slider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 150px;
+  cursor: pointer;
+  animate: 0.2s;
+  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+  background: #efefef;
+  border-radius: 6px;
+  border: 0px solid #000101;
+}
+
+.slider:focus::-webkit-slider-runnable-track {
+  background: #efefef;
+}
+
+.slider::-moz-range-track {
+  width: 100%;
+  height: 150px;
+  cursor: pointer;
+  animate: 0.2s;
+  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+  border-radius: 6px;
+  border: 0px solid #000101;
+}
+
+.slider::-moz-range-thumb {
+  box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d;
+  border: 0px solid #000000;
+  height: 150px;
+  width: 70px;
+  border-radius: 6px;
+  background: #66f;
+  cursor: pointer;
 }
 
 .sliderInfoContainer {
   width: 100%;
   text-align: center;
   font-size: 4vmin;
-  margin-bottom: 20px;
 }
 
 .sliderCenter {
   margin: 0 auto;
   display: inline-block;
-}
-
-.sliderVolume {
-  margin-bottom: 20px;
 }
 
 #overlay {
