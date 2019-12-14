@@ -8,6 +8,7 @@ body {
   max-width: 100%;
   background-color: #000000;
   color: var(--main-fg-color);
+  margin: 30px;
 }
 
 h1, h2, h3 {
@@ -82,11 +83,11 @@ table.playlist.playing:hover {
 }
 
 .button .icon-content {
-  font-size: 70%;
+  font-size: 50%;
 }
 
 .button .text-content {
-  font-size: 5vw;
+  font-size: 4.5vw;
   font-weight: bold;
 }
 
@@ -139,44 +140,85 @@ table.prop-table td {
   width: 100%;
 }
 
-/* The slider itself */
-.slider {
-  -webkit-appearance: none;  /* Override default CSS styles */
-  width: 100%;
-  height: 10px;
-  border-radius: 5px;
-  background: #d3d3d3;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
-  margin-bottom: 15px;
-}
 
-.slider:hover {
-  opacity: 1;
-}
-
-/* The slider handle */
-.slider::-webkit-slider-thumb {
+input[type="range"] {
+  margin: auto;
   -webkit-appearance: none;
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  background: #66f;
-  cursor: pointer; /* Cursor on hover */
-}
-
-.slider::-moz-range-thumb {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  background: #66f;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 85px;
   cursor: pointer;
+  border-radius: 6px;
+  /*background: var(--main-fg-color);*/
+  border: 3px solid var(--main-fg-color);
+  margin-bottom: 7px;
 }
 
-/* No idea if all of this works on IE, but if it does, hide tooltip. */
-.slider::-ms-tooltip {
+::-webkit-slider-runnable-track {
+  background: var(--main-bg-color);
+  height: 85px;
+}
+
+::-webkit-slider-container {
+  background: var(--main-fg-color);
+}
+
+/*
+ * 1. Set to 0 width and remove border for a slider without a thumb
+ */
+::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 0; /* 1 */
+  height: 40px;
+  background: #fff;
+  box-shadow: -100vw 0 0 100vw var(--main-fg-color);
+  border: 0 solid #999; /* 1 */
+}
+
+::-moz-range-thumb {
+  background: #fff;
+  height: 40px;
+  width: 0;
+  border: 0 solid #999;
+  border-radius: 0 !important;
+  box-shadow: -100vw 0 0 100vw var(--main-fg-color);
+  box-sizing: border-box;
+}
+
+::-moz-range-track {
+  height: 85px;
+  background: var(--main-bg-color);
+}
+
+::-ms-fill-lower {
+  background: var(--main-fg-color);
+}
+
+::-ms-thumb {
+  background: #fff;
+  border: 2px solid #999;
+  height: 40px;
+  width: 20px;
+  box-sizing: border-box;
+}
+
+::-ms-ticks-after {
+  display: none;
+}
+
+::-ms-ticks-before {
+  display: none;
+}
+
+::-ms-track {
+  background: #ddd;
+  color: transparent;
+  height: 85px;
+  border: none;
+}
+
+::-ms-tooltip {
   display: none;
 }
 

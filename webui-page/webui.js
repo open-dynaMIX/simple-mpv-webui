@@ -181,7 +181,7 @@ function setMetadata(metadata, playlist, filename) {
   document.getElementById("album").innerHTML = window.metadata.album;
 }
 
-function setPosSlider(duration, position) {
+function setPosSlider(position, duration) {
   var slider = document.getElementById("mediaPosition");
   var pos = document.getElementById("position");
   slider.max = duration;
@@ -260,7 +260,7 @@ function handleStatusResponse(json) {
   document.getElementById("audio-delay").innerHTML =
     json['audio-delay'] + ' ms';
   setPlayPause(json['pause']);
-  setPosSlider(json['duration'], json['position']);
+  setPosSlider(json['position'], json['duration']);
   setVolumeSlider(json['volume'], json['volume-max']);
   setFullscreenButton(json['fullscreen']);
   populatePlaylist(json['playlist'], json['pause']);
