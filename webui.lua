@@ -245,11 +245,13 @@ local function log_line(request, code, length)
     return
   end
 
+  local clientip = request['clientip'] or '-'
+  local path = request['request'] or '-'
   local referer = request['referer'] or '-'
   local agent = request['agent'] or '-'
   local time = os.date('%d/%b/%Y:%H:%M:%S %z', os.time())
   mp.msg.info(
-    request["clientip"]..' - - ['..time..'] "'..request['request']..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
+    clientip..' - - ['..time..'] "'..path..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
 end
 
 local function build_status_response()
