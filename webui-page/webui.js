@@ -60,7 +60,6 @@ function createPlaylistTable(entry, position, pause) {
     table.onclick = function(arg) {
         return function() {
             send("playlist_jump", arg);
-            status();
             return false;
         }
     }(position);
