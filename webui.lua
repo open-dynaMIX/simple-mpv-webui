@@ -383,16 +383,30 @@ local function handle_request(request, passwd)
   end
 end
 
+function strip_query_params(str)
+  path = ""
+  for c in str:gmatch(".") do
+    if c == "?" then
+      break
+    end
+    path = path .. c
+  end
+  return path
+end
+
 local function parse_request(connection)
   local request = {}
   request['clientip'] = connection:getpeername()
   local line = connection:receive()
+  if line == nil or line == "" then
+    return
+  end
   while line ~= nil and line ~= "" do
     if not request['request'] then
       local raw_request = string.gmatch(line, "%S+")
       request["request"] = line
       request["method"] = raw_request()
-      request["path"] = string.sub(raw_request(), 2)
+      request["path"] = strip_query_params(string.sub(raw_request(), 2))
     end
     if string.starts(line, "User-Agent") then
       request["agent"] = string.sub(line, 13)
@@ -416,6 +430,9 @@ local function listen(server, passwd)
   end
 
   local request = parse_request(connection)
+  if request == nil then
+    return
+  end
   local code, content_type, content = handle_request(request, passwd)
 
   connection:send(header(code, content_type, #content))
