@@ -246,10 +246,10 @@ local function log_line(request, code, length)
     return
   end
 
-  local clientip = request['clientip'] or '-'
-  local path = request['request'] or '-'
-  local referer = request['referer'] or '-'
-  local agent = request['agent'] or '-'
+  local clientip = request.clientip or '-'
+  local path = request.request or '-'
+  local referer = request.referer or '-'
+  local agent = request.agent or '-'
   local time = os.date('%d/%b/%Y:%H:%M:%S %z', os.time())
   mp.msg.info(
     clientip..' - - ['..time..'] "'..path..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
@@ -288,19 +288,19 @@ local function build_status_response()
       return false
   end
 
-  return '{"audio-delay":'..values['audio_delay']:sub(1, -4)..',' ..
-          '"duration":'..round(values['duration'])..',' ..
-          '"filename":"'..values['filename']..'",' ..
-          '"fullscreen":'..values['fullscreen']..',' ..
-          '"metadata":'..values['metadata']..',' ..
-          '"pause":'..values['pause']..',' ..
-          '"playlist":'..values['playlist']..',' ..
-          '"position":'..round(values['position'])..',' ..
-          '"remaining":'..round(values['remaining'])..',' ..
-          '"sub-delay":'..values['sub_delay']:sub(1, -4)..',' ..
-          '"track-list":'..values['track_list']..',' ..
-          '"volume":'..round(values['volume'])..',' ..
-          '"volume-max":'..round(values['volume_max'])..'}'
+  return '{"audio-delay":'..values.audio_delay:sub(1, -4)..',' ..
+          '"duration":'..round(values.duration)..',' ..
+          '"filename":"'..values.filename..'",' ..
+          '"fullscreen":'..values.fullscreen..',' ..
+          '"metadata":'..values.metadata..',' ..
+          '"pause":'..values.pause..',' ..
+          '"playlist":'..values.playlist..',' ..
+          '"position":'..round(values.position)..',' ..
+          '"remaining":'..round(values.remaining)..',' ..
+          '"sub-delay":'..values.sub_delay:sub(1, -4)..',' ..
+          '"track-list":'..values.track_list..',' ..
+          '"volume":'..round(values.volume)..',' ..
+          '"volume-max":'..round(values.volume_max)..'}'
 end
 
 local function handle_post(path)
@@ -353,11 +353,11 @@ local function handle_static_get(path)
 end
 
 local function is_authenticated(request, passwd)
-  if not request['user'] or not request['password'] then
+  if not request.user or not request.password then
     return false
   end
   for _,line in ipairs(passwd) do
-    if line == request['user']..':'..request['password'] then
+    if line == request.user..':'..request.password then
       return true
     end
   end
@@ -370,14 +370,14 @@ local function handle_request(request, passwd)
       return 401, get_content_type('plain'), "Authentication required."
     end
   end
-  if request["method"] == "POST" then
+  if request.method == "POST" then
     return handle_post(request['path'])
 
-  elseif request["method"] == "GET" then
-    if request["path"] == "api/status" or request["path"] == "api/status/" then
+  elseif request.method == "GET" then
+    if request.path == "api/status" or request.path == "api/status/" then
       return handle_status_get()
     else
-      return handle_static_get(request["path"])
+      return handle_static_get(request.path)
     end
   else
     return 405, get_content_type('plain'), "Error: Method not allowed"
@@ -386,31 +386,31 @@ end
 
 local function parse_request(connection)
   local request = {}
-  request['clientip'] = connection:getpeername()
+  request.clientip = connection:getpeername()
   local line = connection:receive()
   if line == nil or line == "" then
     return
   end
   while line ~= nil and line ~= "" do
-    if not request['request'] then
+    if not request.request then
       local raw_request = string.gmatch(line, "%S+")
-      request["request"] = line
-      request["method"] = raw_request()
-      request["path"] = ""
+      request.request = line
+      request.method = raw_request()
+      request.path = ""
       raw_path = string.sub(raw_request(), 2)
       if raw_path ~= "" then
         request = url.parse(raw_path, request)
       end
     end
     if string.starts(line, "User-Agent") then
-      request["agent"] = string.sub(line, 13)
+      request.agent = string.sub(line, 13)
     elseif string.starts(line, "Referer") then
-      request["referer"] = string.sub(line, 10)
+      request.referer = string.sub(line, 10)
     elseif string.starts(line, "Authorization: Basic ") then
       local auth64 = string.sub(line, 22)
       local auth_components = string.gmatch(dec64(auth64), "[^:]+")
-      request["user"] = auth_components()
-      request["password"] = auth_components()
+      request.user = auth_components()
+      request.password = auth_components()
     end
     line = connection:receive()
   end
