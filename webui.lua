@@ -2,6 +2,7 @@ require 'mp.options'
 require 'mp.msg'
 local socket = require("socket")
 local dec64 = require("mime").decode("base64")
+local url = require("socket.url")
 
 local msg_prefix = "[webui] "
 
@@ -383,17 +384,6 @@ local function handle_request(request, passwd)
   end
 end
 
-function strip_query_params(str)
-  path = ""
-  for c in str:gmatch(".") do
-    if c == "?" then
-      break
-    end
-    path = path .. c
-  end
-  return path
-end
-
 local function parse_request(connection)
   local request = {}
   request['clientip'] = connection:getpeername()
@@ -406,7 +396,11 @@ local function parse_request(connection)
       local raw_request = string.gmatch(line, "%S+")
       request["request"] = line
       request["method"] = raw_request()
-      request["path"] = strip_query_params(string.sub(raw_request(), 2))
+      request["path"] = ""
+      raw_path = string.sub(raw_request(), 2)
+      if raw_path ~= "" then
+        request = url.parse(raw_path, request)
+      end
     end
     if string.starts(line, "User-Agent") then
       request["agent"] = string.sub(line, 13)
