@@ -110,28 +110,30 @@ In order to have the notification work properly you need to at least once trigge
 ## Endpoints
 You can also directly talk to the endpoints:
 
-| URI                        | Method | Parameter                          | Description                                                             |
-| -------------------------- | ------ | ---------------------------------- | ----------------------------------------------------------------------- |
-| /api/status                | GET    |                                    | Returns JSON data about playing media --> see below                     |
-| /api/play                  | POST   |                                    | Play media                                                              |
-| /api/pause                 | POST   |                                    | Pause media                                                             |
-| /api/toggle_pause          | POST   |                                    | Toggle play/pause                                                       |
-| /api/fullscreen            | POST   |                                    | Toggle fullscreen                                                       |
-| /api/seek/:seconds         | POST   | `int` or `float` (can be negative) | Seek                                                                    |
-| /api/set_position/:seconds | POST   |                                    | Go to position :seconds                                                 |
-| /api/playlist_prev         | POST   |                                    | Go to previous media in playlist                                        |
-| /api/playlist_next         | POST   |                                    | Go to next media in playlist                                            |
-| /api/playlist_jump/:pos    | POST   | `int`                              | Jump to playlist item at position `:pos`                                |
-| /api/add_chapter/:amount   | POST   | `int` (can be negative)            | Jump `:amount` chapters in current media                                |
-| /api/add_volume/:percent   | POST   | `int` or `float` (can be negative) | Add :percent% volume                                                    |
-| /api/set_volume/:percent   | POST   | `int` or `float`                   | Set volume to :percent%                                                 |
-| /api/add_sub_delay/:ms     | POST   | `int` or `float` (can be negative) | Add :ms milliseconds subtitles delay                                    |
-| /api/set_sub_delay/:ms     | POST   | `int` or `float` (can be negative) | Set subtitles delay to :ms milliseconds                                 |
-| /api/add_audio_delay/:ms   | POST   | `int` or `float` (can be negative) | Add :ms miliseconds audio delay                                         |
-| /api/set_audio_delay/:ms   | POST   | `int` or `float` (can be negative) | Set audio delay to :ms milliseconds                                     |
-| /api/cycle_sub             | POST   |                                    | Cycle trough available subtitles                                        |
-| /api/cycle_audio           | POST   |                                    | Cycle trough available audio tracks                                     |
-| /api/cycle_audio_device    | POST   |                                    | Cycle trough audio devices. [More information.](#audio-devices-string)  |
+| URI                          | Method | Parameter                          | Description                                                             |
+| ---------------------------- | ------ | ---------------------------------- | ----------------------------------------------------------------------- |
+| /api/status                  | GET    |                                    | Returns JSON data about playing media --> see below                     |
+| /api/play                    | POST   |                                    | Play media                                                              |
+| /api/pause                   | POST   |                                    | Pause media                                                             |
+| /api/toggle_pause            | POST   |                                    | Toggle play/pause                                                       |
+| /api/fullscreen              | POST   |                                    | Toggle fullscreen                                                       |
+| /api/seek/:seconds           | POST   | `int` or `float` (can be negative) | Seek                                                                    |
+| /api/set_position/:seconds   | POST   |                                    | Go to position :seconds                                                 |
+| /api/playlist_prev           | POST   |                                    | Go to previous media in playlist                                        |
+| /api/playlist_next           | POST   |                                    | Go to next media in playlist                                            |
+| /api/playlist_jump/:index    | POST   | `int`                              | Jump to playlist item at position `:index`                              |
+| /api/playlist_move_up/:index | POST   | `int`                              | Move playlist item at position `:index` one position up                 |
+| /api/playlist_remove/:index  | POST   | `int`                              | Remove playlist item at position `:index`                               |
+| /api/add_chapter/:amount     | POST   | `int` (can be negative)            | Jump `:amount` chapters in current media                                |
+| /api/add_volume/:percent     | POST   | `int` or `float` (can be negative) | Add :percent% volume                                                    |
+| /api/set_volume/:percent     | POST   | `int` or `float`                   | Set volume to :percent%                                                 |
+| /api/add_sub_delay/:ms       | POST   | `int` or `float` (can be negative) | Add :ms milliseconds subtitles delay                                    |
+| /api/set_sub_delay/:ms       | POST   | `int` or `float` (can be negative) | Set subtitles delay to :ms milliseconds                                 |
+| /api/add_audio_delay/:ms     | POST   | `int` or `float` (can be negative) | Add :ms miliseconds audio delay                                         |
+| /api/set_audio_delay/:ms     | POST   | `int` or `float` (can be negative) | Set audio delay to :ms milliseconds                                     |
+| /api/cycle_sub               | POST   |                                    | Cycle trough available subtitles                                        |
+| /api/cycle_audio             | POST   |                                    | Cycle trough available audio tracks                                     |
+| /api/cycle_audio_device      | POST   |                                    | Cycle trough audio devices. [More information.](#audio-devices-string)  |
 
 All POST endpoints return a JSON message. If successful: `{"message": "success"}`, otherwise, the message will contain
 information about the error.

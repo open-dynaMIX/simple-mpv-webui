@@ -60,20 +60,12 @@ h3 {
   font-size: 150px;
 }
 
-.button:hover, table.playlist:hover {
+.button:hover {
   filter: brightness(50%);
 }
 
-.button:active, table.playlist:active {
+.button:active {
   filter: brightness(30%);
-}
-
-table.playlist.playing:hover {
-  filter: brightness(100%);
-}
-
-table.playlist.playing:hover {
-  filter: brightness(100%);
 }
 
 .button .content, .button .content i {
@@ -292,25 +284,46 @@ table.playlist {
   border-collapse: collapse;
   margin-bottom: 10px;
   font-weight: bold;
-  border-radius: 6px;
   cursor: pointer;
 }
 
-table.playlist.playing {
+td.playlist.playing {
   cursor: auto;
 }
 
-tr.playlist td.playlist:first-child {
-  width: 10%;
-  text-align: center;
-  font-size: 5.5vw;
+td.playlist:first-child {
+  border-bottom-left-radius: 6px;
+  border-top-left-radius: 6px;
 }
 
-tr.playlist td.playlist:last-child {
+td.playlist:nth-child(2) {
+  text-align: left;
   overflow-wrap: break-word;
-  padding-right: 20px;
+  font-size: 4vw;
+  width: initial;
 }
 
 td.playlist {
   height: 150px;
+  text-align: center;
+  font-size: 5.5vw;
+  font-weight: bold;
+  width: 13%
+}
+
+td.playlist:last-child {
+  border-bottom-right-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+td.playlist.active, td.playlist:last-child:hover, td.playlist:nth-child(3):hover {
+  filter: brightness(50%);
+}
+
+td.playlist.click, td.playlist:last-child:active, td.playlist:nth-child(3):active {
+  filter: brightness(30%);
+}
+
+td.playlist.playing:hover {
+  filter: brightness(100%);
 }

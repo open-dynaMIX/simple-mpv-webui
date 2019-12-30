@@ -27,7 +27,24 @@ function togglePlaylist() {
   el.style.visibility = (el.style.visibility === "visible") ? "hidden" : "visible";
 }
 
-function createPlaylistTable(entry, position, pause) {
+function createPlaylistTable(entry, position, pause, first) {
+  function setActive(set) {
+    if (set === true) {
+      td_left.classList.add('active');
+      td_2.classList.add('active');
+    } else {
+      td_left.classList.remove('active');
+      td_2.classList.remove('active');
+    }
+  }
+
+  function blink() {
+     td_left.classList.add('click');
+     td_2.classList.add('click');
+     setTimeout(function(){ td_left.classList.remove('click');
+     td_2.classList.remove('click');}, 100);
+  }
+
   if (entry.title) {
     var title = entry.title;
   } else {
@@ -37,13 +54,21 @@ function createPlaylistTable(entry, position, pause) {
 
   var table = document.createElement('table');
   var tr = document.createElement('tr');
-  var td_right = document.createElement('td');
   var td_left = document.createElement('td');
+  var td_2 = document.createElement('td');
+  var td_right = document.createElement('td');
   table.className = 'playlist';
   tr.className = 'playlist';
-  td_right.className = 'playlist';
+  td_2.className = 'playlist';
   td_left.className = 'playlist';
-  td_right.innerText = title;
+  td_right.className = 'playlist';
+  td_2.innerText = title;
+  if (first === false) {
+    var td_3 = document.createElement('td');
+    td_3.innerHTML = '<i class="fas fa-arrow-up"></i>';
+    td_3.className = 'playlist';
+  }
+  td_right.innerHTML = '<i class="fas fa-trash"></i>';
 
   if (entry.hasOwnProperty('playing')) {
     if (pause) {
@@ -52,19 +77,55 @@ function createPlaylistTable(entry, position, pause) {
       td_left.innerHTML = '<i class="fas fa-play"></i>';
     }
 
-    table.classList.add('playing');
-    table.classList.add('violet');
+    td_left.classList.add('playing');
+    td_left.classList.add('violet');
+    td_2.classList.add('playing');
+    td_2.classList.add('violet');
+      first || td_3.classList.add('violet');
+    td_right.classList.add('violet');
 
   } else {
-    table.classList.add('gray');
-    table.onclick = function(arg) {
+    td_left.classList.add('gray');
+    td_2.classList.add('gray');
+    first || td_3.classList.add('gray');
+    td_right.classList.add('gray');
+
+    td_left.onclick = td_2.onclick = function(arg) {
         return function() {
             send("playlist_jump", arg);
             return false;
         }
     }(position);
+
+    td_left.addEventListener("mouseover", function() {setActive(true)});
+    td_left.addEventListener("mouseout", function() {setActive(false)});
+    td_2.addEventListener("mouseover", function() {setActive(true)});
+    td_2.addEventListener("mouseout", function() {setActive(false)});
+
+    td_left.addEventListener("click", blink);
+    td_2.addEventListener("click", blink);
   }
+
+  if (first === false) {
+    td_3.onclick = function (arg) {
+      return function () {
+        send("playlist_move_up", arg);
+        return false;
+      }
+    }(position);
+  }
+
+  td_right.onclick = function(arg) {
+      return function() {
+          console.log(arg);
+          send("playlist_remove", arg);
+          return false;
+      }
+  }(position);
+
   tr.appendChild(td_left);
+  tr.appendChild(td_2);
+  first || tr.appendChild(td_3);
   tr.appendChild(td_right);
   table.appendChild(tr);
   return table;
@@ -74,8 +135,12 @@ function populatePlaylist(json, pause) {
   var playlist = document.getElementById('playlist');
   playlist.innerHTML = "";
 
+  var first = true;
   for(var i = 0; i < json.length; ++i) {
-      playlist.appendChild(createPlaylistTable(json[i], i, pause));
+    playlist.appendChild(createPlaylistTable(json[i], i, pause, first));
+    if (first === true) {
+      first = false
+    }
   }
 }
 

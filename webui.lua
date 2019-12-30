@@ -80,6 +80,26 @@ local commands = {
     return pcall(mp.set_property('playlist-pos', p))
   end,
 
+  playlist_remove = function(p)
+    local valid, msg = validate_number_param(p)
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.commandv('playlist-remove', p))
+  end,
+
+  playlist_move_up = function(p)
+    local valid, msg = validate_number_param(p)
+    if not valid then
+      return true, false, msg
+    end
+    if p - 1 >= 0 then
+      return pcall(mp.commandv('playlist-move', p, p - 1))
+    else
+      return true, true, true
+    end
+  end,
+
   add_volume = function(v)
     local valid, msg = validate_number_param(v)
     if not valid then
