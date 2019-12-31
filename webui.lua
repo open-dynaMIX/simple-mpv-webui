@@ -88,6 +88,17 @@ local commands = {
     return pcall(mp.commandv('playlist-remove', p))
   end,
 
+  playlist_move = function(s, t)
+    args = {s, t}
+    for count = 1, 2 do
+      local valid, msg = validate_number_param(s)
+      if not valid then
+        return true, false, msg
+      end
+    end
+    return pcall(mp.commandv('playlist-move', s, t))
+  end,
+
   playlist_move_up = function(p)
     local valid, msg = validate_number_param(p)
     if not valid then
@@ -330,11 +341,12 @@ local function handle_post(path)
     return 404, get_content_type('plain'), "Error: Requested URL /"..path.." not found"
   end
   local command = components()
-  local param = components() or ""
+  local param1 = components() or ""
+  local param2 = components() or ""
 
   local f = commands[command]
   if f ~= nil then
-    local _, err, ret = f(param)
+    local _, err, ret = f(param1, param2)
     if err then
       return 200, get_content_type('json'), '{"message": "success"}'
     else
