@@ -325,6 +325,34 @@ function playlist_loop_cycle() {
   }
 }
 
+function setChapter(chapters, chapter) {
+  var chapterButtons = document.getElementsByClassName('chapterButton');
+  var chapterAddButtons = document.getElementsByClassName('chapterButtonAdd');
+  var chapterSubButtons = document.getElementsByClassName('chapterButtonSub');
+  var chapterTd = document.getElementById('chapter');
+  var chapterInfo = document.getElementById('chapterInfo');
+  if (chapters === 0) {
+    [].slice.call(chapterButtons).forEach(function (div) {
+      div.onclick = null;
+      div.classList.add('disabled');
+    });
+    chapterTd.innerText = "0/0";
+    chapterInfo.style.display = "none";
+  } else {
+    [].slice.call(chapterAddButtons).forEach(function (div) {
+      div.onclick = function() {send('add_chapter', '1')};
+      div.classList.remove('disabled');
+    });
+    [].slice.call(chapterSubButtons).forEach(function (div) {
+      div.onclick = function() {send('add_chapter', '-1')};
+      div.classList.remove('disabled');
+    });
+    chapterTd.innerText = chapter + 1 + "/" + chapters;
+    chapterInfo.style.display = "";
+  }
+
+}
+
 function setLoop(loopFile, loopPlaylist) {
   var loopButton = document.getElementsByClassName('playlistLoopButton');
   var html = '<i class="fas fa-redo-alt"></i>';
@@ -365,6 +393,7 @@ function handleStatusResponse(json) {
   setVolumeSlider(json['volume'], json['volume-max']);
   setLoop(json["loop-file"], json["loop-playlist"]);
   setFullscreenButton(json['fullscreen']);
+  setChapter(json['chapters'], json['chapter']);
   populatePlaylist(json['playlist'], json['pause']);
   if ('mediaSession' in navigator) {
     setupNotification();

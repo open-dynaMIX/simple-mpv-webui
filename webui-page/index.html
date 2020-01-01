@@ -67,6 +67,10 @@
           <td>Audio-delay:</td>
           <td id="audio-delay"></td>
         </tr>
+        <tr id="chapterInfo">
+          <td>Chapter:</td>
+          <td id="chapter"></td>
+        </tr>
       </table>
     </div>
 
@@ -105,12 +109,12 @@
       </div>
     </div>
 
-    <div onClick="send('add_chapter', '-1')" class="button left blue">
+    <div onClick="send('add_chapter', '-1')" class="button left blue chapterButton chapterButtonSub">
       <div class="content icon-content">
         <i class="fas fa-step-backward"></i>
       </div>
     </div>
-    <div onClick="send('add_chapter', '1')" class="button right blue">
+    <div onClick="send('add_chapter', '1')" class="button right blue chapterButton chapterButtonAdd">
       <div class="content icon-content">
         <i class="fas fa-step-forward"></i>
       </div>

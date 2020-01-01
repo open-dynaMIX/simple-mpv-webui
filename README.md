@@ -148,6 +148,8 @@ information about the error.
 ``` json
 {
     "filename": "big_buck_bunny_1080p_stereo.ogg",
+    "chapter": 0,            # <-- current chapter
+    "chapters": 0,           # <-- chapters count
     "duration": 596,         # <-- seconds
     "position": 122,         # <-- seconds
     "pause": true,
