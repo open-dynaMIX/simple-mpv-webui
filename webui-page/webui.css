@@ -60,6 +60,11 @@ h3 {
   font-size: 150px;
 }
 
+.button.disabled, .button.disabled:hover, .button.disabled:active {
+  filter: brightness(30%);
+  cursor: auto;
+}
+
 .button:hover {
   filter: brightness(50%);
 }

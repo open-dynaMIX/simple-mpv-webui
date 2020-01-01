@@ -335,8 +335,14 @@ local function build_status_response()
     track_list = mp.get_property("track-list") or '',
     fullscreen = tostring(mp.get_property_native("fullscreen")) or '',
     loop_file = mp.get_property("loop-file") or '',
-    loop_playlist = mp.get_property("loop-playlist") or ''
+    loop_playlist = mp.get_property("loop-playlist") or '',
+    chapters = mp.get_property("chapters") or '',
+    chapter = 0
   }
+
+  if values.chapters ~= "0" then
+    values.chapter = mp.get_property("chapter") or ''
+  end
 
   -- We need to check if the value is available.
   -- If the file just started playing, mp-functions return nil for a short time.
@@ -355,6 +361,8 @@ local function build_status_response()
   end
 
   return '{"audio-delay":'..values.audio_delay:sub(1, -4)..',' ..
+          '"chapter":' ..values.chapter..',' ..
+          '"chapters":' ..values.chapters..',' ..
           '"duration":'..round(values.duration)..',' ..
           '"filename":"'..values.filename..'",' ..
           '"fullscreen":'..values.fullscreen..',' ..
