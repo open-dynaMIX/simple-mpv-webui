@@ -24,6 +24,19 @@ local function validate_number_param(param)
   end
 end
 
+local function validate_loop_param(param, valid_table)
+  for _, value in pairs(valid_table) do
+    if value == param then
+      return true, nil
+    end
+  end
+  valid, msg = validate_number_param(param)
+  if not valid then
+    return false, "Invalid parameter!p"
+  end
+  return true, nil
+end
+
 local commands = {
   play = function()
     return pcall(mp.set_property_bool, "pause", false)
@@ -109,6 +122,26 @@ local commands = {
     else
       return true, true, true
     end
+  end,
+
+  playlist_shuffle = function()
+    return pcall(mp.command('playlist-shuffle'))
+  end,
+
+  loop_file = function(mode)
+    local valid, msg = validate_loop_param(mode, {"inf", "no"})
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.set_property('loop-file', mode))
+  end,
+
+  loop_playlist = function(mode)
+    local valid, msg = validate_loop_param(mode, {"inf", "no", "force"})
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.set_property('loop-playlist', mode))
   end,
 
   add_volume = function(v)
@@ -300,7 +333,9 @@ local function build_status_response()
     volume_max = mp.get_property("volume-max") or '',
     playlist = mp.get_property("playlist") or '',
     track_list = mp.get_property("track-list") or '',
-    fullscreen = tostring(mp.get_property_native("fullscreen")) or ''
+    fullscreen = tostring(mp.get_property_native("fullscreen")) or '',
+    loop_file = mp.get_property("loop-file") or '',
+    loop_playlist = mp.get_property("loop-playlist") or ''
   }
 
   -- We need to check if the value is available.
@@ -323,6 +358,8 @@ local function build_status_response()
           '"duration":'..round(values.duration)..',' ..
           '"filename":"'..values.filename..'",' ..
           '"fullscreen":'..values.fullscreen..',' ..
+          '"loop-file":"'..values.loop_file..'",' ..
+          '"loop-playlist":"'..values.loop_playlist..'",' ..
           '"metadata":'..values.metadata..',' ..
           '"pause":'..values.pause..',' ..
           '"playlist":'..values.playlist..',' ..

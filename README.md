@@ -125,6 +125,9 @@ You can also directly talk to the endpoints:
 | /api/playlist_move/:source/:target | POST   | `int` and `int`                    | Move playlist item from position `:source` to position `:target`        |
 | /api/playlist_move_up/:index       | POST   | `int`                              | Move playlist item at position `:index` one position up                 |
 | /api/playlist_remove/:index        | POST   | `int`                              | Remove playlist item at position `:index`                               |
+| /api/playlist_shuffle              | POST   |                                    | Shuffle the playlist                                                    |
+| /api/loop_file/:mode               | POST   | `string` or `int`                  | Loop the current file. `:mode` acceppts the same loop modes as mpv      |
+| /api/loop_playlisr/:mode           | POST   | `string` or `int`                  | Loop the whole playlist `:mode` acceppts the same loop modes as mpv     |
 | /api/add_chapter/:amount           | POST   | `int` (can be negative)            | Jump `:amount` chapters in current media                                |
 | /api/add_volume/:percent           | POST   | `int` or `float` (can be negative) | Add :percent% volume                                                    |
 | /api/set_volume/:percent           | POST   | `int` or `float`                   | Set volume to :percent%                                                 |
@@ -145,15 +148,17 @@ information about the error.
 ``` json
 {
     "filename": "big_buck_bunny_1080p_stereo.ogg",
-    "duration": 596,      # <-- seconds
-    "position": 122,      # <-- seconds
+    "duration": 596,         # <-- seconds
+    "position": 122,         # <-- seconds
     "pause": true,
-    "remaining": 474,     # <-- seconds
-    "sub-delay": 0,       # <-- milliseconds
-    "audio-delay": 0,     # <-- milliseconds
+    "remaining": 474,        # <-- seconds
+    "sub-delay": 0,          # <-- milliseconds
+    "audio-delay": 0,        # <-- milliseconds
     "fullscreen": false,
-    "metadata": {},       # <-- All metadata available to MPV
-    "track-list": [       # <-- All available video, audio and sub tracks
+    "loop-file": "no",       # <-- `no`, `inf` or integer
+    "loop-playlist": "no",   # <-- `no`, `inf`, `force` or integer
+    "metadata": {},          # <-- All metadata available to MPV
+    "track-list": [          # <-- All available video, audio and sub tracks
         {
             "id": 1,
             "type": "video",
@@ -189,7 +194,7 @@ information about the error.
     ],
     "volume": 64,
     "volume-max": 130,
-    "playlist": [         # <-- All files in the current playlist
+    "playlist": [            # <-- All files in the current playlist
         {
             "filename": "Videos/big_buck_bunny_1080p_stereo.ogg",
             "current": true,

@@ -23,16 +23,30 @@
   </head>
   <body>
     <div id="overlay">
-      <div onClick="togglePlaylist()" class="button left violet playlist-button">
-        <div class="content text-content">
-          Hide
-        </div>
-      </div>
-      <div onClick="send('toggle_pause')" class="button right green playlist-button">
-        <div class="content icon-content playPauseButton">
-          <i class="fas fa-play"></i><i class="fas fa-pause"></i>
-        </div>
-      </div>
+      <table class="playlist-control">
+        <tr>
+          <td>
+              <div onClick="send('toggle_pause')" class="button green content icon-content playPauseButton playlist-controls">
+                <i class="fas fa-play"></i><i class="fas fa-pause"></i>
+              </div>
+          </td>
+          <td>
+              <div onClick="playlist_loop_cycle()" class="button blue content icon-content playlist-controls playlistLoopButton">
+                <i class="fas fa-redo-alt"></i>
+              </div>
+          </td>
+          <td>
+              <div onClick="send('playlist_shuffle')" class="button blue content icon-content playlist-controls">
+                <i class="fas fa-random"></i>
+              </div>
+          </td>
+          <td>
+              <div onClick="togglePlaylist()" class="button violet content icon-content playlist-controls">
+                <i class="fas fa-times-circle"></i>
+              </div>
+          </td>
+        </tr>
+      </table>
       <div id="playlist"></div>
     </div>
 

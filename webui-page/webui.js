@@ -117,7 +117,6 @@ function createPlaylistTable(entry, position, pause, first) {
 
   td_right.onclick = function(arg) {
       return function() {
-          console.log(arg);
           send("playlist_remove", arg);
           return false;
       }
@@ -312,6 +311,44 @@ function setPlayPause(value) {
   }
 }
 
+function playlist_loop_cycle() {
+  var loopButton = document.getElementsByClassName('playlistLoopButton');
+  if (loopButton.value === "no") {
+    send("loop_file", "inf");
+    send("loop_playlist", "no");
+  } else if (loopButton.value === "1") {
+    send("loop_file", "no");
+    send("loop_playlist", "inf");
+  } else if (loopButton.value === "a") {
+    send("loop_file", "no");
+    send("loop_playlist", "no");
+  }
+}
+
+function setLoop(loopFile, loopPlaylist) {
+  var loopButton = document.getElementsByClassName('playlistLoopButton');
+  var html = '<i class="fas fa-redo-alt"></i>';
+  var value = "";
+  if (loopFile === "no") {
+    if (loopPlaylist === "no") {
+      html = '!<i class="fas fa-redo-alt"></i>';
+      value = "no";
+    } else {
+      html = '<i class="fas fa-redo-alt"></i>Σ';
+      value = "a";
+    }
+  } else {
+    html = '<i class="fas fa-redo-alt"></i>1';
+    value = "1";
+  }
+
+  [].slice.call(loopButton).forEach(function (div) {
+      div.innerHTML = html;
+    });
+
+  loopButton.value = value;
+}
+
 function handleStatusResponse(json) {
   setMetadata(json['metadata'], json['playlist'], json['filename']);
   setTrackList(json['track-list']);
@@ -326,6 +363,7 @@ function handleStatusResponse(json) {
   setPlayPause(json['pause']);
   setPosSlider(json['position'], json['duration']);
   setVolumeSlider(json['volume'], json['volume-max']);
+  setLoop(json["loop-file"], json["loop-playlist"]);
   setFullscreenButton(json['fullscreen']);
   populatePlaylist(json['playlist'], json['pause']);
   if ('mediaSession' in navigator) {
