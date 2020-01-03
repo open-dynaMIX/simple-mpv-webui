@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.2.1
+### Fix
+* fix playlist_move validation (7500b4f8819964b9f7e47edd8ae494a697ce4899)
+* use events for sending startup notification (067eb23f2c8a3cbe1d395198d60479f95bdf4f12)
+
 ## v0.2.0
 ### Feature
 * restyle range input sliders (d2a8a696413faccc275ab4abe2a0dcb5adc6262e)
