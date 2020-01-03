@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# Enable with:
+# ln -s "$(pwd)/dev_helpers/commit-msg" "$(pwd).git/hooks/commit-msg"
+#
+# Called by "git commit" with one argument, the name of the file
+# that has the commit message.  The hook should exit with non-zero
+# status after issuing an appropriate message if it wants to stop the
+# commit.  The hook is allowed to edit the commit message file.
+
+cat "$1" | gitlint --contrib contrib-title-conventional-commits --ignore B6
+lint_exit="$?"
+
+if [[ "$lint_exit" -ne 0 ]]; then
+    echo -e "Failing commit msg:\n"
+    cat "$1"
+    exit "$lint_exit"
+fi
