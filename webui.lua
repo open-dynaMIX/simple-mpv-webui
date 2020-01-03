@@ -4,7 +4,8 @@ local socket = require("socket")
 local dec64 = require("mime").decode("base64")
 local url = require("socket.url")
 
-local msg_prefix = "[webui] "
+local MSG_PREFIX = "[webui] "
+local VERSION = "0.2.0"
 
 local options = {
   port = 8080,
@@ -545,7 +546,7 @@ if options.audio_devices == '' then
 end
 
 if options.disable then
-  mp.osd_message(msg_prefix.."disabled", 2)
+  mp.osd_message(MSG_PREFIX.."disabled", 2)
   return
 else
   local passwd = get_passwd()
@@ -558,6 +559,6 @@ else
       server:settimeout(0)
       mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
     end
-    mp.osd_message(msg_prefix.."Serving on "..concatkeys(servers, ' and ').." port "..options.port, 5)
+    mp.osd_message(MSG_PREFIX.."Serving on "..concatkeys(servers, ' and ').." port "..options.port, 5)
   end
 end
