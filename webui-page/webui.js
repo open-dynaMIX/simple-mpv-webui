@@ -144,17 +144,57 @@ function populatePlaylist(json, pause) {
 }
 
 window.onkeydown = function(e) {
-  if (e.keyCode === 32 || e.key === ' ') {
-    send('toggle_pause');
-    return false;
-  }
-  if (e.keyCode === 39 || e.key === 'ArrowRight') {
-    send('seek', '10');
-    return false;
-  }
-  if (e.keyCode === 37 || e.key === 'ArrowLeft') {
-    send('seek', '-10');
-    return false;
+  var bindings = [
+    {
+      "key": " ",
+      "code": 32,
+      "command": "toggle_pause"
+    },
+    {
+      "key": "ArrowRight",
+      "code": 39,
+      "command": "seek",
+      "param1": "10"
+    },
+    {
+      "key": "ArrowLeft",
+      "code": 37,
+      "command": "seek",
+      "param1": "-10"
+    },
+    {
+      "key": "PageDown",
+      "code": 34,
+      "command": "seek",
+      "param1": "3"
+    },
+    {
+      "key": "PageUp",
+      "code": 33,
+      "command": "seek",
+      "param1": "-3"
+    },
+    {
+      "key": "f",
+      "code": 70,
+      "command": "fullscreen",
+    },
+    {
+      "key": "n",
+      "code": 78,
+      "command": "playlist_next",
+    },
+    {
+      "key": "p",
+      "code": 80,
+      "command": "playlist_prev",
+    },
+  ];
+  for (var i = 0; i < bindings.length; i++) {
+    if (e.keyCode === bindings[i].code || e.key === bindings[i].key) {
+      send(bindings[i].command, bindings[i].param1, bindings[i].param2);
+      return false;
+    }
   }
 };
 

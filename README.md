@@ -99,6 +99,20 @@ Only plaintext `.htpasswd` entries are supported.
 
 ![playlist screenshot](screenshots/playlist.png#1)
 
+## Key bindings
+There are some keybindings available:
+
+| Key        | Function            |
+| ---------- | ------------------- |
+| SPACE      | Play/Pause          |
+| ArrowRight | seek +10            |
+| ArrowLeft  | seek -10            |
+| PageDown   | seek +3             |
+| PageUp     | seek -3             |
+| f          | toggle fullscreen   |
+| n          | playlist next       |
+| p          | playlist previous   |
+
 ## Media Session API
 When using a browser that supports it, simple-mpv-webui uses the Media Session
 API to provide a notification with some metadata and controls:
