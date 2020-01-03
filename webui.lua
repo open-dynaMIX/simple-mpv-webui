@@ -546,19 +546,24 @@ if options.audio_devices == '' then
 end
 
 if options.disable then
-  mp.osd_message(MSG_PREFIX.."disabled", 2)
+  message = function() mp.osd_message(MSG_PREFIX .. "disabled", 5) end
   return
 else
   local passwd = get_passwd()
   local servers = init_servers()
 
   if next(servers) == nil then
-    mp.msg.error("Error: Couldn't spawn server on port "..options.port)
+    error_msg = "Error: Couldn't spawn server on port " .. options.port
+    message = function() mp.msg.error(error_msg, 5) end
   else
     for _, server in pairs(servers) do
       server:settimeout(0)
       mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
     end
-    mp.osd_message(MSG_PREFIX.."Serving on "..concatkeys(servers, ' and ').." port "..options.port, 5)
+    startup_msg = MSG_PREFIX .. "v" .. VERSION .. "\nServing on " .. concatkeys(servers, ':' .. options.port .. ' and ') .. ":" .. options.port
+    message = function() mp.osd_message(startup_msg, 5) end
   end
 end
+
+mp.register_event("file-loaded", message)
+mp.register_event("file-loaded", function() mp.unregister_event(message) end)
