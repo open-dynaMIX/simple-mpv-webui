@@ -104,7 +104,7 @@ local commands = {
   playlist_move = function(s, t)
     args = {s, t}
     for count = 1, 2 do
-      local valid, msg = validate_number_param(s)
+      local valid, msg = validate_number_param(args[count])
       if not valid then
         return true, false, msg
       end
