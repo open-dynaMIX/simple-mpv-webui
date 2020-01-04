@@ -366,31 +366,19 @@ function playlist_loop_cycle() {
 }
 
 function setChapter(chapters, chapter) {
-  var chapterButtons = document.getElementsByClassName('chapterButton');
-  var chapterAddButtons = document.getElementsByClassName('chapterButtonAdd');
-  var chapterSubButtons = document.getElementsByClassName('chapterButtonSub');
-  var chapterTd = document.getElementById('chapter');
-  var chapterInfo = document.getElementById('chapterInfo');
+  var chapterElements = document.getElementsByClassName('chapter');
+  var chapterContent = document.getElementById('chapterContent');
   if (chapters === 0) {
-    [].slice.call(chapterButtons).forEach(function (div) {
-      div.onclick = null;
-      div.classList.add('disabled');
+    [].slice.call(chapterElements).forEach(function (div) {
+      div.classList.add('hidden');
     });
-    chapterTd.innerText = "0/0";
-    chapterInfo.style.display = "none";
+    chapterContent.innerText = "0/0";
   } else {
-    [].slice.call(chapterAddButtons).forEach(function (div) {
-      div.onclick = function() {send('add_chapter', '1')};
-      div.classList.remove('disabled');
+    [].slice.call(chapterElements).forEach(function (div) {
+      div.classList.remove('hidden');
     });
-    [].slice.call(chapterSubButtons).forEach(function (div) {
-      div.onclick = function() {send('add_chapter', '-1')};
-      div.classList.remove('disabled');
-    });
-    chapterTd.innerText = chapter + 1 + "/" + chapters;
-    chapterInfo.style.display = "";
+    chapterContent.innerText = chapter + 1 + "/" + chapters;
   }
-
 }
 
 function setLoop(loopFile, loopPlaylist) {
