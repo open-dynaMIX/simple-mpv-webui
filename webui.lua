@@ -1,5 +1,6 @@
 require 'mp.options'
 require 'mp.msg'
+utils = require 'mp.utils'
 local socket = require("socket")
 local dec64 = require("mime").decode("base64")
 local url = require("socket.url")
@@ -263,10 +264,6 @@ local function header(code, content_type, content_length)
   end
 end
 
-local function round(a)
-  return (a - a % 1) / 1
-end
-
 function string.starts(String, Start)
   return string.sub(String,1,string.len(Start))==Start
 end
@@ -322,27 +319,41 @@ end
 
 local function build_status_response()
   local values = {
-    filename = mp.get_property('filename') or '',
+    ["audio-delay"] = mp.get_property_osd("audio-delay") or '',
+    chapter = mp.get_property_native("chapter") or 0,
+    chapters = mp.get_property_native("chapters") or '',
     duration = mp.get_property("duration") or '',
+    filename = mp.get_property('filename') or '',
+    fullscreen = mp.get_property_native("fullscreen"),
+    ["loop-file"] = mp.get_property_native("loop-file"),
+    ["loop-playlist"] = mp.get_property_native("loop-playlist"),
+    metadata = mp.get_property_native("metadata") or '',
+    pause = mp.get_property_native("pause"),
+    playlist = mp.get_property_native("playlist") or '',
     position = mp.get_property("time-pos") or '',
-    pause = tostring(mp.get_property_native("pause")) or '',
     remaining = mp.get_property("playtime-remaining") or '',
-    sub_delay = mp.get_property_osd("sub-delay") or '',
-    audio_delay = mp.get_property_osd("audio-delay") or '',
-    metadata = mp.get_property("metadata") or '',
+    ["sub-delay"] = mp.get_property_osd("sub-delay") or '',
+    ["track-list"] = mp.get_property_native("track-list") or '',
     volume = mp.get_property("volume") or '',
-    volume_max = mp.get_property("volume-max") or '',
-    playlist = mp.get_property("playlist") or '',
-    track_list = mp.get_property("track-list") or '',
-    fullscreen = tostring(mp.get_property_native("fullscreen")) or '',
-    loop_file = mp.get_property("loop-file") or '',
-    loop_playlist = mp.get_property("loop-playlist") or '',
-    chapters = mp.get_property("chapters") or '',
-    chapter = 0
+    ["volume-max"] = mp.get_property("volume-max") or ''
   }
 
-  if values.chapters ~= "0" then
-    values.chapter = mp.get_property("chapter") or ''
+  for _, value in pairs({"fullscreen", "loop-file", "loop-playlist", "pause"}) do
+    if values[value] == nil then
+      values[value] = ''
+    end
+  end
+
+  for _, value in pairs({"duration", "position", "remaining", "volume", "volume_max"}) do
+    if values[value] ~= nil then
+      values[value] = values[value]
+    end
+  end
+
+  for _, value in pairs({"audio-delay", "sub-delay"}) do
+    if values[value] ~= nil then
+      values[value] = tonumber(values[value]:sub(1, -4))
+    end
   end
 
   -- We need to check if the value is available.
@@ -361,23 +372,7 @@ local function build_status_response()
       return false
   end
 
-  return '{"audio-delay":'..values.audio_delay:sub(1, -4)..',' ..
-          '"chapter":' ..values.chapter..',' ..
-          '"chapters":' ..values.chapters..',' ..
-          '"duration":'..round(values.duration)..',' ..
-          '"filename":"'..values.filename..'",' ..
-          '"fullscreen":'..values.fullscreen..',' ..
-          '"loop-file":"'..values.loop_file..'",' ..
-          '"loop-playlist":"'..values.loop_playlist..'",' ..
-          '"metadata":'..values.metadata..',' ..
-          '"pause":'..values.pause..',' ..
-          '"playlist":'..values.playlist..',' ..
-          '"position":'..round(values.position)..',' ..
-          '"remaining":'..round(values.remaining)..',' ..
-          '"sub-delay":'..values.sub_delay:sub(1, -4)..',' ..
-          '"track-list":'..values.track_list..',' ..
-          '"volume":'..round(values.volume)..',' ..
-          '"volume-max":'..round(values.volume_max)..'}'
+  return utils.format_json(values)
 end
 
 local function handle_post(path)
