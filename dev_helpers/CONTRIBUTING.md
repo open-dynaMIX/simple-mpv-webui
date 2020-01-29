@@ -27,7 +27,7 @@ This hook uses [gitlint](https://github.com/jorisroovers/gitlint), so you need t
 Then you can add the foloowing symlink:
 
 ```bash
-ln -s "$(pwd)/dev_helpers/commit-msg" "$(pwd).git/hooks/commit-msg"
+ln -s "$(pwd)/dev_helpers/commit-msg" "$(pwd)/.git/hooks/commit-msg"
 ```
 
 Now, your commit messages will be linted, before comitting.

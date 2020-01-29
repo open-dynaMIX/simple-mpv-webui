@@ -1,11 +1,19 @@
-name: Commitlint
-on: [pull_request]
+name: Lint
+on: [push, pull_request]
 
 jobs:
   lint:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    strategy:
+      matrix:
+        python: [3.8]
     steps:
       - uses: actions/checkout@v1
-      - uses: wagoid/commitlint-github-action@v1
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install gitlint
+        run: pip install gitlint
+      - name: Run gitlint
+        run: gitlint --contrib contrib-title-conventional-commits --ignore B6
