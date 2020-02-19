@@ -344,12 +344,6 @@ local function build_status_response()
     end
   end
 
-  for _, value in pairs({"duration", "position", "remaining", "volume", "volume_max"}) do
-    if values[value] ~= nil then
-      values[value] = values[value]
-    end
-  end
-
   for _, value in pairs({"audio-delay", "sub-delay"}) do
     if values[value] ~= nil then
       values[value] = tonumber(values[value]:sub(1, -4))
@@ -535,8 +529,11 @@ local function init_servers()
 end
 
 if options.audio_devices == '' then
-  for _, device in pairs(mp.get_property_native("audio-device-list")) do
-    options.audio_devices = options.audio_devices .. ' ' .. device['name']
+  for name, _ in pairs(audio_device_list) do
+    if not options.audio_devices == '' then
+      options.audio_devices = options.audio_devices .. ' '
+    end
+    options.audio_devices = options.audio_devices .. name
   end
 end
 
