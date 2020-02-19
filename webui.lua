@@ -317,9 +317,18 @@ local function log_line(request, code, length)
     clientip..' - - ['..time..'] "'..path..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
 end
 
+local function is_audio_supported()
+  devices = mp.get_property_native('audio-device-list')
+  if devices[1].name == "auto" and not devices[2] then
+    return false
+  end
+  return true
+end
+
 local function build_status_response()
   local values = {
     ["audio-delay"] = mp.get_property_osd("audio-delay") or '',
+    ["audio-support"] = is_audio_supported(),
     chapter = mp.get_property_native("chapter") or 0,
     chapters = mp.get_property_native("chapters") or '',
     duration = mp.get_property("duration") or '',
@@ -341,12 +350,6 @@ local function build_status_response()
   for _, value in pairs({"fullscreen", "loop-file", "loop-playlist", "pause"}) do
     if values[value] == nil then
       values[value] = ''
-    end
-  end
-
-  for _, value in pairs({"duration", "position", "remaining", "volume", "volume_max"}) do
-    if values[value] ~= nil then
-      values[value] = values[value]
     end
   end
 
@@ -535,8 +538,11 @@ local function init_servers()
 end
 
 if options.audio_devices == '' then
-  for _, device in pairs(mp.get_property_native("audio-device-list")) do
-    options.audio_devices = options.audio_devices .. ' ' .. device['name']
+  for name, _ in pairs(audio_device_list) do
+    if not options.audio_devices == '' then
+      options.audio_devices = options.audio_devices .. ' '
+    end
+    options.audio_devices = options.audio_devices .. name
   end
 end
 

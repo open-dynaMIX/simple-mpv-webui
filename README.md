@@ -173,8 +173,8 @@ information about the error.
     "fullscreen": false,
     "loop-file": "no",       # <-- `no`, `inf` or integer
     "loop-playlist": "no",   # <-- `no`, `inf`, `force` or integer
-    "metadata": {},          # <-- All metadata available to MPV
-    "track-list": [          # <-- All available video, audio and sub tracks
+    "metadata": {},          # <-- all metadata available to MPV
+    "track-list": [          # <-- all available video, audio and sub tracks
         {
             "id": 1,
             "type": "video",
@@ -210,7 +210,8 @@ information about the error.
     ],
     "volume": 64,
     "volume-max": 130,
-    "playlist": [            # <-- All files in the current playlist
+    "audio-support": true,   # <-- is set to `false` if only the `auto` audio device is found by mpv
+    "playlist": [            # <-- all files in the current playlist
         {
             "filename": "Videos/big_buck_bunny_1080p_stereo.ogg",
             "current": true,
