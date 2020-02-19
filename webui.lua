@@ -317,9 +317,18 @@ local function log_line(request, code, length)
     clientip..' - - ['..time..'] "'..path..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
 end
 
+local function is_audio_supported()
+  devices = mp.get_property_native('audio-device-list')
+  if devices[1].name == "auto" and not devices[2] then
+    return false
+  end
+  return true
+end
+
 local function build_status_response()
   local values = {
     ["audio-delay"] = mp.get_property_osd("audio-delay") or '',
+    ["audio-support"] = is_audio_supported(),
     chapter = mp.get_property_native("chapter") or 0,
     chapters = mp.get_property_native("chapters") or '',
     duration = mp.get_property("duration") or '',
