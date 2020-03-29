@@ -24,7 +24,7 @@ For local linting, there is a `commit-msg` hook in `dev_helpers`.
 
 This hook uses [gitlint](https://github.com/jorisroovers/gitlint), so you need to make sure it's installed.
 
-Then you can add the foloowing symlink:
+Then you can add the following symlink:
 
 ```bash
 ln -s "$(pwd)/dev_helpers/commit-msg" "$(pwd)/.git/hooks/commit-msg"
