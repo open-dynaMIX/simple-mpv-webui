@@ -1,9 +1,21 @@
 # Changelog
 
+## v0.3.0
+### Feature
+* add "audio-support" to status response (c66a29f01165446b34a798774165e4d4f12f7374)
+* do not round time and volume values (cabf7dbe297a1161aa555bb4de3ded13628225ce)
+* hide chapter controls if media has no chapters (8974f9405ca8a92e75da4a23a7b28b8cffe2867f)
+* add more key bindings (95243d449eea2e70c5bf84ca329e66d6d2a491b3)
+
+### Documentation
+* add a section with a link to windows dependencies repo (10db3814aae26c9a3e496c77a3ad11b5c6f8585e)
+
+
 ## v0.2.1
 ### Fix
 * fix playlist_move validation (7500b4f8819964b9f7e47edd8ae494a697ce4899)
 * use events for sending startup notification (067eb23f2c8a3cbe1d395198d60479f95bdf4f12)
+
 
 ## v0.2.0
 ### Feature
