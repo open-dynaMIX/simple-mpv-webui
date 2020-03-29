@@ -92,7 +92,17 @@ user2:password2
 Only plaintext `.htpasswd` entries are supported.
 
 ## Dependencies
+
+### Linux
+
  - [luasocket](https://github.com/diegonehab/luasocket)
+
+### Windows
+
+In [this repository](https://github.com/chuck-/simple-mpv-webui-windows-libs) you can find a guide,
+build script and pre-built binaries.
+
+Thanks to [@chuck-](https://github.com/chuck-) for providing this!
 
 ## Screenshots
 ![webui screenshot](screenshots/webui.png#2)
