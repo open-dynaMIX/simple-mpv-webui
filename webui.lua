@@ -6,7 +6,7 @@ local dec64 = require("mime").decode("base64")
 local url = require("socket.url")
 
 local MSG_PREFIX = "[webui] "
-local VERSION = "0.3.0"
+local VERSION = "0.3.1"
 
 local options = {
   port = 8080,

@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.1
+### Fix
+* fix reference to audio-devices-list property (604797d24b6009f51a156f889f23df6b71d80d26)
+
 ## v0.3.0
 ### Feature
 * add "audio-support" to status response (c66a29f01165446b34a798774165e4d4f12f7374)
