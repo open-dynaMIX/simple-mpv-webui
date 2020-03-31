@@ -16,4 +16,4 @@ jobs:
       - name: Install gitlint
         run: pip install gitlint
       - name: Run gitlint
-        run: gitlint --contrib contrib-title-conventional-commits --ignore B6
+        run: gitlint --contrib contrib-title-conventional-commits --ignore B5,B6
