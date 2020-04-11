@@ -63,7 +63,7 @@ Example:
 webui-logging=yes
 ```
 
-#### audio-devices (string)
+#### audio_devices (string)
 Set the audio-devices used for cycling. By default it uses all interfaces MPV 
 knows of.
 
