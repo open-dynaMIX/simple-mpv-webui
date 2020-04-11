@@ -538,11 +538,8 @@ local function init_servers()
 end
 
 if options.audio_devices == '' then
-  for name, _ in pairs(mp.get_property_native("audio-device-list")) do
-    if not options.audio_devices == '' then
-      options.audio_devices = options.audio_devices .. ' '
-    end
-    options.audio_devices = options.audio_devices .. name
+  for _, device in pairs(mp.get_property_native("audio-device-list")) do
+    options.audio_devices = options.audio_devices .. " " .. device.name
   end
 end
 
