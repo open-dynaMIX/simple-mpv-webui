@@ -76,7 +76,7 @@ mpv --audio-device=help
 Example:
 
 ```
-webui-audio-devices="pulse/alsa_output.pci-0000_00_1b.0.analog-stereo pulse/alsa_output.pci-0000_00_03.0.hdmi-stereo"
+webui-audio_devices="pulse/alsa_output.pci-0000_00_1b.0.analog-stereo pulse/alsa_output.pci-0000_00_03.0.hdmi-stereo"
 ```
 
 ### Authentication
