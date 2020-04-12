@@ -162,36 +162,36 @@ local commands = {
     return pcall(mp.command, 'set volume '..v)
   end,
 
-  add_sub_delay = function(ms)
-    local valid, msg = validate_number_param(ms)
+  add_sub_delay = function(sec)
+    local valid, msg = validate_number_param(sec)
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'add sub-delay '..ms)
+    return pcall(mp.command, 'add sub-delay '..sec)
   end,
 
-  set_sub_delay = function(ms)
-    local valid, msg = validate_number_param(ms)
+  set_sub_delay = function(sec)
+    local valid, msg = validate_number_param(sec)
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'set sub-delay '..ms)
+    return pcall(mp.command, 'set sub-delay '..sec)
   end,
 
-  add_audio_delay = function(ms)
-    local valid, msg = validate_number_param(ms)
+  add_audio_delay = function(sec)
+    local valid, msg = validate_number_param(sec)
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'add audio-delay '..ms)
+    return pcall(mp.command, 'add audio-delay '..sec)
   end,
 
-  set_audio_delay = function(ms)
-    local valid, msg = validate_number_param(ms)
+  set_audio_delay = function(sec)
+    local valid, msg = validate_number_param(sec)
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'set audio-delay '..ms)
+    return pcall(mp.command, 'set audio-delay '..sec)
   end,
 
   cycle_sub = function()

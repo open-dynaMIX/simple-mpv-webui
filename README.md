@@ -150,15 +150,15 @@ You can also directly talk to the endpoints:
 | /api/playlist_move_up/:index       | POST   | `int`                              | Move playlist item at position `:index` one position up                 |
 | /api/playlist_remove/:index        | POST   | `int`                              | Remove playlist item at position `:index`                               |
 | /api/playlist_shuffle              | POST   |                                    | Shuffle the playlist                                                    |
-| /api/loop_file/:mode               | POST   | `string` or `int`                  | Loop the current file. `:mode` accepts the same loop modes as mpv      |
-| /api/loop_playlisr/:mode           | POST   | `string` or `int`                  | Loop the whole playlist `:mode` accepts the same loop modes as mpv     |
+| /api/loop_file/:mode               | POST   | `string` or `int`                  | Loop the current file. `:mode` accepts the same loop modes as mpv       |
+| /api/loop_playlist/:mode           | POST   | `string` or `int`                  | Loop the whole playlist `:mode` accepts the same loop modes as mpv      |
 | /api/add_chapter/:amount           | POST   | `int` (can be negative)            | Jump `:amount` chapters in current media                                |
 | /api/add_volume/:percent           | POST   | `int` or `float` (can be negative) | Add :percent% volume                                                    |
 | /api/set_volume/:percent           | POST   | `int` or `float`                   | Set volume to :percent%                                                 |
-| /api/add_sub_delay/:ms             | POST   | `int` or `float` (can be negative) | Add :ms milliseconds subtitles delay                                    |
+| /api/add_sub_delay/:ms             | POST   | `int` or `float` (can be negative) | Add :seconds seconds subtitles delay                                    |
 | /api/set_sub_delay/:ms             | POST   | `int` or `float` (can be negative) | Set subtitles delay to :ms milliseconds                                 |
-| /api/add_audio_delay/:ms           | POST   | `int` or `float` (can be negative) | Add :ms miliseconds audio delay                                         |
-| /api/set_audio_delay/:ms           | POST   | `int` or `float` (can be negative) | Set audio delay to :ms milliseconds                                     |
+| /api/add_audio_delay/:seconds      | POST   | `int` or `float` (can be negative) | Add :seconds seconds audio delay                                    |
+| /api/set_audio_delay/:seconds      | POST   | `int` or `float` (can be negative) | Set audio delay to :seconds milliseconds                                |
 | /api/cycle_sub                     | POST   |                                    | Cycle trough available subtitles                                        |
 | /api/cycle_audio                   | POST   |                                    | Cycle trough available audio tracks                                     |
 | /api/cycle_audio_device            | POST   |                                    | Cycle trough audio devices. [More information.](#audio-devices-string)  |
