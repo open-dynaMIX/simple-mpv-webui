@@ -555,7 +555,10 @@ for _, data in pairs(options.audio_devices) do
 end
 
 if options.disable then
+  mp.msg.info("disabled")
   message = function() mp.osd_message(MSG_PREFIX .. "disabled", 5) end
+  mp.register_event("file-loaded", message)
+  mp.register_event("file-loaded", function() mp.unregister_event(message) end)
   return
 end
 
@@ -570,8 +573,8 @@ else
     server:settimeout(0)
     mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
   end
-  startup_msg = MSG_PREFIX .. "v" .. VERSION .. "\nServing on " .. concatkeys(servers, ':' .. options.port .. ' and ') .. ":" .. options.port
-  message = function() mp.osd_message(startup_msg, 5) end
+  startup_msg = "v" .. VERSION .. "\nServing on " .. concatkeys(servers, ':' .. options.port .. ' and ') .. ":" .. options.port
+  message = function() mp.osd_message(MSG_PREFIX .. startup_msg, 5) end
   mp.msg.info(startup_msg)
   if passwd  ~= nil then
     mp.msg.info('Found .htpasswd file. Basic authentication is enabled.')

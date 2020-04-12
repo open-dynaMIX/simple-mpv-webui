@@ -1,3 +1,4 @@
 .idea/
 .htpasswd
 dummy/
+__pycache__/

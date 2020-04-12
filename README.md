@@ -1,5 +1,9 @@
 # simple-mpv-webui
-...is a web based user interface with controls for the [mpv mediaplayer](https://mpv.io/).
+
+[![Build Status](https://github.com/open-dynaMIX/raiseorlaunch/workflows/Tests/badge.svg)](https://github.com/open-dynaMIX/simple-mpv-webui/actions?query=workflow%3ATests)
+[![License](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
+
+A web based user interface with controls for the [mpv mediaplayer](https://mpv.io/).
 
 ## Usage
 To use it, simply copy `webui.lua` and the `webui-page`-folder to `~/.config/mpv/scripts/`, mpv will then run it 
@@ -171,63 +175,65 @@ information about the error.
 
 ``` json
 {
-    "filename": "big_buck_bunny_1080p_stereo.ogg",
+    "audio-delay": 0,        # <-- milliseconds
+    "audio-devices": [
+        {"active": True, "description": "Autoselect device", "name": "auto"},
+        {"active": False, "description": "Default (alsa)", "name": "alsa"},
+        {"active": False, "description": "Default (jack)", "name": "jack"},
+        {"active": False, "description": "Default (sdl)", "name": "sdl"},
+        {"active": False, "description": "Default (sndio)", "name": "sndio"},
+    ],
     "chapter": 0,            # <-- current chapter
     "chapters": 0,           # <-- chapters count
-    "duration": 596,         # <-- seconds
-    "position": 122,         # <-- seconds
-    "pause": true,
-    "remaining": 474,        # <-- seconds
+    "duration": 6.024,       # <-- seconds
+    "filename": "01 - dummy.mp3",
+    "fullscreen": False,
+    "loop-file": false,      # <-- false, `inf` or integer
+    "loop-playlist": false,  # <-- false, `inf`, `force` or integer
+    "metadata": {            # <-- all metadata available to MPV
+        "album": "Dummy Album",
+        "artist": "Dummy Artist",
+        "comment": "0",
+        "date": "2020",
+        "encoder": "Lavc57.10",
+        "genre": "Jazz",
+        "title": "First dummy",
+    },
+    "pause": True,
+    "playlist": [
+        {
+            "current": True,
+            "filename": "./environment/test_media/01 - dummy.mp3",
+            "playing": True,
+        },
+        {"filename": "./environment/test_media/02 - dummy.mp3"},
+        {"filename": "./environment/test_media/03 - dummy.mp3"},
+    ],
+    "position": -0.0,        # <-- seconds
+    "remaining": 6.024,      # <-- seconds
     "sub-delay": 0,          # <-- milliseconds
-    "audio-delay": 0,        # <-- milliseconds
-    "fullscreen": false,
-    "loop-file": "no",       # <-- `no`, `inf` or integer
-    "loop-playlist": "no",   # <-- `no`, `inf`, `force` or integer
-    "metadata": {},          # <-- all metadata available to MPV
     "track-list": [          # <-- all available video, audio and sub tracks
         {
-            "id": 1,
-            "type": "video",
-            "src-id": 0,
-            "albumart": false,
-            "default": false,
-            "forced": false,
-            "external": false,
-            "selected": true,
-            "ff-index": 0,
-            "decoder-desc": "theora (Theora)",
-            "codec": "theora",
-            "demux-w": 1920,
-            "demux-h": 1080
-        },
-        {
-            "id": 1,
-            "type": "audio",
-            "src-id": 0,
+            "albumart": False,
             "audio-channels": 2,
-            "albumart": false,
-            "default": false,
-            "forced": false,
-            "external": false,
-            "selected": true,
-            "ff-index": 1,
-            "decoder-desc": "vorbis (Vorbis)",
-            "codec": "vorbis",
+            "codec": "mp3",
+            "decoder-desc": "mp3float (MP3 (MPEG audio layer 3))",
+            "default": False,
             "demux-channel-count": 2,
             "demux-channels": "stereo",
-            "demux-samplerate": 48000
+            "demux-samplerate": 48000,
+            "dependent": False,
+            "external": False,
+            "ff-index": 0,
+            "forced": False,
+            "id": 1,
+            "selected": True,
+            "src-id": 0,
+            "type": "audio",
         }
     ],
-    "volume": 64,
+    "volume": 0,
     "volume-max": 130,
-    "audio-support": true,   # <-- is set to `false` if only the `auto` audio device is found by mpv
-    "playlist": [            # <-- all files in the current playlist
-        {
-            "filename": "Videos/big_buck_bunny_1080p_stereo.ogg",
-            "current": true,
-            "playing": true
-        }
-    ]
 }
 ```
 
@@ -241,3 +247,7 @@ Thanks to [makedin](https://github.com/makedin) for his work on this.
  - ipv6 support
  - Option to set the port being used (defaults to 8080)
  - Using the Media Session API
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).

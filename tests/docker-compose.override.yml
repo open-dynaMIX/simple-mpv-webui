@@ -1,0 +1,6 @@
+version: "2.4"  # use v2 for ipv6 support
+
+services:
+  webui:
+    volumes:
+      - ../:/app

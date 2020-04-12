@@ -1,0 +1,21 @@
+;FFMETADATA1
+title=DummyVideo
+
+[CHAPTER]
+TIMEBASE=1/1000
+START=0
+#chapter ends at 00:03
+END=3000
+title=Chapter 1
+
+[CHAPTER]
+TIMEBASE=1/1000
+START=3001
+#chapter ends at 00:10
+END=10000
+title=Chapter 2
+
+
+[STREAM]
+title=DummyVideo
+

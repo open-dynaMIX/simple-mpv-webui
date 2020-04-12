@@ -1,0 +1,11 @@
+Screenshots/
+.dockerignore
+.git/
+.github/
+.gitignore
+.idea/
+.pytest_cache/
+README.md
+LICENSE
+CHANGELOG.md
+CONTRIBUTING.md
