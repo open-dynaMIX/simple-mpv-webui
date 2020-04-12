@@ -351,20 +351,6 @@ function setPlayPause(value) {
   }
 }
 
-function playlist_loop_cycle() {
-  var loopButton = document.getElementsByClassName('playlistLoopButton');
-  if (loopButton.value === "no") {
-    send("loop_file", "inf");
-    send("loop_playlist", "no");
-  } else if (loopButton.value === "1") {
-    send("loop_file", "no");
-    send("loop_playlist", "inf");
-  } else if (loopButton.value === "a") {
-    send("loop_file", "no");
-    send("loop_playlist", "no");
-  }
-}
-
 function setChapter(chapters, chapter) {
   var chapterElements = document.getElementsByClassName('chapter');
   var chapterContent = document.getElementById('chapterContent');
@@ -381,12 +367,24 @@ function setChapter(chapters, chapter) {
   }
 }
 
+function playlist_loop_cycle() {
+  var loopButton = document.getElementsByClassName('playlistLoopButton');
+  if (loopButton.value === "no") {
+    send("loop_file", "inf");
+    send("loop_playlist", "no");
+  } else if (loopButton.value === "1") {
+    send("loop_file", "no");
+    send("loop_playlist", "inf");
+  } else if (loopButton.value === "a") {
+    send("loop_file", "no");
+    send("loop_playlist", "no");
+  }
+}
+
 function setLoop(loopFile, loopPlaylist) {
   var loopButton = document.getElementsByClassName('playlistLoopButton');
-  var html = '<i class="fas fa-redo-alt"></i>';
-  var value = "";
-  if (loopFile === "no") {
-    if (loopPlaylist === "no") {
+  if (loopFile === false) {
+    if (loopPlaylist === false) {
       html = '!<i class="fas fa-redo-alt"></i>';
       value = "no";
     } else {
