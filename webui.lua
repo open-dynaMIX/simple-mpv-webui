@@ -514,7 +514,6 @@ end
 
 local function get_passwd()
   if file_exists(script_path()..".htpasswd") then
-    mp.msg.info('Found .htpasswd file. Basic authentication is enabled.')
     return lines_from(script_path()..".htpasswd")
   end
 end
@@ -546,20 +545,24 @@ end
 if options.disable then
   message = function() mp.osd_message(MSG_PREFIX .. "disabled", 5) end
   return
-else
-  local passwd = get_passwd()
-  local servers = init_servers()
+end
 
-  if next(servers) == nil then
-    error_msg = "Error: Couldn't spawn server on port " .. options.port
-    message = function() mp.msg.error(error_msg, 5) end
-  else
-    for _, server in pairs(servers) do
-      server:settimeout(0)
-      mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
-    end
-    startup_msg = MSG_PREFIX .. "v" .. VERSION .. "\nServing on " .. concatkeys(servers, ':' .. options.port .. ' and ') .. ":" .. options.port
-    message = function() mp.osd_message(startup_msg, 5) end
+local passwd = get_passwd()
+local servers = init_servers()
+
+if next(servers) == nil then
+  error_msg = "Error: Couldn't spawn server on port " .. options.port
+  message = function() mp.msg.error(error_msg, 5) end
+else
+  for _, server in pairs(servers) do
+    server:settimeout(0)
+    mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
+  end
+  startup_msg = MSG_PREFIX .. "v" .. VERSION .. "\nServing on " .. concatkeys(servers, ':' .. options.port .. ' and ') .. ":" .. options.port
+  message = function() mp.osd_message(startup_msg, 5) end
+  mp.msg.info(startup_msg)
+  if passwd  ~= nil then
+    mp.msg.info('Found .htpasswd file. Basic authentication is enabled.')
   end
 end
 
