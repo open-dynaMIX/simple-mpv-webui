@@ -331,7 +331,7 @@ local function build_status_response()
     ["audio-support"] = is_audio_supported(),
     chapter = mp.get_property_native("chapter") or 0,
     chapters = mp.get_property_native("chapters") or '',
-    duration = mp.get_property("duration") or '',
+    duration = mp.get_property_native("duration") or '',
     filename = mp.get_property('filename') or '',
     fullscreen = mp.get_property_native("fullscreen"),
     ["loop-file"] = mp.get_property_native("loop-file"),
@@ -339,12 +339,12 @@ local function build_status_response()
     metadata = mp.get_property_native("metadata") or '',
     pause = mp.get_property_native("pause"),
     playlist = mp.get_property_native("playlist") or '',
-    position = mp.get_property("time-pos") or '',
-    remaining = mp.get_property("playtime-remaining") or '',
+    position = mp.get_property_native("time-pos") or '',
+    remaining = mp.get_property_native("playtime-remaining") or '',
     ["sub-delay"] = mp.get_property_osd("sub-delay") or '',
     ["track-list"] = mp.get_property_native("track-list") or '',
-    volume = mp.get_property("volume") or '',
-    ["volume-max"] = mp.get_property("volume-max") or ''
+    volume = mp.get_property_native("volume") or '',
+    ["volume-max"] = mp.get_property_native("volume-max") or ''
   }
 
   for _, value in pairs({"fullscreen", "loop-file", "loop-playlist", "pause"}) do
