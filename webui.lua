@@ -203,7 +203,7 @@ local commands = {
   end,
 
   cycle_audio_device = function()
-    return pcall(mp.command, "cycle_values audio-device " .. options.audio_devices)
+    return pcall(mp.command, "cycle_values audio-device " .. options.audio_devices_cycle_string)
   end,
 
   add_chapter = function(num)
@@ -317,18 +317,22 @@ local function log_line(request, code, length)
     clientip..' - - ['..time..'] "'..path..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
 end
 
-local function is_audio_supported()
-  devices = mp.get_property_native('audio-device-list')
-  if devices[1].name == "auto" and not devices[2] then
-    return false
+local function get_status_audio_devices()
+  local active_audio_device = mp.get_property_native("audio-device")
+  for _, data in pairs(options.audio_devices) do
+    if data.name == active_audio_device then
+      data.active = true
+    else
+      data.active = false
+    end
   end
-  return true
+  return options.audio_devices
 end
 
 local function build_status_response()
   local values = {
     ["audio-delay"] = mp.get_property_osd("audio-delay") or '',
-    ["audio-support"] = is_audio_supported(),
+    ["audio-devices"] = get_status_audio_devices(),
     chapter = mp.get_property_native("chapter") or 0,
     chapters = mp.get_property_native("chapters") or '',
     duration = mp.get_property_native("duration") or '',
@@ -536,10 +540,21 @@ local function init_servers()
   return servers
 end
 
-if options.audio_devices == '' then
-  for _, device in pairs(mp.get_property_native("audio-device-list")) do
-    options.audio_devices = options.audio_devices .. " " .. device.name
+local audio_devices = {}
+for _, device in pairs(mp.get_property_native("audio-device-list")) do
+  if options.audio_devices ~= "" then
+    if options.audio_devices == device.name or string.find(options.audio_devices, " "..device.name, 1, true) or string.find(options.audio_devices, device.name.." ", 1, true) then
+      audio_devices[#audio_devices+1] = {name = device.name, description = device.description, active = false}
+    end
+  else
+    audio_devices[#audio_devices+1] = {name = device.name, description = device.description, active = false}
   end
+end
+
+options.audio_devices = audio_devices
+options.audio_devices_cycle_string = ""
+for _, data in pairs(options.audio_devices) do
+  options.audio_devices_cycle_string = options.audio_devices_cycle_string .. " " .. data.name
 end
 
 if options.disable then
