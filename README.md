@@ -241,6 +241,3 @@ Thanks to [makedin](https://github.com/makedin) for his work on this.
  - ipv6 support
  - Option to set the port being used (defaults to 8080)
  - Using the Media Session API
-
-## Warning
-These are my first steps with lua, so I'm just happy it works.
