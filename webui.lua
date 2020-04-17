@@ -482,11 +482,11 @@ local function parse_request(connection)
         request = url.parse(raw_path, request)
       end
     end
-    if string.starts(line, "User-Agent") then
+    if string.starts(string.lower(line), "user-agent") then
       request.agent = string.sub(line, 13)
-    elseif string.starts(line, "Referer") then
+    elseif string.starts(string.lower(line), "referer") then
       request.referer = string.sub(line, 10)
-    elseif string.starts(line, "Authorization: Basic ") then
+    elseif string.starts(string.lower(line), "authorization: basic ") then
       local auth64 = string.sub(line, 22)
       local auth_components = string.gmatch(dec64(auth64), "[^:]+")
       request.user = auth_components()
