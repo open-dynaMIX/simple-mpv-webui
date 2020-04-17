@@ -162,36 +162,36 @@ local commands = {
     return pcall(mp.command, 'set volume '..v)
   end,
 
-  add_sub_delay = function(ms)
-    local valid, msg = validate_number_param(ms)
+  add_sub_delay = function(sec)
+    local valid, msg = validate_number_param(sec)
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'add sub-delay '..ms)
+    return pcall(mp.command, 'add sub-delay '..sec)
   end,
 
-  set_sub_delay = function(ms)
-    local valid, msg = validate_number_param(ms)
+  set_sub_delay = function(sec)
+    local valid, msg = validate_number_param(sec)
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'set sub-delay '..ms)
+    return pcall(mp.command, 'set sub-delay '..sec)
   end,
 
-  add_audio_delay = function(ms)
-    local valid, msg = validate_number_param(ms)
+  add_audio_delay = function(sec)
+    local valid, msg = validate_number_param(sec)
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'add audio-delay '..ms)
+    return pcall(mp.command, 'add audio-delay '..sec)
   end,
 
-  set_audio_delay = function(ms)
-    local valid, msg = validate_number_param(ms)
+  set_audio_delay = function(sec)
+    local valid, msg = validate_number_param(sec)
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'set audio-delay '..ms)
+    return pcall(mp.command, 'set audio-delay '..sec)
   end,
 
   cycle_sub = function()
@@ -203,7 +203,7 @@ local commands = {
   end,
 
   cycle_audio_device = function()
-    return pcall(mp.command, "cycle_values audio-device " .. options.audio_devices)
+    return pcall(mp.command, "cycle_values audio-device " .. options.audio_devices_cycle_string)
   end,
 
   add_chapter = function(num)
@@ -317,21 +317,25 @@ local function log_line(request, code, length)
     clientip..' - - ['..time..'] "'..path..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
 end
 
-local function is_audio_supported()
-  devices = mp.get_property_native('audio-device-list')
-  if devices[1].name == "auto" and not devices[2] then
-    return false
+local function get_status_audio_devices()
+  local active_audio_device = mp.get_property_native("audio-device")
+  for _, data in pairs(options.audio_devices) do
+    if data.name == active_audio_device then
+      data.active = true
+    else
+      data.active = false
+    end
   end
-  return true
+  return options.audio_devices
 end
 
 local function build_status_response()
   local values = {
     ["audio-delay"] = mp.get_property_osd("audio-delay") or '',
-    ["audio-support"] = is_audio_supported(),
+    ["audio-devices"] = get_status_audio_devices(),
     chapter = mp.get_property_native("chapter") or 0,
     chapters = mp.get_property_native("chapters") or '',
-    duration = mp.get_property("duration") or '',
+    duration = mp.get_property_native("duration") or '',
     filename = mp.get_property('filename') or '',
     fullscreen = mp.get_property_native("fullscreen"),
     ["loop-file"] = mp.get_property_native("loop-file"),
@@ -339,12 +343,12 @@ local function build_status_response()
     metadata = mp.get_property_native("metadata") or '',
     pause = mp.get_property_native("pause"),
     playlist = mp.get_property_native("playlist") or '',
-    position = mp.get_property("time-pos") or '',
-    remaining = mp.get_property("playtime-remaining") or '',
+    position = mp.get_property_native("time-pos") or '',
+    remaining = mp.get_property_native("playtime-remaining") or '',
     ["sub-delay"] = mp.get_property_osd("sub-delay") or '',
     ["track-list"] = mp.get_property_native("track-list") or '',
-    volume = mp.get_property("volume") or '',
-    ["volume-max"] = mp.get_property("volume-max") or ''
+    volume = mp.get_property_native("volume") or '',
+    ["volume-max"] = mp.get_property_native("volume-max") or ''
   }
 
   for _, value in pairs({"fullscreen", "loop-file", "loop-playlist", "pause"}) do
@@ -411,9 +415,6 @@ local function handle_status_get()
 end
 
 local function handle_static_get(path)
-  if string.find(path, '%.%./') then
-    return nil, nil
-  end
   if path == "" then
     path = 'index.html'
   end
@@ -478,11 +479,11 @@ local function parse_request(connection)
         request = url.parse(raw_path, request)
       end
     end
-    if string.starts(line, "User-Agent") then
+    if string.starts(string.lower(line), "user-agent") then
       request.agent = string.sub(line, 13)
-    elseif string.starts(line, "Referer") then
+    elseif string.starts(string.lower(line), "referer") then
       request.referer = string.sub(line, 10)
-    elseif string.starts(line, "Authorization: Basic ") then
+    elseif string.starts(string.lower(line), "authorization: basic ") then
       local auth64 = string.sub(line, 22)
       local auth_components = string.gmatch(dec64(auth64), "[^:]+")
       request.user = auth_components()
@@ -514,7 +515,6 @@ end
 
 local function get_passwd()
   if file_exists(script_path()..".htpasswd") then
-    mp.msg.info('Found .htpasswd file. Basic authentication is enabled.')
     return lines_from(script_path()..".htpasswd")
   end
 end
@@ -537,29 +537,47 @@ local function init_servers()
   return servers
 end
 
-if options.audio_devices == '' then
-  for _, device in pairs(mp.get_property_native("audio-device-list")) do
-    options.audio_devices = options.audio_devices .. " " .. device.name
+local audio_devices = {}
+for _, device in pairs(mp.get_property_native("audio-device-list")) do
+  if options.audio_devices ~= "" then
+    if options.audio_devices == device.name or string.find(options.audio_devices, " "..device.name, 1, true) or string.find(options.audio_devices, device.name.." ", 1, true) then
+      audio_devices[#audio_devices+1] = {name = device.name, description = device.description, active = false}
+    end
+  else
+    audio_devices[#audio_devices+1] = {name = device.name, description = device.description, active = false}
   end
 end
 
-if options.disable then
-  message = function() mp.osd_message(MSG_PREFIX .. "disabled", 5) end
-  return
-else
-  local passwd = get_passwd()
-  local servers = init_servers()
+options.audio_devices = audio_devices
+options.audio_devices_cycle_string = ""
+for _, data in pairs(options.audio_devices) do
+  options.audio_devices_cycle_string = options.audio_devices_cycle_string .. " " .. data.name
+end
 
-  if next(servers) == nil then
-    error_msg = "Error: Couldn't spawn server on port " .. options.port
-    message = function() mp.msg.error(error_msg, 5) end
-  else
-    for _, server in pairs(servers) do
-      server:settimeout(0)
-      mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
-    end
-    startup_msg = MSG_PREFIX .. "v" .. VERSION .. "\nServing on " .. concatkeys(servers, ':' .. options.port .. ' and ') .. ":" .. options.port
-    message = function() mp.osd_message(startup_msg, 5) end
+if options.disable then
+  mp.msg.info("disabled")
+  message = function() mp.osd_message(MSG_PREFIX .. "disabled", 5) end
+  mp.register_event("file-loaded", message)
+  mp.register_event("file-loaded", function() mp.unregister_event(message) end)
+  return
+end
+
+local passwd = get_passwd()
+local servers = init_servers()
+
+if next(servers) == nil then
+  error_msg = "Error: Couldn't spawn server on port " .. options.port
+  message = function() mp.msg.error(error_msg, 5) end
+else
+  for _, server in pairs(servers) do
+    server:settimeout(0)
+    mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
+  end
+  startup_msg = "v" .. VERSION .. "\nServing on " .. concatkeys(servers, ':' .. options.port .. ' and ') .. ":" .. options.port
+  message = function() mp.osd_message(MSG_PREFIX .. startup_msg, 5) end
+  mp.msg.info(startup_msg)
+  if passwd  ~= nil then
+    mp.msg.info('Found .htpasswd file. Basic authentication is enabled.')
   end
 end
 

@@ -1,0 +1,47 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron:  '0 0 * * 0'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the webui container
+        run: docker-compose -f docker-compose.yml build --pull
+        working-directory: ./tests
+      - name: Run test suite
+        run: docker-compose -f docker-compose.yml run --rm webui pytest ./tests.py -vv
+        working-directory: ./tests
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.8'
+      - name: Install requirements
+        run: pip install -r requirements.txt
+        working-directory: ./tests
+      - name: Run black and flake8
+        run: |
+          black --check --diff ./
+          flake8
+        working-directory: ./tests
+  commit-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.8'
+      - name: Install gitlint
+        run: pip install gitlint
+      - name: Run gitlint
+        run: gitlint --contrib contrib-title-conventional-commits --ignore B5,B6
