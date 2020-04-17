@@ -415,9 +415,6 @@ local function handle_status_get()
 end
 
 local function handle_static_get(path)
-  if string.find(path, '%.%./') then
-    return nil, nil
-  end
   if path == "" then
     path = 'index.html'
   end
