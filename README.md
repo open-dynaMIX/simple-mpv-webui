@@ -177,18 +177,18 @@ information about the error.
 {
     "audio-delay": 0,        # <-- milliseconds
     "audio-devices": [
-        {"active": True, "description": "Autoselect device", "name": "auto"},
-        {"active": False, "description": "Default (alsa)", "name": "alsa"},
-        {"active": False, "description": "Default (jack)", "name": "jack"},
-        {"active": False, "description": "Default (sdl)", "name": "sdl"},
-        {"active": False, "description": "Default (sndio)", "name": "sndio"},
+        {"active": true, "description": "Autoselect device", "name": "auto"},
+        {"active": false, "description": "Default (alsa)", "name": "alsa"},
+        {"active": false, "description": "Default (jack)", "name": "jack"},
+        {"active": false, "description": "Default (sdl)", "name": "sdl"},
+        {"active": false, "description": "Default (sndio)", "name": "sndio"},
     ],
     "chapter": 0,            # <-- current chapter
     "chapters": 0,           # <-- chapters count
     "duration": 6.024,       # <-- seconds
     "filename": "01 - dummy.mp3",
-    "fullscreen": False,
-    "loop-file": false,      # <-- false, `inf` or integer
+    "fullscreen": false,
+    "loop-file": false,      # <-- false, true or integer
     "loop-playlist": false,  # <-- false, `inf`, `force` or integer
     "metadata": {            # <-- all metadata available to MPV
         "album": "Dummy Album",
@@ -199,12 +199,12 @@ information about the error.
         "genre": "Jazz",
         "title": "First dummy",
     },
-    "pause": True,
+    "pause": true,
     "playlist": [
         {
-            "current": True,
+            "current": true,
             "filename": "./environment/test_media/01 - dummy.mp3",
-            "playing": True,
+            "playing": true,
         },
         {"filename": "./environment/test_media/02 - dummy.mp3"},
         {"filename": "./environment/test_media/03 - dummy.mp3"},
@@ -214,20 +214,20 @@ information about the error.
     "sub-delay": 0,          # <-- milliseconds
     "track-list": [          # <-- all available video, audio and sub tracks
         {
-            "albumart": False,
+            "albumart": false,
             "audio-channels": 2,
             "codec": "mp3",
             "decoder-desc": "mp3float (MP3 (MPEG audio layer 3))",
-            "default": False,
+            "default": false,
             "demux-channel-count": 2,
             "demux-channels": "stereo",
             "demux-samplerate": 48000,
-            "dependent": False,
-            "external": False,
+            "dependent": false,
+            "external": false,
             "ff-index": 0,
-            "forced": False,
+            "forced": false,
             "id": 1,
-            "selected": True,
+            "selected": true,
             "src-id": 0,
             "type": "audio",
         }
