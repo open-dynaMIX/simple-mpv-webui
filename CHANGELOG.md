@@ -1,5 +1,26 @@
 # Changelog
 
+## v1.0.0
+### Feature
+* allow lower case header names (d37a27a8dc67e09a890130d7651602eef871c907)
+* include audio-device information in status response (c81cf3b402726a97492639c7651b794f0570c388)
+
+### Fix
+* use floats in status json (51ee82143fdc8e61df80dc378f01bbf5c7467d47)
+* also print startup_msg to shell (4825a7733f6e52e283f23944f127b6376225028b)
+* fix loop handling in frontend (42b3704cb84ac8b0df12e9fae12536ad32539981)
+* fix audio-device cycling when audio_devices option is not provided (7e00756ce4c2ca573bc2afc1ba67d45f5ceb3161)
+
+### Breaking
+* The type of the duration and volume properties has changed from string to float in the status response.  (51ee82143fdc8e61df80dc378f01bbf5c7467d47)
+
+### Documentation
+* fix json in readme (cd8272c093550d524e66604cc6606ee7bc87c831)
+* delays are transmitted in seconds, not ms (2b9d23b8091cf6067722970cffcbc2cf7d2a71ae)
+* fix typo `audio-devices`/`audio_devices` (c83b9949dabfe1b10c21329cb221f725f9746677)
+* fix typo `audio-devices`/`audio_devices` (4fc63269ef84f25a2e7a5d510508f5c91aa7b981)
+
+
 ## v0.3.1
 ### Fix
 * fix reference to audio-devices-list property (604797d24b6009f51a156f889f23df6b71d80d26)
