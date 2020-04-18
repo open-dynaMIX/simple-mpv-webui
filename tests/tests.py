@@ -91,13 +91,8 @@ class TestsRequests:
             ("loop_file", "no", "loop-file", False, False),
             ("loop_file", "inf", "loop-file", True, False),
             ("loop_playlist", "no", "loop-playlist", False, False),
-            (
-                "loop_playlist",
-                "inf",
-                "loop-playlist",
-                "inf",
-                False,
-            ),  # TODO: why "inf" for playlist, but True for files?
+            ("loop_playlist", "inf", "loop-playlist", "inf", False),
+            # Thats a quirk from mpv. For `loop-file` it returns True, for `loop-playlist` it returns `"inf"`
             ("add_volume", "10", "volume", 10, False),
             ("set_volume", "100", "volume", 100, False),
             ("add_sub_delay", "0.1", "sub-delay", 100, False),
