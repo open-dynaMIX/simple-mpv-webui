@@ -188,6 +188,8 @@ class TestsRequests:
                 break
         assert success, "playlist_shuffle failed!"
 
+        # make sure we're not removing the current playlist entry
+        requests.post(get_uri("api/playlist_jump/0"))
         resp = requests.post(get_uri("api/playlist_remove/2"))
         assert resp.status_code == 200
         status = get_status()
