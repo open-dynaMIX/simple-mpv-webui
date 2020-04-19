@@ -202,6 +202,25 @@ class TestsRequests:
 
 
 @pytest.mark.parametrize(
+    "mpv_instance,status_code",
+    [
+        ({}, 404),
+        (get_script_opts("static_dir", "/app/tests/environment/static_test"), 200),
+        (get_script_opts("static_dir", "/app/tests/environment/static_test/"), 200),
+        (get_script_opts("static_dir", "environment/static_test"), 200),
+        (get_script_opts("static_dir", "./environment/static_test/"), 200),
+    ],
+    indirect=["mpv_instance"],
+)
+def test_static_dir_config(mpv_instance, status_code):
+    resp = requests.get(get_uri("static.json"))
+    assert resp.status_code == status_code
+
+    if status_code == 200:
+        assert resp.json() == {"success": True}
+
+
+@pytest.mark.parametrize(
     "mpv_instance,expected_devices",
     [
         ({}, ["auto", "alsa", "jack", "sdl", "sndio"]),

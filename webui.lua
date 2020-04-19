@@ -8,6 +8,11 @@ local url = require("socket.url")
 local MSG_PREFIX = "[webui] "
 local VERSION = "1.0.0"
 
+local function script_path()
+  local str = debug.getinfo(2, "S").source:sub(2)
+  return str:match("(.*/)")
+end
+
 local options = {
   port = 8080,
   disable = false,
@@ -15,6 +20,7 @@ local options = {
   ipv4 = true,
   ipv6 = true,
   audio_devices = '',
+  static_dir = script_path() .. "webui-page"
 }
 read_options(options, "webui")
 
@@ -276,11 +282,6 @@ local function concatkeys(tab, sep)
   return table.concat(inter, sep)
 end
 
-local function script_path()
-  local str = debug.getinfo(2, "S").source:sub(2)
-  return str:match("(.*/)")
-end
-
 local function file_exists(file)
   local f = io.open(file, "rb")
   if f then f:close() end
@@ -419,7 +420,7 @@ local function handle_static_get(path)
     path = 'index.html'
   end
 
-  local content = read_file(script_path()..'webui-page/'..path)
+  local content = read_file(options.static_dir .. "/" .. path)
   local extension = path:match("[^.]+$") or ""
   local content_type = get_content_type(extension)
   if content == nil or content_type == nil then

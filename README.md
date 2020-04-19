@@ -83,6 +83,24 @@ Example:
 webui-audio_devices="pulse/alsa_output.pci-0000_00_1b.0.analog-stereo pulse/alsa_output.pci-0000_00_03.0.hdmi-stereo"
 ```
 
+#### static_dir
+
+Configure the directory from which the static files should be served.
+
+This is useful, if you want to use an alternative frontend.
+
+The provided path may be absolute or relative.
+
+Example:
+
+```
+webui-static_dir="/path/to/directory"
+```
+
+Content types are hardcoded into the server. If you miss something, please
+[create an issue](https://github.com/open-dynaMIX/simple-mpv-webui/issues/new/choose) or - even better -
+a pull request.
+
 ### Authentication
 There is a very simple implementation of
 [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication). It will be enabled, if a file
