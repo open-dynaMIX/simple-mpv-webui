@@ -29,6 +29,10 @@ def is_responding(uri):
     return works
 
 
+def get_script_opts(option, value):
+    return {"options": [f"--script-opts=webui-{option}={value}"]}
+
+
 def test_status(mpv_instance, snapshot):
     status = get_status()
     snapshot.assert_match(status)
@@ -202,7 +206,7 @@ class TestsRequests:
     [
         ({}, ["auto", "alsa", "jack", "sdl", "sndio"]),
         (
-            {"options": ['--script-opts=webui-audio_devices="auto jack sndio"']},
+            get_script_opts("audio_devices", "auto jack sndio"),
             ["auto", "jack", "sndio"],
         ),
     ],
@@ -256,9 +260,9 @@ def test_cycle_tracks(mpv_instance, endpoint, track_type):
     "mpv_instance,v4_works,v6_works",
     [
         ({}, True, True),
-        ({"options": ["--script-opts=webui-ipv4=no"]}, False, True),
-        ({"options": ["--script-opts=webui-ipv6=no"]}, True, False),
-        ({"options": ["--script-opts=webui-disable=yes"]}, False, False),
+        (get_script_opts("ipv4", "no"), False, True),
+        (get_script_opts("ipv6", "no"), True, False),
+        (get_script_opts("disable", "yes"), False, False),
     ],
     indirect=["mpv_instance"],
 )
@@ -283,7 +287,7 @@ def test_auth(htpasswd, mpv_instance, credentials, status_code):
 
 @pytest.mark.parametrize(
     "mpv_instance,expected_8080,expected_8000",
-    [({}, True, False), ({"options": ["--script-opts=webui-port=8000"]}, False, True)],
+    [({}, True, False), (get_script_opts("port", "8000"), False, True)],
     indirect=["mpv_instance"],
 )
 @pytest.mark.parametrize("v", [4, 6])
@@ -296,9 +300,7 @@ def test_port(mpv_instance, v, expected_8080, expected_8000):
 
 
 @pytest.mark.parametrize(
-    "mpv_instance",
-    [{"options": ["--script-opts=webui-logging=yes"]}],
-    indirect=["mpv_instance"],
+    "mpv_instance", [get_script_opts("logging", "yes")], indirect=["mpv_instance"],
 )
 def test_logging(mpv_instance):
     resp = requests.get(get_uri("api/status"), headers={"Referer": "https://referer"})
