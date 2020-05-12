@@ -126,8 +126,8 @@ class TestsRequests:
     )
     def test_seek(mpv_instance, endpoint, arg, position):
         # reset position
-        requests.post(get_uri(f"api/pause"))
-        requests.post(get_uri(f"api/set_position/0"))
+        requests.post(get_uri("api/pause"))
+        requests.post(get_uri("api/set_position/0"))
 
         resp = requests.post(get_uri(f"api/{endpoint}/{arg}"))
         assert resp.status_code == 200
@@ -144,7 +144,7 @@ class TestsRequests:
             ]
 
         # make sure we're on the
-        requests.post(get_uri(f"api/pause"))
+        requests.post(get_uri("api/pause"))
         requests.post(get_uri("api/playlist_jump/0"))
 
         status = get_status()
