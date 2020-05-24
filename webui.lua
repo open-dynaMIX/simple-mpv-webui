@@ -568,7 +568,7 @@ local servers = init_servers()
 
 if next(servers) == nil then
   error_msg = "Error: Couldn't spawn server on port " .. options.port
-  message = function() mp.msg.error(error_msg, 5) end
+  message = function() mp.msg.error(error_msg); mp.osd_message(MSG_PREFIX .. error_msg, 5) end
 else
   for _, server in pairs(servers) do
     server:settimeout(0)
