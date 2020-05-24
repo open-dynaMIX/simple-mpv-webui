@@ -574,7 +574,10 @@ else
     server:settimeout(0)
     mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
   end
-  startup_msg = "v" .. VERSION .. "\nServing on " .. concatkeys(servers, ':' .. options.port .. ' and ') .. ":" .. options.port
+  startup_msg = ("v" .. VERSION .. "\nServing on "
+          .. concatkeys(servers, ':' .. options.port .. ' and ')
+          .. ":" .. options.port
+  )
   message = function() mp.osd_message(MSG_PREFIX .. startup_msg, 5) end
   mp.msg.info(startup_msg)
   if passwd  ~= nil then
