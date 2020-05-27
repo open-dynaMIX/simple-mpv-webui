@@ -45,6 +45,45 @@ local function validate_loop_param(param, valid_table)
   return true, nil
 end
 
+local function get_audio_devices_config()
+  local function add_device(d, active, ad, ads)
+    ad[#ad+1] = {
+          name = d.name,
+          description = d.description,
+          active = d.name == active
+    }
+    ads = ads .. " " .. d.name
+    return ad, ads
+  end
+  local active_device = mp.get_property_native("audio-device")
+  local audio_devices = {}
+  audio_devices_cycle_string = ""
+  for _, device in pairs(mp.get_property_native("audio-device-list")) do
+    if options.audio_devices ~= "" then
+      if options.audio_devices == device.name
+              or string.find(options.audio_devices, " "..device.name, 1, true)
+              or string.find(options.audio_devices, device.name.." ", 1, true)
+      then
+        audio_devices, audio_devices_cycle_string = add_device(
+                device,
+                active_device,
+                audio_devices,
+                audio_devices_cycle_string
+        )
+      end
+    else
+      audio_devices, audio_devices_cycle_string = add_device(
+                device,
+                active_device,
+                audio_devices,
+                audio_devices_cycle_string
+        )
+    end
+  end
+
+  return audio_devices, audio_devices_cycle_string
+end
+
 local commands = {
   play = function()
     return pcall(mp.set_property_bool, "pause", false)
@@ -209,7 +248,8 @@ local commands = {
   end,
 
   cycle_audio_device = function()
-    return pcall(mp.command, "cycle_values audio-device " .. options.audio_devices_cycle_string)
+    _, audio_devices_cycle_string = get_audio_devices_config()
+    return pcall(mp.command, "cycle_values audio-device " .. audio_devices_cycle_string)
   end,
 
   add_chapter = function(num)
@@ -318,22 +358,10 @@ local function log_line(request, code, length)
     clientip..' - - ['..time..'] "'..path..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
 end
 
-local function get_status_audio_devices()
-  local active_audio_device = mp.get_property_native("audio-device")
-  for _, data in pairs(options.audio_devices) do
-    if data.name == active_audio_device then
-      data.active = true
-    else
-      data.active = false
-    end
-  end
-  return options.audio_devices
-end
-
 local function build_status_response()
   local values = {
     ["audio-delay"] = mp.get_property_osd("audio-delay") or '',
-    ["audio-devices"] = get_status_audio_devices(),
+    ["audio-devices"] = get_audio_devices_config(),
     chapter = mp.get_property_native("chapter") or 0,
     chapters = mp.get_property_native("chapters") or '',
     duration = mp.get_property_native("duration") or '',
@@ -538,23 +566,6 @@ local function init_servers()
   return servers
 end
 
-local audio_devices = {}
-for _, device in pairs(mp.get_property_native("audio-device-list")) do
-  if options.audio_devices ~= "" then
-    if options.audio_devices == device.name or string.find(options.audio_devices, " "..device.name, 1, true) or string.find(options.audio_devices, device.name.." ", 1, true) then
-      audio_devices[#audio_devices+1] = {name = device.name, description = device.description, active = false}
-    end
-  else
-    audio_devices[#audio_devices+1] = {name = device.name, description = device.description, active = false}
-  end
-end
-
-options.audio_devices = audio_devices
-options.audio_devices_cycle_string = ""
-for _, data in pairs(options.audio_devices) do
-  options.audio_devices_cycle_string = options.audio_devices_cycle_string .. " " .. data.name
-end
-
 if options.disable then
   mp.msg.info("disabled")
   message = function() mp.osd_message(MSG_PREFIX .. "disabled", 5) end
@@ -568,13 +579,16 @@ local servers = init_servers()
 
 if next(servers) == nil then
   error_msg = "Error: Couldn't spawn server on port " .. options.port
-  message = function() mp.msg.error(error_msg, 5) end
+  message = function() mp.msg.error(error_msg); mp.osd_message(MSG_PREFIX .. error_msg, 5) end
 else
   for _, server in pairs(servers) do
     server:settimeout(0)
     mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
   end
-  startup_msg = "v" .. VERSION .. "\nServing on " .. concatkeys(servers, ':' .. options.port .. ' and ') .. ":" .. options.port
+  startup_msg = ("v" .. VERSION .. "\nServing on "
+          .. concatkeys(servers, ':' .. options.port .. ' and ')
+          .. ":" .. options.port
+  )
   message = function() mp.osd_message(MSG_PREFIX .. startup_msg, 5) end
   mp.msg.info(startup_msg)
   if passwd  ~= nil then
