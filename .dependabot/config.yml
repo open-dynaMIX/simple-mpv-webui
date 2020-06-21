@@ -1,0 +1,18 @@
+version: 1
+update_configs:
+  - package_manager: "python"
+    directory: "/tests"
+    update_schedule: "live"
+    automerged_updates:
+      - match:
+          dependency_type: "all"
+          update_type: "semver:minor"
+    commit_message:
+      prefix: "chore"
+      include_scope: true
+  - package_manager: "docker"
+    directory: "/tests"
+    update_schedule: "daily"
+    commit_message:
+      prefix: "chore"
+      include_scope: true
