@@ -20,7 +20,8 @@ local options = {
   ipv4 = true,
   ipv6 = true,
   audio_devices = '',
-  static_dir = script_path() .. "webui-page"
+  static_dir = script_path() .. "webui-page",
+  htpasswd_path = "",
 }
 read_options(options, "webui")
 
@@ -542,9 +543,13 @@ local function listen(server, passwd)
   return
 end
 
-local function get_passwd()
-  if file_exists(script_path()..".htpasswd") then
-    return lines_from(script_path()..".htpasswd")
+local function get_passwd(path)
+  if path ~= nil then
+    if file_exists(path) then
+      return lines_from(path)
+    else
+      mp.msg.error("Error: Provided .htpasswd could not be found!")
+    end
   end
 end
 
@@ -574,7 +579,7 @@ if options.disable then
   return
 end
 
-local passwd = get_passwd()
+local passwd = get_passwd(options.htpasswd_path)
 local servers = init_servers()
 
 if next(servers) == nil then

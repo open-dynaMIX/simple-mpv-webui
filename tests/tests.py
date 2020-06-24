@@ -293,13 +293,24 @@ def test_disablers(mpv_instance, v4_works, v6_works):
 
 
 @pytest.mark.parametrize(
-    "credentials,status_code",
-    [(None, 401), (("user", "wrong"), 401), (("user", "secret"), 200)],
+    "mpv_instance,auth,status_code",
+    [
+        (get_script_opts("htpasswd_path", "/tmp/.htpasswd"), None, 401,),
+        (
+            get_script_opts("htpasswd_path", "/tmp/.htpasswd"),
+            HTTPBasicAuth("user", "wrong"),
+            401,
+        ),
+        (
+            get_script_opts("htpasswd_path", "/tmp/.htpasswd"),
+            HTTPBasicAuth("user", "secret"),
+            200,
+        ),
+        (get_script_opts("htpasswd_path", "/app/.does-not-exist"), None, 200,),
+    ],
+    indirect=["mpv_instance"],
 )
-def test_auth(htpasswd, mpv_instance, credentials, status_code):
-    auth = None
-    if credentials:
-        auth = HTTPBasicAuth(*credentials)
+def test_auth(htpasswd, mpv_instance, auth, status_code):
     resp = requests.get(get_uri("api/status"), auth=auth)
     assert resp.status_code == status_code
 
