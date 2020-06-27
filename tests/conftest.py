@@ -37,7 +37,7 @@ def mpv_instance(request):
 
 @pytest.fixture(scope="class")
 def htpasswd():
-    file = Path("/app/.htpasswd")
+    file = Path("/tmp/.htpasswd")
     file.open("w").write("user:secret")
 
     yield file
