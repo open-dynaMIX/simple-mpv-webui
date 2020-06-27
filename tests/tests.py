@@ -29,8 +29,12 @@ def is_responding(uri):
     return works
 
 
-def get_script_opts(option, value):
-    return {"options": [f"--script-opts=webui-{option}={value}"]}
+def get_script_opts(options):
+    option_strings = []
+    for option, value in options.items():
+        option_strings.append(f"webui-{option}={value}")
+
+    return {"options": [f"--script-opts={','.join(option_strings)}"]}
 
 
 def test_status(mpv_instance, snapshot):
@@ -205,10 +209,10 @@ class TestsRequests:
     "mpv_instance,status_code",
     [
         ({}, 404),
-        (get_script_opts("static_dir", "/app/tests/environment/static_test"), 200),
-        (get_script_opts("static_dir", "/app/tests/environment/static_test/"), 200),
-        (get_script_opts("static_dir", "environment/static_test"), 200),
-        (get_script_opts("static_dir", "./environment/static_test/"), 200),
+        (get_script_opts({"static_dir": "/app/tests/environment/static_test"}), 200),
+        (get_script_opts({"static_dir": "/app/tests/environment/static_test/"}), 200),
+        (get_script_opts({"static_dir": "environment/static_test"}), 200),
+        (get_script_opts({"static_dir": "./environment/static_test/"}), 200),
     ],
     indirect=["mpv_instance"],
 )
@@ -225,7 +229,7 @@ def test_static_dir_config(mpv_instance, status_code):
     [
         ({}, ["auto", "alsa", "jack", "sdl", "sndio"]),
         (
-            get_script_opts("audio_devices", "auto jack sndio"),
+            get_script_opts({"audio_devices": "auto jack sndio"}),
             ["auto", "jack", "sndio"],
         ),
     ],
@@ -279,9 +283,9 @@ def test_cycle_tracks(mpv_instance, endpoint, track_type):
     "mpv_instance,v4_works,v6_works",
     [
         ({}, True, True),
-        (get_script_opts("ipv4", "no"), False, True),
-        (get_script_opts("ipv6", "no"), True, False),
-        (get_script_opts("disable", "yes"), False, False),
+        (get_script_opts({"ipv4": "no"}), False, True),
+        (get_script_opts({"ipv6": "no"}), True, False),
+        (get_script_opts({"disable": "yes"}), False, False),
     ],
     indirect=["mpv_instance"],
 )
@@ -295,18 +299,18 @@ def test_disablers(mpv_instance, v4_works, v6_works):
 @pytest.mark.parametrize(
     "mpv_instance,auth,status_code",
     [
-        (get_script_opts("htpasswd_path", "/tmp/.htpasswd"), None, 401,),
+        (get_script_opts({"htpasswd_path": "/tmp/.htpasswd"}), None, 401,),
         (
-            get_script_opts("htpasswd_path", "/tmp/.htpasswd"),
+            get_script_opts({"htpasswd_path": "/tmp/.htpasswd"}),
             HTTPBasicAuth("user", "wrong"),
             401,
         ),
         (
-            get_script_opts("htpasswd_path", "/tmp/.htpasswd"),
+            get_script_opts({"htpasswd_path": "/tmp/.htpasswd"}),
             HTTPBasicAuth("user", "secret"),
             200,
         ),
-        (get_script_opts("htpasswd_path", "/app/.does-not-exist"), None, 200,),
+        (get_script_opts({"htpasswd_path": "/app/.does-not-exist"}), None, 200,),
     ],
     indirect=["mpv_instance"],
 )
@@ -317,7 +321,7 @@ def test_auth(htpasswd, mpv_instance, auth, status_code):
 
 @pytest.mark.parametrize(
     "mpv_instance,expected_8080,expected_8000",
-    [({}, True, False), (get_script_opts("port", "8000"), False, True)],
+    [({}, True, False), (get_script_opts({"port": "8000"}), False, True)],
     indirect=["mpv_instance"],
 )
 @pytest.mark.parametrize("v", [4, 6])
@@ -330,7 +334,7 @@ def test_port(mpv_instance, v, expected_8080, expected_8000):
 
 
 @pytest.mark.parametrize(
-    "mpv_instance", [get_script_opts("logging", "yes")], indirect=["mpv_instance"],
+    "mpv_instance", [get_script_opts({"logging": "yes"})], indirect=["mpv_instance"],
 )
 def test_logging(mpv_instance):
     resp = requests.get(get_uri("api/status"), headers={"Referer": "https://referer"})
