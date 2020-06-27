@@ -101,16 +101,30 @@ Content types are hardcoded into the server. If you miss something, please
 [create an issue](https://github.com/open-dynaMIX/simple-mpv-webui/issues/new/choose) or - even better -
 a pull request.
 
+#### htpasswd_path
+
+See [authentication](#authentication) below.
+
+Example:
+
+```
+webui-htpasswd_path="/path/to/file"
+```
+
 ### Authentication
 There is a very simple implementation of
-[Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication). It will be enabled, if a file
-`.htpasswd` exists in the same directory as `webui.lua`. The file needs to
-contain data in the following format:
+[Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication).
+
+It can be enabled by providing the htpasswd file via the [htpasswd_path](#htpasswd_path) option (it does not need to be
+called `htpasswd`).
+
+The provided file needs to contain data in the following format:
 
 ```
 user1:password1
 user2:password2
 ```
+
 Only plaintext `.htpasswd` entries are supported.
 
 ## Dependencies
