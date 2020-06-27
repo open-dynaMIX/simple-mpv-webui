@@ -351,12 +351,13 @@ local function log_line(request, code, length)
   end
 
   local clientip = request.clientip or '-'
+  local user = request.user or '-'
   local path = request.request or '-'
   local referer = request.referer or '-'
   local agent = request.agent or '-'
   local time = os.date('%d/%b/%Y:%H:%M:%S %z', os.time())
   mp.msg.info(
-    clientip..' - - ['..time..'] "'..path..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
+    clientip..' - '..user..' ['..time..'] "'..path..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
 end
 
 local function build_status_response()
@@ -476,6 +477,9 @@ local function handle_request(request, passwd)
     if not is_authenticated(request, passwd) then
       return 401, get_content_type('plain'), "Authentication required."
     end
+  else
+    request.user = nil
+    request.password = nil
   end
   if request.method == "POST" then
     return handle_post(request['path'])

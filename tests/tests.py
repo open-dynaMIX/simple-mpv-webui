@@ -338,19 +338,53 @@ def test_port(mpv_instance, v, expected_8080, expected_8000):
 
 
 @pytest.mark.parametrize(
-    "mpv_instance", [get_script_opts({"logging": "yes"})], indirect=["mpv_instance"],
+    "mpv_instance,use_auth,username,password,status_code",
+    [
+        (get_script_opts({"logging": "yes"}), False, None, None, 200),
+        (
+            get_script_opts({"logging": "yes", "htpasswd_path": "/tmp/.htpasswd"}),
+            True,
+            None,
+            None,
+            401,
+        ),
+        (
+            get_script_opts({"logging": "yes", "htpasswd_path": "/tmp/.htpasswd"}),
+            True,
+            "user",
+            "secret",
+            200,
+        ),
+        (
+            get_script_opts({"logging": "yes", "htpasswd_path": "/tmp/.htpasswd"}),
+            True,
+            "user",
+            None,
+            401,
+        ),
+        (get_script_opts({"logging": "yes"}), False, "user", "secret", 200,),
+    ],
+    indirect=["mpv_instance"],
 )
-def test_logging(mpv_instance):
-    resp = requests.get(get_uri("api/status"), headers={"Referer": "https://referer"})
-    assert resp.status_code == 200
+def test_logging(htpasswd, mpv_instance, use_auth, username, password, status_code):
+    auth = None
+    if use_auth and username:
+        auth = HTTPBasicAuth(username, password)
+    resp = requests.get(
+        get_uri("api/status"), auth=auth, headers={"Referer": "https://referer"}
+    )
+    assert resp.status_code == status_code
 
     # example log line
-    # ::1 - - [17/Apr/2020:13:18:22 +0000] "GET /api/status HTTP/1.1" 200 1253 "https://referer" "python-requests/2.23.0"
+    # ::1 - user [17/Apr/2020:13:18:22 +0000] "GET /api/status HTTP/1.1" 200 1253 "https://referer" "python-requests/2.23.0"
+    user = "-"
+    if username and auth:
+        user = "user"
 
     assert (
         mpv_instance.expect(
-            r"\[webui\] ::1 - - \[\d\d?/[A-Z][a-z][a-z][a-z]?/?/\d{4}:\d{2}:\d{2}:\d{2} \+0{4}\] "
-            r'"GET /api/status HTTP/1.1" 200 \d* "https://referer" "python-requests/',
+            fr"\[webui\] ::1 - {user} \[\d\d?/[A-Z][a-z][a-z][a-z]?/?/\d{{4}}:\d{{2}}:\d{{2}}:\d{{2}} \+0{{4}}\] "
+            fr'"GET /api/status HTTP/1.1" {status_code} \d* "https://referer" "python-requests/',
             timeout=1,
         )
         == 0
