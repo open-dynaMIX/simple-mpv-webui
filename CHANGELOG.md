@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.1.0
+### Feature
+* add static_dir configuration (280d5a6e8ef4b562e454c0447ba483ce9bb2acab)
+
+### Fix
+* rebuild audio-devices during runtime (637006838aba850bcbfdd837f7e5186b9cec44ba)
+* fix display of error message if server fails to start (2c3eb9e2d231ddf872dd297b1f9bc5d33583a985)
+
+
 ## v1.0.0
 ### Feature
 * allow lower case header names (d37a27a8dc67e09a890130d7651602eef871c907)
