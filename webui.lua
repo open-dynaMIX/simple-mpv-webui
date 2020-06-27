@@ -544,11 +544,15 @@ local function listen(server, passwd)
 end
 
 local function get_passwd(path)
-  if path ~= nil then
+  if path ~= '' then
     if file_exists(path) then
       return lines_from(path)
     else
-      mp.msg.error("Error: Provided .htpasswd could not be found!")
+      msg = "Provided .htpasswd could not be found!"
+      mp.msg.error("Error: " .. msg)
+      message = function() mp.osd_message(MSG_PREFIX .. msg .. "\nwebui is disabled.", 5) end
+      mp.register_event("file-loaded", message)
+      return 1
     end
   end
 end
@@ -582,24 +586,26 @@ end
 local passwd = get_passwd(options.htpasswd_path)
 local servers = init_servers()
 
-if next(servers) == nil then
-  error_msg = "Error: Couldn't spawn server on port " .. options.port
-  message = function() mp.msg.error(error_msg); mp.osd_message(MSG_PREFIX .. error_msg, 5) end
-else
-  for _, server in pairs(servers) do
-    server:settimeout(0)
-    mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
+if passwd ~= 1 then
+  if next(servers) == nil then
+    error_msg = "Error: Couldn't spawn server on port " .. options.port
+    message = function() mp.msg.error(error_msg); mp.osd_message(MSG_PREFIX .. error_msg, 5) end
+  else
+    for _, server in pairs(servers) do
+      server:settimeout(0)
+      mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
+    end
+    startup_msg = ("v" .. VERSION .. "\nServing on "
+            .. concatkeys(servers, ':' .. options.port .. ' and ')
+            .. ":" .. options.port
+    )
+    message = function() mp.osd_message(MSG_PREFIX .. startup_msg, 5) end
+    mp.msg.info(startup_msg)
+    if passwd  ~= nil then
+      mp.msg.info('Found .htpasswd file. Basic authentication is enabled.')
+    end
   end
-  startup_msg = ("v" .. VERSION .. "\nServing on "
-          .. concatkeys(servers, ':' .. options.port .. ' and ')
-          .. ":" .. options.port
-  )
-  message = function() mp.osd_message(MSG_PREFIX .. startup_msg, 5) end
-  mp.msg.info(startup_msg)
-  if passwd  ~= nil then
-    mp.msg.info('Found .htpasswd file. Basic authentication is enabled.')
-  end
-end
 
-mp.register_event("file-loaded", message)
-mp.register_event("file-loaded", function() mp.unregister_event(message) end)
+  mp.register_event("file-loaded", message)
+  mp.register_event("file-loaded", function() mp.unregister_event(message) end)
+end
