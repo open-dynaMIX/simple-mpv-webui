@@ -606,7 +606,7 @@ if passwd ~= 1 then
     message = function() mp.osd_message(MSG_PREFIX .. startup_msg, 5) end
     mp.msg.info(startup_msg)
     if passwd  ~= nil then
-      mp.msg.info('Found .htpasswd file. Basic authentication is enabled.')
+      mp.msg.info('Basic authentication is enabled.')
     end
   end
 
