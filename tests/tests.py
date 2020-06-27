@@ -344,8 +344,8 @@ def test_port(mpv_instance, v, expected_8080, expected_8000):
         (
             get_script_opts({"logging": "yes", "htpasswd_path": "/tmp/.htpasswd"}),
             True,
-            None,
-            None,
+            "",
+            "",
             401,
         ),
         (
@@ -359,7 +359,7 @@ def test_port(mpv_instance, v, expected_8080, expected_8000):
             get_script_opts({"logging": "yes", "htpasswd_path": "/tmp/.htpasswd"}),
             True,
             "user",
-            None,
+            "",
             401,
         ),
         (get_script_opts({"logging": "yes"}), False, "user", "secret", 200,),
