@@ -6,7 +6,7 @@ local dec64 = require("mime").decode("base64")
 local url = require("socket.url")
 
 local MSG_PREFIX = "[webui] "
-local VERSION = "1.0.0"
+local VERSION = "1.1.0"
 
 local function script_path()
   local str = debug.getinfo(2, "S").source:sub(2)
