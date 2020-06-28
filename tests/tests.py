@@ -21,12 +21,11 @@ def get_status():
 
 
 def is_responding(uri):
-    works = True
     try:
         requests.get(uri)
     except requests.exceptions.ConnectionError:
-        works = False
-    return works
+        return False
+    return True
 
 
 def get_script_opts(options):
@@ -184,20 +183,21 @@ class TestsRequests:
         status = get_status()
         assert get_order(status) == ["03", "02", "01"]
 
-        # brute forcing shuffle :rolling_eyes:
-        success = False
-        order = None
-        for _ in range(5):
-            resp = requests.post(get_uri("api/playlist_shuffle"))
-            assert resp.status_code == 200
-            order = get_order(get_status())
-            if not order == ["03", "02", "01"]:
-                success = True
-                break
-        assert success, "playlist_shuffle failed!"
+        def shuffle():
+            # brute forcing shuffle :rolling_eyes:
+            for _ in range(5):
+                resp = requests.post(get_uri("api/playlist_shuffle"))
+                assert resp.status_code == 200
+                order = get_order(get_status())
+                if not order == ["03", "02", "01"]:
+                    return True
+            return False
+
+        assert shuffle() is True, "playlist_shuffle failed!"
 
         # make sure we're not removing the current playlist entry
         requests.post(get_uri("api/playlist_jump/0"))
+        order = get_order(get_status())
         resp = requests.post(get_uri("api/playlist_remove/2"))
         assert resp.status_code == 200
         status = get_status()
@@ -240,7 +240,6 @@ def test_audio_device_cycling(mpv_instance, expected_devices):
     assert len(status["audio-devices"]) == len(expected_devices)
 
     for expexted_device in expected_devices:
-
         for device in status["audio-devices"]:
             assert device["active"] == (device["name"] == expexted_device)
         resp = requests.post(get_uri("api/cycle_audio_device"))
