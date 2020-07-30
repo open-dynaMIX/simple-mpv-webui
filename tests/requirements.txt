@@ -10,7 +10,7 @@ ipython==7.16.1
 isort==4.3.21
 pexpect==4.8.0
 pre-commit==2.6.0
-pytest==5.4.3
+pytest==6.0.1
 pytest-randomly==3.4.1
 python-semantic-release==7.2.2
 requests==2.24.0
