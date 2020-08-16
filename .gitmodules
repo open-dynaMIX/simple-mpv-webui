@@ -1,0 +1,4 @@
+[submodule "webui-page/static/fontawesome-free"]
+	path = webui-page/static/fontawesome-free
+	url = https://github.com/FortAwesome/Font-Awesome
+	branch = 5.14.0
