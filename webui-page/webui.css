@@ -60,6 +60,10 @@ h3 {
   font-size: 150px;
 }
 
+.button-x3 {
+  width: 32%;
+}
+
 .hidden {
   display: none;
 }
@@ -121,6 +125,18 @@ h3 {
 
 .left {
   float: left;
+}
+
+.center {
+  margin-left: 2%;
+}
+
+.slant-right {
+  transform: scale(1) rotate(0deg) translate(0px, 0px) skewX(-20deg);
+}
+
+.slant-left {
+  transform: scale(1) rotate(0deg) translate(0px, 0px) skewX(20deg);
 }
 
 table.prop-table {

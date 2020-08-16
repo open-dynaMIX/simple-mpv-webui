@@ -189,6 +189,21 @@ window.onkeydown = function(e) {
       "code": 80,
       "command": "playlist_prev",
     },
+    {
+      "key": "BracketLeft",
+      "code": 219,
+      "command": "speed_slower",
+    },
+    {
+      "key": "BracketRight",
+      "code": 221,
+      "command": "speed_faster",
+    },
+    {
+      "key": "Backspace",
+      "code": 8,
+      "command": "speed_set",
+    },
   ];
   for (var i = 0; i < bindings.length; i++) {
     if (e.keyCode === bindings[i].code || e.key === bindings[i].key) {
@@ -410,6 +425,8 @@ function handleStatusResponse(json) {
     '&nbsp;'+ format_time(json['duration']);
   document.getElementById("remaining").innerHTML =
     "-" + format_time(json['remaining']);
+  document.getElementById('speed').innerHTML =
+    json['speed'].toFixed(2) + 'x';
   document.getElementById("sub-delay").innerHTML =
     json['sub-delay'] + ' ms';
   document.getElementById("audio-delay").innerHTML =

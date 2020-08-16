@@ -139,6 +139,24 @@ class TestsRequests:
         assert status["position"] == position
 
     @staticmethod
+    def test_speed(mpv_instance):
+        # We need a dedicated test as changing the speed can mess up other tests.
+        # This makes sure we run in isolation and in order.
+        TESTS = (
+            ("speed_set", "2.2", 2.2),
+            ("speed_set", "1.0", 1),
+            ("speed_faster", "", 1.1),
+            ("speed_set", "1", 1),
+            ("speed_slower", "", 0.9091),
+            ("speed_set", "", 1),
+        )
+        for (endpoint, arg, value) in TESTS:
+            resp = requests.post(get_uri(f"api/{endpoint}/{arg}"))
+            assert resp.status_code == 200
+            status = get_status()
+            assert status["speed"] == value
+
+    @staticmethod
     def test_playlist(mpv_instance):
         def get_order(s):
             return [
