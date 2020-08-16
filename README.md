@@ -67,6 +67,15 @@ Example:
 webui-logging=yes
 ```
 
+#### osd_logging (bool)
+Log to OSD (default: yes)
+
+Example:
+
+```
+webui-osd_logging=yes
+```
+
 #### audio_devices (string)
 Set the audio-devices used for cycling. By default it uses all interfaces MPV 
 knows of.
