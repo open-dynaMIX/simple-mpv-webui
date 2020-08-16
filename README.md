@@ -111,12 +111,17 @@ Example:
 webui-htpasswd_path="/path/to/file"
 ```
 
+Relative paths are searched relative to the program's current working directory,
+so stick to absolute paths all the time.
+
+Shortcuts to your homedir like `~/` are not supported.
+
 ### Authentication
 There is a very simple implementation of
 [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication).
 
-It can be enabled by providing the htpasswd file via the [htpasswd_path](#htpasswd_path) option (it does not need to be
-called `htpasswd`).
+It can be enabled by providing the htpasswd file via the [htpasswd_path](#htpasswd_path) option.
+The file does not need to be named `htpasswd`.
 
 The provided file needs to contain data in the following format:
 

@@ -573,7 +573,7 @@ local function get_passwd(path)
     if file_exists(path) then
       return lines_from(path)
     else
-      msg = "Provided .htpasswd could not be found!"
+      msg = "Provided htpasswd_path \"" .. path .. "\" could not be found!"
       mp.msg.error("Error: " .. msg)
       message = function() mp.osd_message(MSG_PREFIX .. msg .. "\nwebui is disabled.", 5) end
       mp.register_event("file-loaded", message)
