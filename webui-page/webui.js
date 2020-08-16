@@ -27,6 +27,12 @@ function togglePlaylist() {
   el.style.visibility = (el.style.visibility === "visible") ? "hidden" : "visible";
 }
 
+function hidePlaylist() {
+  const el = document.getElementById('overlay');
+  if (el.style.visibility === 'visible')
+    togglePlaylist();
+}
+
 function createPlaylistTable(entry, position, pause, first) {
   function setActive(set) {
     if (set === true) {
@@ -146,82 +152,80 @@ function populatePlaylist(json, pause) {
 window.onkeydown = function(e) {
   var bindings = [
     {
+      "key": "Escape",
+      "code": 27,
+      "command": hidePlaylist,
+    },
+    {
       "key": " ",
       "code": 32,
-      "command": "toggle_pause"
+      "command": () => send("toggle_pause"),
     },
     {
       "key": "ArrowRight",
       "code": 39,
-      "command": "seek",
-      "param1": "10"
+      "command": () => send("seek", "10"),
     },
     {
       "key": "ArrowLeft",
       "code": 37,
-      "command": "seek",
-      "param1": "-10"
+      "command": () => send("seek", "-10"),
     },
     {
       "key": "PageDown",
       "code": 34,
-      "command": "seek",
-      "param1": "3"
+      "command": () => send("seek", "3"),
     },
     {
       "key": "PageUp",
       "code": 33,
-      "command": "seek",
-      "param1": "-3"
+      "command": () => send("seek", "-3"),
     },
     {
       "key": "f",
       "code": 70,
-      "command": "fullscreen",
+      "command": () => send("fullscreen"),
     },
     {
       "key": "n",
       "code": 78,
-      "command": "playlist_next",
+      "command": () => send("playlist_next"),
     },
     {
       "key": "p",
       "code": 80,
-      "command": "playlist_prev",
+      "command": () => send("playlist_prev"),
     },
     // These {} must come before [] as they have the same "code".
     {
       "key": "{",
-      "command": "speed_adjust",
-      "param1": "0.5",
+      "command": () => send("speed_adjust", "0.5"),
     },
     {
       "key": "}",
-      "command": "speed_adjust",
-      "param1": "2.0",
+      "command": () => send("speed_adjust", "2.0"),
     },
     {
       "key": "[",
       "code": 219,
-      "command": "speed_adjust",
       // This funky value matches mpv defaults.
-      "param1": "0.9091",
+      "command": () => send("speed_adjust", "0.9091"),
     },
     {
       "key": "]",
       "code": 221,
-      "command": "speed_adjust",
-      "param1": "1.1",
+      "command": () => send("speed_adjust", "1.1"),
     },
     {
       "key": "Backspace",
       "code": 8,
-      "command": "speed_set",
+      "command": () => send("speed_set"),
     },
   ];
   for (var i = 0; i < bindings.length; i++) {
-    if (e.keyCode === bindings[i].code || e.key === bindings[i].key) {
-      send(bindings[i].command, bindings[i].param1, bindings[i].param2);
+    const binding = bindings[i];
+    if (e.keyCode === binding.code || e.key === binding.key) {
+      binding.command();
       return false;
     }
   }

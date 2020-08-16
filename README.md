@@ -177,6 +177,7 @@ There are some keybindings available:
 | {          | decrease playback speed more |
 | }          | increase playback speed more |
 | Backspace  | reset playback speed         |
+| Escape     | hide current overlay         |
 
 ## Media Session API
 When using a browser that supports it, simple-mpv-webui uses the Media Session
