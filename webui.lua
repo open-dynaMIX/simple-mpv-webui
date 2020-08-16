@@ -264,13 +264,12 @@ local commands = {
     return pcall(mp.command, 'set speed '..speed)
   end,
 
-  speed_faster = function()
-    return pcall(mp.command, 'multiply speed 1.1')
-  end,
-
-  speed_slower = function()
-    -- The funky value matches mpv defaults.
-    return pcall(mp.command, 'multiply speed 0.9091')
+  speed_adjust = function(amount)
+    local valid, msg = validate_number_param(amount)
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.command, 'multiply speed '..amount)
   end,
 
   add_chapter = function(num)
