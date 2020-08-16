@@ -253,6 +253,26 @@ local commands = {
     return pcall(mp.command, "cycle_values audio-device " .. audio_devices_cycle_string)
   end,
 
+  speed_set = function(speed)
+    if speed == '' then
+      speed = '1'
+    end
+    local valid, msg = validate_number_param(speed)
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.command, 'set speed '..speed)
+  end,
+
+  speed_faster = function()
+    return pcall(mp.command, 'multiply speed 1.1')
+  end,
+
+  speed_slower = function()
+    -- The funky value matches mpv defaults.
+    return pcall(mp.command, 'multiply speed 0.9091')
+  end,
+
   add_chapter = function(num)
     local valid, msg = validate_number_param(num)
     if not valid then
@@ -376,6 +396,7 @@ local function build_status_response()
     playlist = mp.get_property_native("playlist") or '',
     position = mp.get_property_native("time-pos") or '',
     remaining = mp.get_property_native("playtime-remaining") or '',
+    speed = mp.get_property_native('speed') or '',
     ["sub-delay"] = mp.get_property_osd("sub-delay") or '',
     ["track-list"] = mp.get_property_native("track-list") or '',
     volume = mp.get_property_native("volume") or '',

@@ -43,6 +43,7 @@ snapshots["test_status 1"] = {
     ],
     "position": -0.0,
     "remaining": 6.024,
+    "speed": 1,
     "sub-delay": 0,
     "track-list": [
         {
