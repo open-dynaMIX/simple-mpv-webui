@@ -279,6 +279,10 @@ local commands = {
       return true, false, msg
     end
     return pcall(mp.command, 'add chapter '..num)
+  end,
+
+  quit = function()
+    return pcall(mp.command, 'quit')
   end
 }
 
