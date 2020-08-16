@@ -167,8 +167,12 @@ There are some keybindings available:
 | SPACE      | Play/Pause                   |
 | ArrowRight | seek +10                     |
 | ArrowLeft  | seek -10                     |
+| ArrowUp    | seek +1min                   |
+| ArrowDown  | seek -1min                   |
 | PageDown   | seek +3                      |
 | PageUp     | seek -3                      |
+| 9          | decrease volume              |
+| 0          | increase volume              |
 | f          | toggle fullscreen            |
 | n          | playlist next                |
 | p          | playlist previous            |

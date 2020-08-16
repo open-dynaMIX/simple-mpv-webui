@@ -197,6 +197,18 @@ var keyboardBindings = [
     "command": () => send("seek", "-10"),
   },
   {
+    "help": "seek +1min",
+    "key": "ArrowUp",
+    "code": 38,
+    "command": () => send("seek", "60"),
+  },
+  {
+    "help": "seek -1min",
+    "key": "ArrowDown",
+    "code": 40,
+    "command": () => send("seek", "-60"),
+  },
+  {
     "help": "seek +3",
     "key": "PageDown",
     "code": 34,
@@ -207,6 +219,18 @@ var keyboardBindings = [
     "key": "PageUp",
     "code": 33,
     "command": () => send("seek", "-3"),
+  },
+  {
+    "help": "decrease volume",
+    "key": "9",
+    "code": 57,
+    "command": () => send("add_volume", "-2"),
+  },
+  {
+    "help": "increase volume",
+    "key": "0",
+    "code": 48,
+    "command": () => send("add_volume", "2"),
   },
   {
     "help": "toggle fullscreen",
