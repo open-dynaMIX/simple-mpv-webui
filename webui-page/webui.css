@@ -250,7 +250,7 @@ input[type="range"] {
   margin-bottom: 20px;
 }
 
-#overlay {
+.overlay {
   top: 0;
   left: 0;
   right: 0;
@@ -369,4 +369,22 @@ td.playlist.click, td.playlist:last-child:active, td.playlist:nth-child(3):activ
 
 td.playlist.playing:hover {
   filter: brightness(100%);
+}
+
+#shortcuts-overlay {
+  overflow: scroll;
+}
+
+table#shortcuts-table {
+  width: 100%;
+  font-size: 4vmin;
+}
+
+table#shortcuts-table td {
+  padding-left: 1em;
+}
+
+table#shortcuts-table tr:first-child td {
+  font-weight: bold;
+  border-bottom: 3px solid var(--main-fg-color);
 }
