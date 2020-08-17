@@ -158,6 +158,54 @@ class TestsRequests:
             assert send(endpoint, arg=arg, status="speed") == value
 
     @staticmethod
+    def test_add(mpv_instance):
+        def add(arg=None):
+            return send("add/volume", arg=arg, status="volume")
+
+        send("set/volume", "10")
+        assert add() == 11
+        assert add("") == 12
+        assert round(add("5.1"), 1) == 17.1
+        assert round(add("-3"), 1) == 14.1
+
+    @staticmethod
+    def test_cycle(mpv_instance):
+        def cycle(arg=None):
+            return send("cycle/pause", arg=arg, status="pause")
+
+        send("set/pause", "yes")
+        assert cycle() is False
+        assert cycle("") is True
+        assert cycle("up") is False
+        assert cycle("down") is True
+
+    @staticmethod
+    def test_multiply(mpv_instance):
+        def multiply(arg):
+            return send("multiply/volume", arg=arg, status="volume")
+
+        send("set/volume", "10")
+        assert multiply("2") == 20
+        assert multiply("1.1") == 22
+
+    @staticmethod
+    def test_set(mpv_instance):
+        def set(arg):
+            return send("set/volume", arg=arg, status="volume")
+
+        assert round(set("91.2"), 1) == 91.2
+        assert round(set("107.3"), 1) == 107.3
+
+    @staticmethod
+    def test_toggle(mpv_instance):
+        def toggle():
+            return send("toggle/fullscreen", status="fullscreen")
+
+        send("set/fullscreen", arg="yes")
+        assert toggle() is False
+        assert toggle() is True
+
+    @staticmethod
     def test_playlist(mpv_instance):
         def get_order(s):
             return [

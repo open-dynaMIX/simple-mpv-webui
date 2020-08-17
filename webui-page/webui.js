@@ -6,14 +6,12 @@ var DEBUG = false;
     blockPosSlider = false;
     blockVolSlider = false;
 
-function send(command, param){
-  DEBUG && console.log('Sending command: ' + command + ' - param: ' + param);
+function send(command, ...args) {
+  DEBUG && console.log(`Sending command: ${command} params: ${args}`);
   if ('mediaSession' in navigator) {
     audioLoad();
   }
-  var path = 'api/' + command;
-  if (param !== undefined)
-    path += "/" + param;
+  const path = ['api', command, ...args].join('/');
 
   var request = new XMLHttpRequest();
   request.open("post", path);

@@ -203,6 +203,11 @@ You can also directly talk to the endpoints:
 | /api/toggle_pause                  | POST   |                                    | Toggle play/pause                                                       |
 | /api/fullscreen                    | POST   |                                    | Toggle fullscreen                                                       |
 | /api/quit                          | POST   |                                    | Quit the program                                                        |
+| /api/add/:name/:value              | POST   | `string` and `int` or `float`      | Add `:value` (default of `1`) to the `:name` property                   |
+| /api/cycle/:name/:value            | POST   | `string` and `up` or `down`        | Cycle `:name` by `:value` (default of `up`)                             |
+| /api/multiply/:name/:value         | POST   | `string` and `int` or `float`      | Multiply `:name` by `:value`                                            |
+| /api/set/:name/:value              | POST   | `string` and anything              | Set `:name` to `:value`                                                 |
+| /api/toggle/:name                  | POST   | `string`                           | Toggle the boolean property                                             |
 | /api/seek/:seconds                 | POST   | `int` or `float` (can be negative) | Seek                                                                    |
 | /api/set_position/:seconds         | POST   |                                    | Go to position :seconds                                                 |
 | /api/playlist_prev                 | POST   |                                    | Go to previous media in playlist                                        |

@@ -34,6 +34,30 @@ local function validate_number_param(param)
   end
 end
 
+local function validate_name_param(param)
+  if not string.match(param, '^[a-z0-9/-]+$') then
+    return false, 'Parameter name contains invalid characters'
+  else
+    return true, nil
+  end
+end
+
+local function validate_value_param(param)
+  if not string.match(param, '^%g+$') then
+    return false, 'Parameter value contains invalid characters'
+  else
+    return true, nil
+  end
+end
+
+local function validate_cycle_param(param)
+  if param ~= 'up' and param ~= 'down' then
+    return false, 'Cycle paramater is not "up" or "down"'
+  else
+    return true, nil
+  end
+end
+
 local function validate_loop_param(param, valid_table)
   for _, value in pairs(valid_table) do
     if value == param then
@@ -42,7 +66,7 @@ local function validate_loop_param(param, valid_table)
   end
   valid, msg = validate_number_param(param)
   if not valid then
-    return false, "Invalid parameter!p"
+    return false, "Invalid parameter!"
   end
   return true, nil
 end
@@ -111,6 +135,71 @@ local commands = {
       return true, false, msg
     end
     return pcall(mp.command, "seek "..t)
+  end,
+
+  add = function(name, value)
+    local valid, msg = validate_name_param(name)
+    if not valid then
+      return true, false, msg
+    end
+    if value ~= nil and value ~= '' then
+      local valid, msg = validate_number_param(value)
+      if not valid then
+        return true, false, msg
+      end
+      return pcall(mp.commandv, 'add', name, value)
+    else
+      return pcall(mp.commandv, 'add', name)
+    end
+  end,
+
+  cycle = function(name, value)
+    local valid, msg = validate_name_param(name)
+    if not valid then
+      return true, false, msg
+    end
+    if value ~= nil and value ~= '' then
+      local valid, msg = validate_cycle_param(value)
+      if not valid then
+        return true, false, msg
+      end
+      return pcall(mp.commandv, 'cycle', name, value)
+    else
+      return pcall(mp.commandv, 'cycle', name)
+    end
+  end,
+
+  multiply = function(name, value)
+    local valid, msg = validate_name_param(name)
+    if not valid then
+      return true, false, msg
+    end
+    local valid, msg = validate_number_param(value)
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.commandv, 'multiply', name, value)
+  end,
+
+  set = function(name, value)
+    local valid, msg = validate_name_param(name)
+    if not valid then
+      return true, false, msg
+    end
+    local valid, msg = validate_value_param(value)
+    if not valid then
+      return true, false, msg
+    end
+    return pcall(mp.commandv, 'set', name, value)
+  end,
+
+  toggle = function(name)
+    local valid, msg = validate_name_param(name)
+    if not valid then
+      return true, false, msg
+    end
+    local curr = mp.get_property_bool(name)
+    return pcall(mp.set_property_bool, name, not curr)
   end,
 
   set_position = function(t)
