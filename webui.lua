@@ -17,6 +17,7 @@ local options = {
   port = 8080,
   disable = false,
   logging = false,
+  osd_logging = true,
   ipv4 = true,
   ipv6 = true,
   audio_devices = '',
@@ -383,6 +384,13 @@ local function log_line(request, code, length)
     clientip..' - '..user..' ['..time..'] "'..path..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
 end
 
+local function log_osd(text)
+  if not options.osd_logging then
+    return
+  end
+  mp.osd_message(MSG_PREFIX .. text, 5)
+end
+
 local function build_status_response()
   local values = {
     ["audio-delay"] = mp.get_property_osd("audio-delay") or '',
@@ -578,7 +586,7 @@ local function get_passwd(path)
     else
       msg = "Provided htpasswd_path \"" .. path .. "\" could not be found!"
       mp.msg.error("Error: " .. msg)
-      message = function() mp.osd_message(MSG_PREFIX .. msg .. "\nwebui is disabled.", 5) end
+      message = function() log_osd(msg .. "\nwebui is disabled.") end
       mp.register_event("file-loaded", message)
       return 1
     end
@@ -605,7 +613,7 @@ end
 
 if options.disable then
   mp.msg.info("disabled")
-  message = function() mp.osd_message(MSG_PREFIX .. "disabled", 5) end
+  message = function() log_osd("disabled") end
   mp.register_event("file-loaded", message)
   mp.register_event("file-loaded", function() mp.unregister_event(message) end)
   return
@@ -617,7 +625,7 @@ local servers = init_servers()
 if passwd ~= 1 then
   if next(servers) == nil then
     error_msg = "Error: Couldn't spawn server on port " .. options.port
-    message = function() mp.msg.error(error_msg); mp.osd_message(MSG_PREFIX .. error_msg, 5) end
+    message = function() mp.msg.error(error_msg); log_osd(error_msg) end
   else
     for _, server in pairs(servers) do
       server:settimeout(0)
@@ -627,7 +635,7 @@ if passwd ~= 1 then
             .. concatkeys(servers, ':' .. options.port .. ' and ')
             .. ":" .. options.port
     )
-    message = function() mp.osd_message(MSG_PREFIX .. startup_msg, 5) end
+    message = function() log_osd(startup_msg) end
     mp.msg.info(startup_msg)
     if passwd  ~= nil then
       mp.msg.info('Basic authentication is enabled.')
