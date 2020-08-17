@@ -180,6 +180,7 @@ You can also directly talk to the endpoints:
 | /api/pause                         | POST   |                                    | Pause media                                                             |
 | /api/toggle_pause                  | POST   |                                    | Toggle play/pause                                                       |
 | /api/fullscreen                    | POST   |                                    | Toggle fullscreen                                                       |
+| /api/quit                          | POST   |                                    | Quit the program                                                        |
 | /api/seek/:seconds                 | POST   | `int` or `float` (can be negative) | Seek                                                                    |
 | /api/set_position/:seconds         | POST   |                                    | Go to position :seconds                                                 |
 | /api/playlist_prev                 | POST   |                                    | Go to previous media in playlist                                        |
