@@ -381,16 +381,11 @@ local function log_line(request, code, length)
     clientip..' - '..user..' ['..time..'] "'..path..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
 end
 
-local function log_osd(text, duration)
+local function log_osd(text)
   if not options.osd_logging then
     return
   end
-
-  if duration == nil then
-    duration = 5
-  end
-
-  mp.osd_message(MSG_PREFIX .. text, duration)
+  mp.osd_message(MSG_PREFIX .. text, 5)
 end
 
 local function build_status_response()
