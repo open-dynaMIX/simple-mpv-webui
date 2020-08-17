@@ -521,8 +521,24 @@ function setupNotification() {
   }
 }
 
-status();
-setInterval(function(){status();}, 1000);
+// Toggle between high-refresh when active, but low-refresh when backgrounded.
+var refreshInterval;
+var nextPeriodicRefresh;
+function schedulePeriodicStatus() {
+  if (nextPeriodicRefresh) {
+    clearTimeout(nextPeriodicRefresh);
+  }
+
+  refreshInterval = document.hidden ? 10000 : 1000;
+  nextPeriodicRefresh = setTimeout(refreshStatus, refreshInterval);
+}
+function refreshStatus() {
+  status();
+  schedulePeriodicStatus();
+}
+
+document.addEventListener('visibilitychange', refreshStatus, false);
+refreshStatus();
 
 // prevent zoom-in on double-click
 // https://stackoverflow.com/questions/37808180/disable-viewport-zooming-ios-10-safari/38573198#38573198
