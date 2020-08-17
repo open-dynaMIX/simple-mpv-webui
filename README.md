@@ -148,19 +148,21 @@ Thanks to [@chuck-](https://github.com/chuck-) for providing this!
 ## Key bindings
 There are some keybindings available:
 
-| Key        | Function                |
-| ---------- | ----------------------- |
-| SPACE      | Play/Pause              |
-| ArrowRight | seek +10                |
-| ArrowLeft  | seek -10                |
-| PageDown   | seek +3                 |
-| PageUp     | seek -3                 |
-| f          | toggle fullscreen       |
-| n          | playlist next           |
-| p          | playlist previous       |
-| [          | decrease playback speed |
-| ]          | increase playback speed |
-| Backspace  | reset playback speed    |
+| Key        | Function                     |
+| ---------- | ---------------------------- |
+| SPACE      | Play/Pause                   |
+| ArrowRight | seek +10                     |
+| ArrowLeft  | seek -10                     |
+| PageDown   | seek +3                      |
+| PageUp     | seek -3                      |
+| f          | toggle fullscreen            |
+| n          | playlist next                |
+| p          | playlist previous            |
+| [          | decrease playback speed      |
+| ]          | increase playback speed      |
+| {          | decrease playback speed more |
+| }          | increase playback speed more |
+| Backspace  | reset playback speed         |
 
 ## Media Session API
 When using a browser that supports it, simple-mpv-webui uses the Media Session
@@ -203,8 +205,7 @@ You can also directly talk to the endpoints:
 | /api/cycle_audio                   | POST   |                                    | Cycle trough available audio tracks                                     |
 | /api/cycle_audio_device            | POST   |                                    | Cycle trough audio devices. [More information.](#audio-devices-string)  |
 | /api/speed_set/:speed              | POST   | `int` or `float`                   | Set playback speed to `:speed` (defaults to `1` for quick reset)        |
-| /api/speed_faster                  | POST   |                                    | Increase playback speed by 10%                                          |
-| /api/speed_slower                  | POST   |                                    | Decrease playback speed by 10%                                          |
+| /api/speed_adjust/:amount          | POST   | `int` or `float`                   | Multiply playback speed by `:amount` (where `1.0` is no change)         |
 
 All POST endpoints return a JSON message. If successful: `{"message": "success"}`, otherwise, the message will contain
 information about the error.

@@ -144,10 +144,12 @@ class TestsRequests:
         # This makes sure we run in isolation and in order.
         TESTS = (
             ("speed_set", "2.2", 2.2),
+            ("speed_adjust", "1", 2.2),
             ("speed_set", "1.0", 1),
-            ("speed_faster", "", 1.1),
+            ("speed_adjust", "1.1", 1.1),
+            ("speed_adjust", "3", 3.3),
             ("speed_set", "1", 1),
-            ("speed_slower", "", 0.9091),
+            ("speed_adjust", "0.9", 0.9),
             ("speed_set", "", 1),
         )
         for (endpoint, arg, value) in TESTS:

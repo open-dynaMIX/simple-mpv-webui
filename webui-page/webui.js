@@ -189,15 +189,29 @@ window.onkeydown = function(e) {
       "code": 80,
       "command": "playlist_prev",
     },
+    // These {} must come before [] as they have the same "code".
     {
-      "key": "BracketLeft",
-      "code": 219,
-      "command": "speed_slower",
+      "key": "{",
+      "command": "speed_adjust",
+      "param1": "0.5",
     },
     {
-      "key": "BracketRight",
+      "key": "}",
+      "command": "speed_adjust",
+      "param1": "2.0",
+    },
+    {
+      "key": "[",
+      "code": 219,
+      "command": "speed_adjust",
+      // This funky value matches mpv defaults.
+      "param1": "0.9091",
+    },
+    {
+      "key": "]",
       "code": 221,
-      "command": "speed_faster",
+      "command": "speed_adjust",
+      "param1": "1.1",
     },
     {
       "key": "Backspace",
