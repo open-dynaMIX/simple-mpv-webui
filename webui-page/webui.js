@@ -362,6 +362,10 @@ document.getElementById("mediaVolume").oninput = function() {
 function setPlayPause(value) {
   var playPause = document.getElementsByClassName('playPauseButton');
 
+  if ('mediaSession' in navigator) {
+    navigator.mediaSession.playbackState = value ? 'paused' : 'playing';
+  }
+
   // var playPause = document.getElementById("playPause");
   if (value) {
     [].slice.call(playPause).forEach(function (div) {
@@ -454,6 +458,11 @@ function handleStatusResponse(json) {
   populatePlaylist(json['playlist'], json['pause']);
   if ('mediaSession' in navigator) {
     setupNotification();
+    navigator.mediaSession.setPositionState({
+      duration: json['duration'],
+      playbackRate: json['speed'],
+      position: json['position'],
+    });
   }
 }
 
