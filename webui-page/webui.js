@@ -23,16 +23,29 @@ function send(command, param){
   refreshStatus(100);
 }
 
-function togglePlaylist() {
+function toggleOverlay(id) {
   document.body.classList.toggle('noscroll');
-  var el = document.getElementById("overlay");
-  el.style.visibility = (el.style.visibility === "visible") ? "hidden" : "visible";
+  const el = document.getElementById(id);
+  el.style.visibility = (el.style.visibility === 'visible') ? 'hidden' : 'visible';
 }
 
-function hidePlaylist() {
-  const el = document.getElementById('overlay');
+function hideOverlay(id) {
+  const el = document.getElementById(id);
   if (el.style.visibility === 'visible')
-    togglePlaylist();
+    toggleOverlay(id);
+}
+
+function togglePlaylist() {
+  toggleOverlay('playlist-overlay');
+}
+
+function toggleShortcutsOverlay() {
+  toggleOverlay('shortcuts-overlay');
+}
+
+function hideOverlays() {
+  hideOverlay('playlist-overlay');
+  hideOverlay('shortcuts-overlay');
 }
 
 function createPlaylistTable(entry, position, pause, first) {
@@ -151,87 +164,119 @@ function populatePlaylist(json, pause) {
   }
 }
 
+var keyboardBindings = [
+  {
+    "help": "hide current overlay",
+    "key": "Escape",
+    "code": 27,
+    "command": hideOverlays,
+  },
+  {
+    "help": "toggle keyboard shortcuts overlay",
+    "key": "?",
+    "code": 191,
+    "command": toggleShortcutsOverlay,
+  },
+  {
+    "help": "Play/Pause",
+    "helpKey": "Space",
+    "key": " ",
+    "code": 32,
+    "command": () => send("toggle_pause"),
+  },
+  {
+    "help": "seek +10",
+    "key": "ArrowRight",
+    "code": 39,
+    "command": () => send("seek", "10"),
+  },
+  {
+    "help": "seek -10",
+    "key": "ArrowLeft",
+    "code": 37,
+    "command": () => send("seek", "-10"),
+  },
+  {
+    "help": "seek +3",
+    "key": "PageDown",
+    "code": 34,
+    "command": () => send("seek", "3"),
+  },
+  {
+    "help": "seek -3",
+    "key": "PageUp",
+    "code": 33,
+    "command": () => send("seek", "-3"),
+  },
+  {
+    "help": "toggle fullscreen",
+    "key": "f",
+    "code": 70,
+    "command": () => send("fullscreen"),
+  },
+  {
+    "help": "playlist next",
+    "key": "n",
+    "code": 78,
+    "command": () => send("playlist_next"),
+  },
+  {
+    "help": "playlist previous",
+    "key": "p",
+    "code": 80,
+    "command": () => send("playlist_prev"),
+  },
+  // These {} must come before [] as they have the same "code".
+  {
+    "help": "decrease playback speed more",
+    "key": "{",
+    "command": () => send("speed_adjust", "0.5"),
+  },
+  {
+    "help": "increase playback speed more",
+    "key": "}",
+    "command": () => send("speed_adjust", "2.0"),
+  },
+  {
+    "help": "decrease playback speed",
+    "key": "[",
+    "code": 219,
+    // This funky value matches mpv defaults.
+    "command": () => send("speed_adjust", "0.9091"),
+  },
+  {
+    "help": "increase playback speed",
+    "key": "]",
+    "code": 221,
+    "command": () => send("speed_adjust", "1.1"),
+  },
+  {
+    "help": "reset playback speed",
+    "key": "Backspace",
+    "code": 8,
+    "command": () => send("speed_set"),
+  },
+];
+
 window.onkeydown = function(e) {
-  var bindings = [
-    {
-      "key": "Escape",
-      "code": 27,
-      "command": hidePlaylist,
-    },
-    {
-      "key": " ",
-      "code": 32,
-      "command": () => send("toggle_pause"),
-    },
-    {
-      "key": "ArrowRight",
-      "code": 39,
-      "command": () => send("seek", "10"),
-    },
-    {
-      "key": "ArrowLeft",
-      "code": 37,
-      "command": () => send("seek", "-10"),
-    },
-    {
-      "key": "PageDown",
-      "code": 34,
-      "command": () => send("seek", "3"),
-    },
-    {
-      "key": "PageUp",
-      "code": 33,
-      "command": () => send("seek", "-3"),
-    },
-    {
-      "key": "f",
-      "code": 70,
-      "command": () => send("fullscreen"),
-    },
-    {
-      "key": "n",
-      "code": 78,
-      "command": () => send("playlist_next"),
-    },
-    {
-      "key": "p",
-      "code": 80,
-      "command": () => send("playlist_prev"),
-    },
-    // These {} must come before [] as they have the same "code".
-    {
-      "key": "{",
-      "command": () => send("speed_adjust", "0.5"),
-    },
-    {
-      "key": "}",
-      "command": () => send("speed_adjust", "2.0"),
-    },
-    {
-      "key": "[",
-      "code": 219,
-      // This funky value matches mpv defaults.
-      "command": () => send("speed_adjust", "0.9091"),
-    },
-    {
-      "key": "]",
-      "code": 221,
-      "command": () => send("speed_adjust", "1.1"),
-    },
-    {
-      "key": "Backspace",
-      "code": 8,
-      "command": () => send("speed_set"),
-    },
-  ];
-  for (var i = 0; i < bindings.length; i++) {
-    const binding = bindings[i];
+  for (let i = 0; i < keyboardBindings.length; i++) {
+    const binding = keyboardBindings[i];
     if (e.keyCode === binding.code || e.key === binding.key) {
       binding.command();
       return false;
     }
   }
 };
+
+function updateShortcutsHelp() {
+  const table = document.getElementById('shortcuts-table');
+  keyboardBindings.forEach((binding) => {
+    const row = table.insertRow(-1);
+    row.insertCell(-1).innerText = binding.helpKey || binding.key;
+    row.insertCell(-1).innerText = binding.help;
+  });
+}
+updateShortcutsHelp();
 
 function format_time(seconds){
   var date = new Date(null);

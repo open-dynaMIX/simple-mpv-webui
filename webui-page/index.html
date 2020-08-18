@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="static/fontawesome-free-5.0.2/css/fontawesome-all.min.css">
   </head>
   <body>
-    <div id="overlay">
+    <div id="playlist-overlay" class="overlay">
       <table class="playlist-control">
         <tr>
           <td>
@@ -53,6 +53,18 @@
         </tr>
       </table>
       <div id="playlist"></div>
+    </div>
+
+    <div id="shortcuts-overlay" class="overlay">
+      <div onClick="toggleShortcutsOverlay()" class="button violet content icon-content">
+        <i class="fas fa-times-circle"></i>
+      </div>
+      <table id="shortcuts-table">
+        <tr>
+          <td><b class="fas fa-keyboard"></b></td>
+          <td>Action</td>
+        </tr>
+      </table>
     </div>
 
     <div class="burger">
