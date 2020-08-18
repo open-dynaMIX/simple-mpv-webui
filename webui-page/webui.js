@@ -19,6 +19,8 @@ function send(command, param){
   request.open("post", path);
 
   request.send(null);
+  // Kick off a refresh quickly in response to user input.
+  refreshStatus(100);
 }
 
 function togglePlaylist() {
@@ -459,6 +461,17 @@ function handleStatusResponse(json) {
   if ('mediaSession' in navigator) {
     setupNotification();
   }
+}
+
+let nextRefresh;
+function refreshStatus(timeout) {
+  if (nextRefresh) {
+    return;
+  }
+  nextRefresh = setTimeout(() => {
+    nextRefresh = undefined;
+    status();
+  }, timeout);
 }
 
 function status(){
