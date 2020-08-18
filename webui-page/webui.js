@@ -335,6 +335,12 @@ document.getElementById("mediaPosition").onchange = function() {
   window.blockPosSlider = false;
 };
 
+document.getElementById("mediaPosition").onmousemove = function(e) {
+  const slider = e.target;
+  const offset = slider.max * (e.offsetX / slider.clientWidth);
+  slider.title = format_time(offset);
+};
+
 document.getElementById("mediaPosition").oninput = function() {
   window.blockPosSlider = true;
   var slider = document.getElementById("mediaPosition");
@@ -356,6 +362,12 @@ document.getElementById("mediaVolume").onchange = function() {
   var slider = document.getElementById("mediaVolume");
   send("set_volume", slider.value);
   window.blockVolSlider = false;
+};
+
+document.getElementById("mediaVolume").onmousemove = function(e) {
+  const slider = e.target;
+  const offset = slider.max * (e.offsetX / slider.clientWidth);
+  slider.title = `${offset.toFixed(1)}%`;
 };
 
 document.getElementById("mediaVolume").oninput = function() {
