@@ -84,7 +84,9 @@
     </div>
 
     <div class="slidecontainer">
-      <input type="range" min="0" max="0" value="0" step="any" class="slider" id="mediaPosition">
+      <input type="range" min="0" max="0" value="0" step="any" class="slider" id="mediaPosition" list="chapters">
+      <datalist id="chapters">
+      </datalist>
       <div class="sliderInfoContainer">
         <div class="left" id="remaining"></div>
         <div class="sliderCenter" id="position"></div>
