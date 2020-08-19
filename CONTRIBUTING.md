@@ -43,10 +43,12 @@ Pre commit hooks is an additional option instead of linting and formatting check
 
 First create a virtualenv with the tool of your choice before running below commands:
 
+```shell
 pip install pre-commit
 pip install -r requirements.txt
 pre-commit install --hook=pre-commit
 pre-commit install --hook=commit-msg
+```
 
 ## Generating the release notes
 Make sure [python-semantic-release](https://github.com/relekang/python-semantic-release) is
