@@ -56,7 +56,7 @@
     </div>
 
     <div class="burger">
-      <a href="#" onClick="togglePlaylist(); return false;"><i class="fas fa-list-ul"></i></a>
+      <a href="#" onClick="togglePlaylist(); return false;" title="Show playlist"><i class="fas fa-list-ul"></i></a>
     </div>
     <h1 id="title">Title</h1>
     <h2 id="artist">Artist</h2>
@@ -101,62 +101,62 @@
       </div>
     </div>
 
-    <div onClick="send('toggle_pause')" class="button full-width green">
+    <div onClick="send('toggle_pause')" class="button full-width green" title="Play/Pause (Space)">
       <div class="content icon-content playPauseButton">
         <i class="fas fa-play"></i><i class="fas fa-pause"></i>
       </div>
     </div>
 
-    <div onClick="send('seek', '-10')" class="button left blue">
+    <div onClick="send('seek', '-10')" class="button left blue" title="Rewind 10 sec (ArrowLeft)">
       <div class="content icon-content">
         <i class="fas fa-backward"></i>
       </div>
     </div>
-    <div onClick="send('seek', '10')" class="button right blue">
+    <div onClick="send('seek', '10')" class="button right blue" title="Forward 10 sec (ArrowRight)">
       <div class="content icon-content">
         <i class="fas fa-forward"></i>
       </div>
     </div>
 
-    <div onClick="send('add_chapter', '-1')" class="button left blue chapter">
+    <div onClick="send('add_chapter', '-1')" class="button left blue chapter" title="Previous chapter">
       <div class="content icon-content">
         <i class="fas fa-step-backward"></i>
       </div>
     </div>
-    <div onClick="send('add_chapter', '1')" class="button right blue chapter">
+    <div onClick="send('add_chapter', '1')" class="button right blue chapter" title="Next chapter">
       <div class="content icon-content">
         <i class="fas fa-step-forward"></i>
       </div>
     </div>
 
-    <div onClick="send('playlist_prev')" class="button left blue">
+    <div onClick="send('playlist_prev')" class="button left blue" title="Previous playlist (p)">
       <div class="content icon-content">
         <i class="fas fa-fast-backward"></i>
       </div>
     </div>
-    <div onClick="send('playlist_next')" class="button right blue">
+    <div onClick="send('playlist_next')" class="button right blue" title="Next playlist (n)">
       <div class="content icon-content">
         <i class="fas fa-fast-forward"></i>
       </div>
     </div>
 
-    <div onClick="send('speed_adjust', '0.9091')" class="button button-x3 left blue">
+    <div onClick="send('speed_adjust', '0.9091')" class="button button-x3 left blue" title="Slower playback speed ([)">
       <div class="content text-content slant-left">
         Slower
       </div>
     </div>
-    <div onClick="send('speed_set')" class="button button-x3 center blue">
+    <div onClick="send('speed_set')" class="button button-x3 center blue" title="Normal playback speed (Backspace)">
       <div class="content text-content">
         Normal
       </div>
     </div>
-    <div onClick="send('speed_adjust', '1.1')" class="button button-x3 right blue">
+    <div onClick="send('speed_adjust', '1.1')" class="button button-x3 right blue" title="Faster playback speed (])">
       <div class="content text-content slant-right">
         Faster
       </div>
     </div>
 
-    <div onClick="send('cycle_sub')" class="button left violet">
+    <div onClick="send('cycle_sub')" class="button left violet" title="Cycle subtitles (j)">
       <div id="nextSub" class="content text-content">
         Next sub
       </div>
@@ -189,7 +189,7 @@
       </div>
     </div>
 
-    <div onClick="send('fullscreen')" class="button left gray">
+    <div onClick="send('fullscreen')" class="button left gray" title="Toggle fullscreen (f)">
       <div id="fullscreenButton" class="content text-content">
         Fullscreen
       </div>
