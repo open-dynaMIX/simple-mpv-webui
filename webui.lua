@@ -397,6 +397,7 @@ local function build_status_response()
     ["audio-devices"] = get_audio_devices_config(),
     chapter = mp.get_property_native("chapter") or 0,
     chapters = mp.get_property_native("chapters") or '',
+    ["chapter-list"] = mp.get_property_native("chapter-list") or '',
     duration = mp.get_property_native("duration") or '',
     filename = mp.get_property('filename') or '',
     fullscreen = mp.get_property_native("fullscreen"),

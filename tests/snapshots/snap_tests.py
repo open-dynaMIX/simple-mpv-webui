@@ -17,6 +17,7 @@ snapshots["test_status 1"] = {
     ],
     "chapter": 0,
     "chapters": 0,
+    "chapter-list": [],
     "duration": 6.024,
     "filename": "01 - dummy.mp3",
     "fullscreen": False,

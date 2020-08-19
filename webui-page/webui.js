@@ -471,7 +471,7 @@ function setPlayPause(value) {
   }
 }
 
-function setChapter(chapters, chapter) {
+function setChapter(chapters, chapter, chapterList) {
   var chapterElements = document.getElementsByClassName('chapter');
   var chapterContent = document.getElementById('chapterContent');
   if (chapters === 0) {
@@ -484,6 +484,17 @@ function setChapter(chapters, chapter) {
       div.classList.remove('hidden');
     });
     chapterContent.innerText = chapter + 1 + "/" + chapters;
+    if (chapterList && chapterList[chapter])
+      chapterContent.innerText += ` (${chapterList[chapter].title})`;
+  }
+
+  const datalist = document.getElementById('chapters');
+  while (datalist.lastElementChild)
+    datalist.lastElementChild.remove();
+  if (chapterList) {
+    chapterList.forEach((info) => {
+      datalist.appendChild(new Option(info.title, info.time));
+    });
   }
 }
 
@@ -541,7 +552,7 @@ function handleStatusResponse(json) {
   setVolumeSlider(json['volume'], json['volume-max']);
   setLoop(json["loop-file"], json["loop-playlist"]);
   setFullscreenButton(json['fullscreen']);
-  setChapter(json['chapters'], json['chapter']);
+  setChapter(json['chapters'], json['chapter'], json['chapter-list']);
   populatePlaylist(json['playlist'], json['pause']);
   if ('mediaSession' in navigator) {
     setupNotification();

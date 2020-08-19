@@ -245,6 +245,12 @@ information about the error.
     ],
     "chapter": 0,            # <-- current chapter
     "chapters": 0,           # <-- chapters count
+    "chapter-list": [        # Array length == "chapters".
+        {
+            "title": "Chapter 0",
+            "time": 0,       # <-- start time in seconds
+        },
+    ],
     "duration": 6.024,       # <-- seconds
     "filename": "01 - dummy.mp3",
     "fullscreen": false,
