@@ -237,6 +237,18 @@ var keyboardBindings = [
     "command": () => send("fullscreen"),
   },
   {
+    "help": "cycle through subtitles",
+    "key": "j",
+    "code": 74,
+    "command": () => send("cycle", "sub"),
+  },
+  {
+    "help": "toggle subtitle visibility",
+    "key": "v",
+    "code": 86,
+    "command": () => send("cycle", "sub-visibility"),
+  },
+  {
     "help": "playlist next",
     "key": "n",
     "code": 78,
