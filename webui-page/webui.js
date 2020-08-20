@@ -554,14 +554,7 @@ function handleStatusResponse(json) {
   setFullscreenButton(json['fullscreen']);
   setChapter(json['chapters'], json['chapter'], json['chapter-list']);
   populatePlaylist(json['playlist'], json['pause']);
-  if ('mediaSession' in navigator) {
-    setupNotification();
-    navigator.mediaSession.setPositionState({
-      duration: json['duration'],
-      playbackRate: json['speed'],
-      position: json['position'],
-    });
-  }
+  setupNotification(json);
 }
 
 let nextRefresh;
@@ -618,8 +611,15 @@ function audioPause() {
   }
 }
 
-function setupNotification() {
+function setupNotification({duration, speed, position}) {
   if ('mediaSession' in navigator) {
+    if (navigator.mediaSession.setPositionState) {
+      navigator.mediaSession.setPositionState({
+        duration: duration,
+        playbackRate: speed,
+        position: position,
+      });
+    }
     navigator.mediaSession.metadata = new MediaMetadata({
       title: window.metadata.title,
       artist: window.metadata.artist,
