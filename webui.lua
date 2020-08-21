@@ -110,7 +110,7 @@ local function get_audio_devices_config()
   return audio_devices, audio_devices_cycle_string
 end
 
-local commands = {
+local commands_post = {
   play = function()
     return pcall(mp.set_property_bool, "pause", false)
   end,
@@ -532,7 +532,7 @@ local function build_status_response()
       return false
   end
 
-  return utils.format_json(values)
+  return values
 end
 
 local function handle_post(path)
@@ -545,7 +545,7 @@ local function handle_post(path)
   local param1 = components() or ""
   local param2 = components() or ""
 
-  local f = commands[command]
+  local f = commands_post[command]
   if f ~= nil then
     local _, err, ret = f(param1, param2)
     if err then
@@ -558,14 +558,11 @@ local function handle_post(path)
   end
 end
 
-local function handle_status_get()
-  local json = build_status_response()
-  if not json then
-    return 503, get_content_type('plain'), "Error: Not ready to handle requests."
-  else
-    return 200, get_content_type("json"), json
+local commands_get = {
+  status = function()
+    return pcall(build_status_response)
   end
-end
+}
 
 local function handle_static_get(path)
   if path == "" then
@@ -579,6 +576,30 @@ local function handle_static_get(path)
     return 404, get_content_type('plain'), "Error: Requested URL /"..path.." not found"
   else
     return 200, content_type, content
+  end
+end
+
+local function handle_get(path)
+  local components = string.gmatch(path, "[^/]+")
+  local api_prefix = components()
+  if api_prefix ~= 'api' then
+    return handle_static_get(path)
+  end
+
+  local command = components()
+  local param1 = components() or ""
+  local param2 = components() or ""
+
+  local f = commands_get[command]
+  if f ~= nil then
+    local _, err, ret = f(param1, param2)
+    if err then
+      return 200, get_content_type('json'), utils.format_json(err)
+    else
+      return 400, get_content_type('json'), '{"message": "'..ret..'"}'
+    end
+  else
+    return 404, get_content_type('plain'), "Error: Requested URL /"..path.." not found"
   end
 end
 
@@ -603,15 +624,11 @@ local function handle_request(request, passwd)
     request.user = nil
     request.password = nil
   end
+
   if request.method == "POST" then
     return handle_post(request['path'])
-
   elseif request.method == "GET" then
-    if request.path == "api/status" or request.path == "api/status/" then
-      return handle_status_get()
-    else
-      return handle_static_get(request.path)
-    end
+    return handle_get(request.path)
   else
     return 405, get_content_type('plain'), "Error: Method not allowed"
   end
