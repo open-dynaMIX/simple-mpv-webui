@@ -283,6 +283,13 @@ var keyboardBindings = [
 ];
 
 window.onkeydown = function(e) {
+  // We have no shortcuts below that use these combos, so don't capture them.
+  // We allow Shift key as some keyboards require that to trigger the keys.
+  // For example, a US QWERTY uses Shift+/ to get ?.
+  if (e.altKey || e.ctrlKey || e.metaKey) {
+    return;
+  }
+
   for (let i = 0; i < keyboardBindings.length; i++) {
     const binding = keyboardBindings[i];
     if (e.keyCode === binding.code || e.key === binding.key) {
