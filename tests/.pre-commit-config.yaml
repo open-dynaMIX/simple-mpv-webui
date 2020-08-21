@@ -22,6 +22,6 @@ repos:
   - id: gitlint
     stages: [commit-msg]
     name: gitlint
-    description: Validate commit lint
-    entry: gitlint --ignore B1,B5,B6 --msg-filename
     language: system
+    entry: gitlint
+    args: [--contrib=CT1, --msg-filename]
