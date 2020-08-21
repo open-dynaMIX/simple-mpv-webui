@@ -24,4 +24,4 @@ repos:
     name: gitlint
     language: system
     entry: gitlint
-    args: [--contrib=CT1, --msg-filename]
+    args: [--contrib=CT1, --ignore=B1, --ignore=B5, --ignore=B6, --msg-filename]
