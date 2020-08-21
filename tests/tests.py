@@ -36,6 +36,16 @@ def get_script_opts(options):
     return {"options": [f"--script-opts={','.join(option_strings)}"]}
 
 
+def send(command, arg=None, expect=200, status=None):
+    api = f"api/{command}"
+    if arg is not None:
+        api += f"/{arg}"
+    resp = requests.post(get_uri(api))
+    assert resp.status_code == expect
+    if status is not None:
+        return get_status()[status]
+
+
 def test_status(mpv_instance, snapshot):
     status = get_status()
     snapshot.assert_match(status)
@@ -117,11 +127,7 @@ class TestsRequests:
             status = get_status()
             value = status[key] + value
 
-        resp = requests.post(get_uri(f"api/{endpoint}/{arg}"))
-        assert resp.status_code == 200
-
-        status = get_status()
-        assert status[key] == value
+        assert send(endpoint, arg=arg, status=key) == value
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -129,14 +135,10 @@ class TestsRequests:
     )
     def test_seek(mpv_instance, endpoint, arg, position):
         # reset position
-        requests.post(get_uri("api/pause"))
-        requests.post(get_uri("api/set_position/0"))
+        send("pause")
+        send("set_position", arg="0")
 
-        resp = requests.post(get_uri(f"api/{endpoint}/{arg}"))
-        assert resp.status_code == 200
-
-        status = get_status()
-        assert status["position"] == position
+        assert send(endpoint, arg=arg, status="position") == position
 
     @staticmethod
     def test_speed(mpv_instance):
@@ -153,10 +155,55 @@ class TestsRequests:
             ("speed_set", "", 1),
         )
         for (endpoint, arg, value) in TESTS:
-            resp = requests.post(get_uri(f"api/{endpoint}/{arg}"))
-            assert resp.status_code == 200
-            status = get_status()
-            assert status["speed"] == value
+            assert send(endpoint, arg=arg, status="speed") == value
+
+    @staticmethod
+    def test_add(mpv_instance):
+        def add(arg=None):
+            return send("add/volume", arg=arg, status="volume")
+
+        send("set/volume", "10")
+        assert add() == 11
+        assert add("") == 12
+        assert round(add("5.1"), 1) == 17.1
+        assert round(add("-3"), 1) == 14.1
+
+    @staticmethod
+    def test_cycle(mpv_instance):
+        def cycle(arg=None):
+            return send("cycle/pause", arg=arg, status="pause")
+
+        send("set/pause", "yes")
+        assert cycle() is False
+        assert cycle("") is True
+        assert cycle("up") is False
+        assert cycle("down") is True
+
+    @staticmethod
+    def test_multiply(mpv_instance):
+        def multiply(arg):
+            return send("multiply/volume", arg=arg, status="volume")
+
+        send("set/volume", "10")
+        assert multiply("2") == 20
+        assert multiply("1.1") == 22
+
+    @staticmethod
+    def test_set(mpv_instance):
+        def set(arg):
+            return send("set/volume", arg=arg, status="volume")
+
+        assert round(set("91.2"), 1) == 91.2
+        assert round(set("107.3"), 1) == 107.3
+
+    @staticmethod
+    def test_toggle(mpv_instance):
+        def toggle():
+            return send("toggle/fullscreen", status="fullscreen")
+
+        send("set/fullscreen", arg="yes")
+        assert toggle() is False
+        assert toggle() is True
 
     @staticmethod
     def test_playlist(mpv_instance):
@@ -167,47 +214,41 @@ class TestsRequests:
             ]
 
         # make sure we're on the
-        requests.post(get_uri("api/pause"))
-        requests.post(get_uri("api/playlist_jump/0"))
+        send("pause")
+        send("playlist_jump", arg="0")
 
         status = get_status()
         assert status["playlist"][0]["current"] is True
         assert len(status["playlist"]) == 3
         assert get_order(status) == ["01", "02", "03"]
 
-        resp = requests.post(get_uri("api/playlist_jump/1"))
-        assert resp.status_code == 200
+        send("playlist_jump", arg="1")
         status = get_status()
         assert status["playlist"][1]["current"] is True
         assert get_order(status) == ["01", "02", "03"]
 
-        resp = requests.post(get_uri("api/playlist_next"))
-        assert resp.status_code == 200
+        send("playlist_next")
         status = get_status()
         assert status["playlist"][2]["current"] is True
         assert get_order(status) == ["01", "02", "03"]
 
-        resp = requests.post(get_uri("api/playlist_prev"))
-        assert resp.status_code == 200
+        send("playlist_prev")
         status = get_status()
         assert status["playlist"][1]["current"] is True
         assert get_order(status) == ["01", "02", "03"]
 
-        resp = requests.post(get_uri("api/playlist_move/0/3"))
-        assert resp.status_code == 200
+        send("playlist_move", arg="0/3")
         status = get_status()
         assert get_order(status) == ["02", "03", "01"]
 
-        resp = requests.post(get_uri("api/playlist_move_up/1"))
-        assert resp.status_code == 200
+        send("playlist_move_up", arg="1")
         status = get_status()
         assert get_order(status) == ["03", "02", "01"]
 
         def shuffle():
             # brute forcing shuffle :rolling_eyes:
             for _ in range(5):
-                resp = requests.post(get_uri("api/playlist_shuffle"))
-                assert resp.status_code == 200
+                send("playlist_shuffle")
                 order = get_order(get_status())
                 if not order == ["03", "02", "01"]:
                     return True
@@ -216,10 +257,9 @@ class TestsRequests:
         assert shuffle() is True, "playlist_shuffle failed!"
 
         # make sure we're not removing the current playlist entry
-        requests.post(get_uri("api/playlist_jump/0"))
+        send("playlist_jump", arg="0")
         order = get_order(get_status())
-        resp = requests.post(get_uri("api/playlist_remove/2"))
-        assert resp.status_code == 200
+        send("playlist_remove", arg="2")
         status = get_status()
         assert len(status["playlist"]) == 2
         assert get_order(status) == order[:2]
@@ -262,8 +302,7 @@ def test_audio_device_cycling(mpv_instance, expected_devices):
     for expexted_device in expected_devices:
         for device in status["audio-devices"]:
             assert device["active"] == (device["name"] == expexted_device)
-        resp = requests.post(get_uri("api/cycle_audio_device"))
-        assert resp.status_code == 200
+        send("cycle_audio_device")
         status = get_status()
 
 
@@ -281,16 +320,14 @@ def test_cycle_tracks(mpv_instance, endpoint, track_type):
         if track["type"] == track_type:
             assert track["selected"] is True
 
-    resp = requests.post(get_uri(f"api/{endpoint}"))
-    assert resp.status_code == 200
+    send(endpoint)
 
     status = get_status()
     for track in status["track-list"]:
         if track["type"] == track_type:
             assert track["selected"] is False
 
-    resp = requests.post(get_uri(f"api/{endpoint}"))
-    assert resp.status_code == 200
+    send(endpoint)
 
     status = get_status()
     for track in status["track-list"]:
