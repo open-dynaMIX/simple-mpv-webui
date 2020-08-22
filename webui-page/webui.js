@@ -240,13 +240,13 @@ var keyboardBindings = [
     "help": "cycle through subtitles",
     "key": "j",
     "code": 74,
-    "command": () => send("cycle", "sub"),
+    "command": () => send("cycle_sub"),
   },
   {
     "help": "toggle subtitle visibility",
     "key": "v",
     "code": 86,
-    "command": () => send("cycle", "sub-visibility"),
+    "command": () => send("toggle", "sub-visibility"),
   },
   {
     "help": "playlist next",
