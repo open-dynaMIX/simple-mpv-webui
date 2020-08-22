@@ -71,44 +71,51 @@ local function validate_loop_param(param, valid_table)
   return true, nil
 end
 
-local function get_audio_devices_config()
-  local function add_device(d, active, ad, ads)
+local function get_audio_devices()
+  local function add_device(d, active, ad)
     ad[#ad+1] = {
           name = d.name,
           description = d.description,
           active = d.name == active
     }
-    ads = ads .. " " .. d.name
-    return ad, ads
+    return ad
   end
   local active_device = mp.get_property_native("audio-device")
   local audio_devices = {}
-  audio_devices_cycle_string = ""
   for _, device in pairs(mp.get_property_native("audio-device-list")) do
     if options.audio_devices ~= "" then
       if options.audio_devices == device.name
               or string.find(options.audio_devices, " "..device.name, 1, true)
               or string.find(options.audio_devices, device.name.." ", 1, true)
       then
-        audio_devices, audio_devices_cycle_string = add_device(
+        audio_devices = add_device(
                 device,
                 active_device,
-                audio_devices,
-                audio_devices_cycle_string
+                audio_devices
         )
       end
     else
-      audio_devices, audio_devices_cycle_string = add_device(
+      audio_devices = add_device(
                 device,
                 active_device,
-                audio_devices,
-                audio_devices_cycle_string
+                audio_devices
         )
     end
   end
 
-  return audio_devices, audio_devices_cycle_string
+  return audio_devices
 end
+
+local function get_audio_devices_list()
+  local audio_devices = get_audio_devices()
+  local devices_list = {}
+
+  for n, v in pairs(audio_devices) do
+    devices_list[n] = v.name
+  end
+  return devices_list
+end
+
 
 local commands = {
   play = function()
@@ -134,7 +141,7 @@ local commands = {
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, "seek "..t)
+    return pcall(mp.commandv, 'osd-msg', "seek", t)
   end,
 
   add = function(name, value)
@@ -147,9 +154,9 @@ local commands = {
       if not valid then
         return true, false, msg
       end
-      return pcall(mp.commandv, 'add', name, value)
+      return pcall(mp.commandv, 'osd-msg', 'add', name, value)
     else
-      return pcall(mp.commandv, 'add', name)
+      return pcall(mp.commandv, 'osd-msg', 'add', name)
     end
   end,
 
@@ -163,9 +170,9 @@ local commands = {
       if not valid then
         return true, false, msg
       end
-      return pcall(mp.commandv, 'cycle', name, value)
+      return pcall(mp.commandv, 'osd-msg', 'cycle', name, value)
     else
-      return pcall(mp.commandv, 'cycle', name)
+      return pcall(mp.commandv, 'osd-msg', 'cycle', name)
     end
   end,
 
@@ -178,7 +185,7 @@ local commands = {
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.commandv, 'multiply', name, value)
+    return pcall(mp.commandv, 'osd-msg', 'multiply', name, value)
   end,
 
   set = function(name, value)
@@ -190,7 +197,7 @@ local commands = {
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.commandv, 'set', name, value)
+    return pcall(mp.commandv, 'osd-msg', 'set', name, value)
   end,
 
   toggle = function(name)
@@ -207,20 +214,20 @@ local commands = {
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, "seek "..t.." absolute")
+    return pcall(mp.commandv, 'osd-msg', "seek", t, "absolute")
   end,
 
   playlist_prev = function()
     local position = tonumber(mp.get_property("time-pos") or 0)
     if position > 1 then
-      return pcall(mp.command, "seek "..-position)
+      return pcall(mp.commandv, 'osd-msg', "seek", -position)
     else
-      return pcall(mp.command, "playlist-prev")
+      return pcall(mp.commandv, 'osd-msg', "playlist-prev")
     end
   end,
 
   playlist_next = function()
-    return pcall(mp.command, "playlist-next")
+    return pcall(mp.commandv, 'osd-msg', "playlist-next")
   end,
 
   playlist_jump = function(p)
@@ -263,7 +270,7 @@ local commands = {
   end,
 
   playlist_shuffle = function()
-    return pcall(mp.command('playlist-shuffle'))
+    return pcall(mp.commandv('osd-msg', 'playlist-shuffle'))
   end,
 
   loop_file = function(mode)
@@ -287,7 +294,7 @@ local commands = {
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'add volume '..v)
+    return pcall(mp.commandv, 'osd-msg', 'add', 'volume', v)
   end,
 
   set_volume = function(v)
@@ -295,7 +302,7 @@ local commands = {
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'set volume '..v)
+    return pcall(mp.commandv, 'osd-msg', 'set', 'volume', v)
   end,
 
   add_sub_delay = function(sec)
@@ -303,7 +310,7 @@ local commands = {
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'add sub-delay '..sec)
+    return pcall(mp.commandv, 'osd-msg', 'add', 'sub-delay', sec)
   end,
 
   set_sub_delay = function(sec)
@@ -311,7 +318,7 @@ local commands = {
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'set sub-delay '..sec)
+    return pcall(mp.commandv, 'osd-msg', 'set', 'sub-delay', sec)
   end,
 
   add_audio_delay = function(sec)
@@ -319,7 +326,7 @@ local commands = {
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'add audio-delay '..sec)
+    return pcall(mp.commandv, 'osd-msg', 'add', 'audio-delay', sec)
   end,
 
   set_audio_delay = function(sec)
@@ -327,20 +334,20 @@ local commands = {
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'set audio-delay '..sec)
+    return pcall(mp.commandv, 'osd-msg', 'set', 'audio-delay', sec)
   end,
 
   cycle_sub = function()
-    return pcall(mp.command, "cycle sub")
+    return pcall(mp.commandv, 'osd-msg', "cycle", "sub")
   end,
 
   cycle_audio = function()
-    return pcall(mp.command, "cycle audio")
+    return pcall(mp.commandv, 'osd-msg', "cycle", "audio")
   end,
 
   cycle_audio_device = function()
-    _, audio_devices_cycle_string = get_audio_devices_config()
-    return pcall(mp.command, "cycle_values audio-device " .. audio_devices_cycle_string)
+    local audio_devices_list = get_audio_devices_list()
+    return pcall(mp.commandv, "osd-msg", "cycle_values", "audio-device", unpack(audio_devices_list))
   end,
 
   speed_set = function(speed)
@@ -351,7 +358,7 @@ local commands = {
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'set speed '..speed)
+    return pcall(mp.commandv, 'osd-msg', 'set', 'speed', speed)
   end,
 
   speed_adjust = function(amount)
@@ -359,7 +366,7 @@ local commands = {
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'multiply speed '..amount)
+    return pcall(mp.commandv, 'osd-msg', 'multiply', 'speed', amount)
   end,
 
   add_chapter = function(num)
@@ -367,11 +374,11 @@ local commands = {
     if not valid then
       return true, false, msg
     end
-    return pcall(mp.command, 'add chapter '..num)
+    return pcall(mp.commandv, 'osd-msg', 'add', 'chapter', num)
   end,
 
   quit = function()
-    return pcall(mp.command, 'quit')
+    return pcall(mp.commandv, 'osd-msg', 'quit')
   end
 }
 
@@ -483,7 +490,7 @@ end
 local function build_status_response()
   local values = {
     ["audio-delay"] = mp.get_property_osd("audio-delay") or '',
-    ["audio-devices"] = get_audio_devices_config(),
+    ["audio-devices"] = get_audio_devices(),
     chapter = mp.get_property_native("chapter") or 0,
     chapters = mp.get_property_native("chapters") or '',
     ["chapter-list"] = mp.get_property_native("chapter-list") or '',
