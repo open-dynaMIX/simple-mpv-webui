@@ -547,8 +547,8 @@ local function handle_post(path)
 
   local f = commands[command]
   if f ~= nil then
-    local _, err, ret = f(param1, param2)
-    if err then
+    local _, success, ret = f(param1, param2)
+    if success then
       return 200, get_content_type('json'), '{"message": "success"}'
     else
       return 400, get_content_type('json'), '{"message": "'..ret..'"}'
