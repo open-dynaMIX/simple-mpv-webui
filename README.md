@@ -176,6 +176,8 @@ There are some keybindings available:
 | f          | toggle fullscreen            |
 | n          | playlist next                |
 | p          | playlist previous            |
+| j          | cycle subtitles              |
+| v          | toggle subtitle visibility   |
 | [          | decrease playback speed      |
 | ]          | increase playback speed      |
 | {          | decrease playback speed more |
