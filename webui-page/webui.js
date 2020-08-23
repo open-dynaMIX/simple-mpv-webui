@@ -1,4 +1,4 @@
-var DEBUG = false;
+let DEBUG = false;
     loaded = false;
     metadata = {};
     subs = {};
@@ -13,7 +13,7 @@ function send(command, ...args) {
   }
   const path = ['api', command, ...args].join('/');
 
-  var request = new XMLHttpRequest();
+  const request = new XMLHttpRequest();
   request.open("post", path);
 
   request.send(null);
@@ -64,18 +64,20 @@ function createPlaylistTable(entry, position, pause, first) {
      td_2.classList.remove('click');}, 100);
   }
 
+  let title;
   if (entry.title) {
-    var title = entry.title;
+    title = entry.title;
   } else {
-    var filename_array = entry.filename.split('/');
+    const filename_array = entry.filename.split('/');
     title = filename_array[filename_array.length - 1];
   }
 
-  var table = document.createElement('table');
-  var tr = document.createElement('tr');
-  var td_left = document.createElement('td');
-  var td_2 = document.createElement('td');
-  var td_right = document.createElement('td');
+  const table = document.createElement('table');
+  const tr = document.createElement('tr');
+  const td_left = document.createElement('td');
+  const td_2 = document.createElement('td');
+  const td_3 = document.createElement('td')
+  const td_right = document.createElement('td');
   table.className = 'playlist';
   tr.className = 'playlist';
   td_2.className = 'playlist';
@@ -83,7 +85,6 @@ function createPlaylistTable(entry, position, pause, first) {
   td_right.className = 'playlist';
   td_2.innerText = title;
   if (first === false) {
-    var td_3 = document.createElement('td');
     td_3.innerHTML = '<i class="fas fa-arrow-up"></i>';
     td_3.className = 'playlist';
   }
@@ -150,11 +151,11 @@ function createPlaylistTable(entry, position, pause, first) {
 }
 
 function populatePlaylist(json, pause) {
-  var playlist = document.getElementById('playlist');
+  const playlist = document.getElementById('playlist');
   playlist.innerHTML = "";
 
-  var first = true;
-  for(var i = 0; i < json.length; ++i) {
+  let first = true;
+  for(let i = 0; i < json.length; ++i) {
     playlist.appendChild(createPlaylistTable(json[i], i, pause, first));
     if (first === true) {
       first = false
@@ -162,7 +163,7 @@ function populatePlaylist(json, pause) {
   }
 }
 
-var keyboardBindings = [
+const keyboardBindings = [
   {
     "help": "hide current overlay",
     "key": "Escape",
@@ -320,16 +321,15 @@ function updateShortcutsHelp() {
 updateShortcutsHelp();
 
 function format_time(seconds){
-  var date = new Date(null);
+  const date = new Date(null);
   date.setSeconds(seconds);
   return date.toISOString().substr(11, 8);
 }
 
 function setFullscreenButton(fullscreen) {
+  let fullscreenText = 'Fullscreen on';
     if (fullscreen) {
-        var fullscreenText = 'Fullscreen off';
-    } else {
-        fullscreenText = 'Fullscreen on';
+        fullscreenText = 'Fullscreen off';
     }
     document.getElementById("fullscreenButton").innerText =
         fullscreenText;
@@ -340,7 +340,7 @@ function setTrackList(tracklist) {
   window.audios.count = 0;
   window.subs.selected = 0;
   window.subs.count = 0;
-  for (var i = 0; i < tracklist.length; i++){
+  for (let i = 0; i < tracklist.length; i++){
     if (tracklist[i].type === 'audio') {
       window.audios.count++;
       if (tracklist[i].selected) {
@@ -359,16 +359,16 @@ function setTrackList(tracklist) {
 
 function setMetadata(metadata, playlist, filename) {
   // try to gather the track number
+  let track = '';
   if (metadata['track']) {
-    var track = metadata['track'] + ' - ';
-  } else {
-    track = '';
+    track = metadata['track'] + ' - ';
   }
 
   // try to gather the playing playlist element
-  for (var i = 0; i < playlist.length; i++){
+  let pl_title;
+  for (let i = 0; i < playlist.length; i++){
     if (playlist[i].hasOwnProperty('playing')) {
-       var pl_title = playlist[i].title;
+       pl_title = playlist[i].title;
     }
   }
   // set the title. Try values in this order:
@@ -406,8 +406,8 @@ function setMetadata(metadata, playlist, filename) {
 }
 
 function setPosSlider(position, duration) {
-  var slider = document.getElementById("mediaPosition");
-  var pos = document.getElementById("position");
+  const slider = document.getElementById("mediaPosition");
+  const pos = document.getElementById("position");
   slider.max = duration;
   if (!window.blockPosSlider) {
     slider.value = position;
@@ -416,7 +416,7 @@ function setPosSlider(position, duration) {
 }
 
 document.getElementById("mediaPosition").onchange = function() {
-  var slider = document.getElementById("mediaPosition");
+  const slider = document.getElementById("mediaPosition");
   send("set_position", slider.value);
   window.blockPosSlider = false;
 };
@@ -429,14 +429,14 @@ document.getElementById("mediaPosition").onmousemove = function(e) {
 
 document.getElementById("mediaPosition").oninput = function() {
   window.blockPosSlider = true;
-  var slider = document.getElementById("mediaPosition");
-  var pos = document.getElementById("position");
+  const slider = document.getElementById("mediaPosition");
+  const pos = document.getElementById("position");
   pos.innerHTML = format_time(slider.value);
 };
 
 function setVolumeSlider(volume, volumeMax) {
-  var slider = document.getElementById("mediaVolume");
-  var vol = document.getElementById("volume");
+  const slider = document.getElementById("mediaVolume");
+  const vol = document.getElementById("volume");
   if (!window.blockVolSlider) {
     slider.value = volume;
     slider.max = volumeMax;
@@ -445,7 +445,7 @@ function setVolumeSlider(volume, volumeMax) {
 }
 
 document.getElementById("mediaVolume").onchange = function() {
-  var slider = document.getElementById("mediaVolume");
+  const slider = document.getElementById("mediaVolume");
   send("set_volume", slider.value);
   window.blockVolSlider = false;
 };
@@ -458,19 +458,19 @@ document.getElementById("mediaVolume").onmousemove = function(e) {
 
 document.getElementById("mediaVolume").oninput = function() {
   window.blockVolSlider = true;
-  var slider = document.getElementById("mediaVolume");
-  var vol = document.getElementById("volume");
+  const slider = document.getElementById("mediaVolume");
+  const vol = document.getElementById("volume");
   vol.innerHTML = slider.value + "%";
 };
 
 function setPlayPause(value) {
-  var playPause = document.getElementsByClassName('playPauseButton');
+  const playPause = document.getElementsByClassName('playPauseButton');
 
   if ('mediaSession' in navigator) {
     navigator.mediaSession.playbackState = value ? 'paused' : 'playing';
   }
 
-  // var playPause = document.getElementById("playPause");
+  // const playPause = document.getElementById("playPause");
   if (value) {
     [].slice.call(playPause).forEach(function (div) {
       div.innerHTML = '<i class="fas fa-play"></i>';
@@ -489,8 +489,8 @@ function setPlayPause(value) {
 }
 
 function setChapter(chapters, chapter, chapterList) {
-  var chapterElements = document.getElementsByClassName('chapter');
-  var chapterContent = document.getElementById('chapterContent');
+  const chapterElements = document.getElementsByClassName('chapter');
+  const chapterContent = document.getElementById('chapterContent');
   if (chapters === 0) {
     [].slice.call(chapterElements).forEach(function (div) {
       div.classList.add('hidden');
@@ -516,7 +516,7 @@ function setChapter(chapters, chapter, chapterList) {
 }
 
 function playlist_loop_cycle() {
-  var loopButton = document.getElementsByClassName('playlistLoopButton');
+  const loopButton = document.getElementsByClassName('playlistLoopButton');
   if (loopButton.value === "no") {
     send("loop_file", "inf");
     send("loop_playlist", "no");
@@ -530,7 +530,8 @@ function playlist_loop_cycle() {
 }
 
 function setLoop(loopFile, loopPlaylist) {
-  var loopButton = document.getElementsByClassName('playlistLoopButton');
+  const loopButton = document.getElementsByClassName('playlistLoopButton');
+  let html, value;
   if (loopFile === false) {
     if (loopPlaylist === false) {
       html = '!<i class="fas fa-redo-alt"></i>';
@@ -586,12 +587,12 @@ function refreshStatus(timeout) {
 }
 
 function status(){
-  var request = new XMLHttpRequest();
+  const request = new XMLHttpRequest();
   request.open("get", "/api/status");
 
   request.onreadystatechange = function() {
     if (request.readyState === 4 && request.status === 200) {
-      var json = JSON.parse(request.responseText);
+      const json = JSON.parse(request.responseText);
       handleStatusResponse(json);
     } else if (request.status === 0) {
       document.getElementById("title").innerHTML = "<h1><span class='error'>Couldn't connect to MPV!</span></h1>";
@@ -612,7 +613,7 @@ function audioLoad() {
 }
 
 function audioPlay() {
-  var audio = document.getElementById("audio");
+  const audio = document.getElementById("audio");
   if (audio.paused) {
     audio.play().then(function() {
       DEBUG && console.log('Playing dummy audio');
@@ -621,7 +622,7 @@ function audioPlay() {
 }
 
 function audioPause() {
-  var audio = document.getElementById("audio");
+  const audio = document.getElementById("audio");
   if (!audio.paused) {
     DEBUG && console.log('Pausing dummy audio');
     audio.pause();
@@ -657,8 +658,8 @@ function setupNotification({duration, speed, position}) {
 }
 
 // Toggle between high-refresh when active, but low-refresh when backgrounded.
-var refreshInterval;
-var nextPeriodicRefresh;
+let refreshInterval;
+let nextPeriodicRefresh;
 function schedulePeriodicStatus() {
   if (nextPeriodicRefresh) {
     clearTimeout(nextPeriodicRefresh);
