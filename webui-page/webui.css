@@ -9,6 +9,7 @@ body {
   background-color: #000000;
   color: var(--main-fg-color);
   margin: 30px;
+  touch-action: manipulation;
 }
 
 h1, h2, h3 {

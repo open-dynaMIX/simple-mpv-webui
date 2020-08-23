@@ -674,14 +674,3 @@ function refreshStatus() {
 
 document.addEventListener('visibilitychange', refreshStatus, false);
 refreshStatus();
-
-// prevent zoom-in on double-click
-// https://stackoverflow.com/questions/37808180/disable-viewport-zooming-ios-10-safari/38573198#38573198
-var lastTouchEnd = 0;
-document.addEventListener('touchend', function (event) {
-  var now = (new Date()).getTime();
-  if (now - lastTouchEnd <= 300) {
-    event.preventDefault();
-  }
-  lastTouchEnd = now;
-}, false);
