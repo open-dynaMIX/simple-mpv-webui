@@ -59,6 +59,7 @@ h3 {
   color: var(--main-bg-color);
   cursor: pointer;
   font-size: 150px;
+  white-space: nowrap;
 }
 
 .button-x3 {
