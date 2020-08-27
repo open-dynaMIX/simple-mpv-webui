@@ -11,7 +11,7 @@ repos:
     stages: [commit]
     name: isort
     language: system
-    entry: isort -y
+    entry: isort
     types: [python]
   - id: flake8
     stages: [commit]
