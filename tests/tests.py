@@ -131,7 +131,8 @@ class TestsRequests:
 
     @staticmethod
     @pytest.mark.parametrize(
-        "endpoint,arg,position", [("seek", "1", 1.008979), ("set_position", "2", 2.0)],
+        "endpoint,arg,position",
+        [("seek", "1", 1.008979), ("set_position", "2", 2.0)],
     )
     def test_seek(mpv_instance, endpoint, arg, position):
         # reset position
@@ -418,7 +419,13 @@ def test_port(mpv_instance, v, expected_8080, expected_8000):
             "",
             401,
         ),
-        (get_script_opts({"logging": "yes"}), False, "user", "secret", 200,),
+        (
+            get_script_opts({"logging": "yes"}),
+            False,
+            "user",
+            "secret",
+            200,
+        ),
     ],
     indirect=["mpv_instance"],
 )
