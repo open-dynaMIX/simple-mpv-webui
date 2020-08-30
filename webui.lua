@@ -663,11 +663,18 @@ local function listen(server, passwd)
     return
   end
 
-  local request = parse_request(connection)
-  if request == nil then
-    return
+  local code = 400
+  local content_type = get_content_type("plain")
+  local content = "Bad request!"
+
+  local success, request = pcall(parse_request, connection)
+
+  if success then
+    if request == nil then
+      return
+    end
+    code, content_type, content = handle_request(request, passwd)
   end
-  local code, content_type, content = handle_request(request, passwd)
 
   connection:send(header(code, content_type, #content))
   connection:send(content)
