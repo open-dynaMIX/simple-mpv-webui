@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import urllib
+
 import pytest
 import requests
 from requests.auth import HTTPBasicAuth
@@ -36,10 +38,11 @@ def get_script_opts(options):
     return {"options": [f"--script-opts={','.join(option_strings)}"]}
 
 
-def send(command, arg=None, expect=200, status=None):
+def send(command, arg=None, arg2=None, expect=200, status=None):
     api = f"api/{command}"
-    if arg is not None:
-        api += f"/{arg}"
+    for a in [arg, arg2]:
+        if a is not None:
+            api += f"/{a}"
     resp = requests.post(get_uri(api))
     assert resp.status_code == expect
     if status is not None:
@@ -264,6 +267,45 @@ class TestsRequests:
         status = get_status()
         assert len(status["playlist"]) == 2
         assert get_order(status) == order[:2]
+
+
+def test_loadfile(mpv_instance):
+    def send_loadfile(url, mode=None, expect=200):
+        return send(
+            "loadfile",
+            urllib.parse.quote(url, safe=""),
+            mode,
+            status="playlist",
+            expect=expect,
+        )
+
+    send("pause")
+    status = get_status()
+    assert status["playlist"][0]["current"] is True
+    assert len(status["playlist"]) == 3
+
+    playlist = send_loadfile("./environment/test_media/01 - dummy.mp3", "append-play")
+
+    assert len(playlist) == 4
+    assert playlist[-1]["filename"] == "./environment/test_media/01 - dummy.mp3"
+
+    playlist = send_loadfile("./environment/test_media/01 - dummy.mp3", "append")
+
+    assert len(playlist) == 5
+    assert playlist[-2]["filename"] == "./environment/test_media/01 - dummy.mp3"
+    assert playlist[-1]["filename"] == "./environment/test_media/01 - dummy.mp3"
+
+    playlist = send_loadfile("./environment/test_media/01 - dummy.mp3", "replace")
+
+    assert len(playlist) == 1
+    assert playlist[0]["filename"] == "./environment/test_media/01 - dummy.mp3"
+
+    playlist = send_loadfile("./environment/test_media/01 - dummy.mp3")
+
+    assert len(playlist) == 1
+    assert playlist[0]["filename"] == "./environment/test_media/01 - dummy.mp3"
+
+    send_loadfile("./environment/test_media/01 - dummy.mp3", "not a valid mode", 400)
 
 
 @pytest.mark.parametrize(
