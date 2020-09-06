@@ -555,10 +555,14 @@ local function handle_post(path)
   local f = commands[command]
   if f ~= nil then
     local _, success, ret = f(param1, param2)
+    if success and ret == nil then
+      ret = "success"
+    end
+    response_json = utils.format_json({message = ret})
     if success then
-      return 200, get_content_type('json'), '{"message": "success"}'
+      return 200, get_content_type('json'), response_json
     else
-      return 400, get_content_type('json'), '{"message": "'..ret..'"}'
+      return 400, get_content_type('json'), response_json
     end
   else
     return 404, get_content_type('plain'), "Error: Requested URL /"..path.." not found"
