@@ -404,7 +404,11 @@ function setMetadata(metadata, playlist, filename) {
 }
 
 function touchRangeOffset(e) {
-  e.preventDefault();
+  if (!e.layerX){
+    return false
+  }else{
+    e.preventDefault();
+  }
   const slider = e.target;
   const offset = slider.max * (e.layerX / slider.scrollWidth);
   return offset;
@@ -419,6 +423,9 @@ function setPosSlider(position, duration) {
 }
 
 function updatePosSlider(position) {
+  if(position === false){
+    return
+  }
   const slider = document.getElementById("mediaPosition");
   const pos = document.getElementById("position");
   slider.value = position;
@@ -439,7 +446,7 @@ function handleMediaPositionMove(e){
 function handleMediaPositionEnd(e) {
   const offset = touchRangeOffset(e);
   updatePosSlider(offset);
-  send("set_position", offset);
+  (offset != false) && send("set_position", offset);
   window.blockPosSlider = false;
 };
 
@@ -473,6 +480,9 @@ function setVolumeSlider(volume, volumeMax) {
 }
 
 function updateVolSlider(position) {
+  if (position === false) {
+    return
+  }
   const slider = document.getElementById("mediaVolume");
   const vol = document.getElementById("volume");
   slider.value = position;
@@ -494,7 +504,7 @@ function handleVolumeMove(e) {
 function handleVolumeEnd(e) {
   const offset = touchRangeOffset(e);
   updateVolSlider(offset);
-  send("set_volume", offset);
+  (offset != false) && send("set_volume", offset);
   window.blockVolSlider = false;
 };
 
