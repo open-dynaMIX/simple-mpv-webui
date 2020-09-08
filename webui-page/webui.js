@@ -403,6 +403,13 @@ function setMetadata(metadata, playlist, filename) {
   document.getElementById("album").innerHTML = window.metadata.album;
 }
 
+function touchRangeOffset(e) {
+  e.preventDefault();
+  const slider = e.target;
+  const offset = slider.max * (e.layerX / slider.scrollWidth);
+  return offset;
+};
+
 function setPosSlider(position, duration) {
   const slider = document.getElementById("mediaPosition");
   const pos = document.getElementById("position");
@@ -410,6 +417,35 @@ function setPosSlider(position, duration) {
   slider.value = position;
   pos.innerHTML = format_time(slider.value);
 }
+
+function updatePosSlider(position) {
+  const slider = document.getElementById("mediaPosition");
+  const pos = document.getElementById("position");
+  slider.value = position;
+  pos.innerHTML = format_time(slider.value);
+}
+
+function handleMediaPositionStart(e) {
+  window.blockPosSlider = true;
+  const offset = touchRangeOffset(e);
+  updatePosSlider(offset);
+};
+
+function handleMediaPositionMove(e){
+  const offset = touchRangeOffset(e);
+  updatePosSlider(offset);
+};
+
+function handleMediaPositionEnd(e) {
+  const offset = touchRangeOffset(e);
+  updatePosSlider(offset);
+  send("set_position", offset);
+  window.blockPosSlider = false;
+};
+
+document.getElementById("mediaPosition").addEventListener('touchstart', handleMediaPositionStart, false);
+document.getElementById("mediaPosition").addEventListener('touchmove', handleMediaPositionMove, false);
+document.getElementById("mediaPosition").addEventListener('touchend', handleMediaPositionEnd, false);
 
 document.getElementById("mediaPosition").onchange = function() {
   const slider = document.getElementById("mediaPosition");
@@ -435,6 +471,36 @@ function setVolumeSlider(volume, volumeMax) {
   slider.max = volumeMax;
   vol.innerHTML = slider.value + "%";
 }
+
+function updateVolSlider(position) {
+  const slider = document.getElementById("mediaVolume");
+  const vol = document.getElementById("volume");
+  slider.value = position;
+  vol.innerHTML = `${position.toFixed(1)}%`;
+}
+
+function handleVolumeStart(e) {
+  window.blockVolSlider = true;
+  const offset = touchRangeOffset(e);
+  updateVolSlider(offset);
+};
+
+function handleVolumeMove(e) {
+  const offset = touchRangeOffset(e);
+  console.log("vol", offset);
+  updateVolSlider(offset);
+};
+
+function handleVolumeEnd(e) {
+  const offset = touchRangeOffset(e);
+  updateVolSlider(offset);
+  send("set_volume", offset);
+  window.blockVolSlider = false;
+};
+
+document.getElementById("mediaVolume").addEventListener('touchstart', handleVolumeStart, false);
+document.getElementById("mediaVolume").addEventListener('touchmove', handleVolumeMove, false);
+document.getElementById("mediaVolume").addEventListener('touchend', handleVolumeEnd, false);
 
 document.getElementById("mediaVolume").onchange = function() {
   const slider = document.getElementById("mediaVolume");
