@@ -3,8 +3,6 @@ let DEBUG = false;
     metadata = {};
     subs = {};
     audios = {};
-    blockPosSlider = false;
-    blockVolSlider = false;
 
 function send(command, ...args) {
   DEBUG && console.log(`Sending command: ${command} params: ${args}`);
@@ -409,16 +407,13 @@ function setPosSlider(position, duration) {
   const slider = document.getElementById("mediaPosition");
   const pos = document.getElementById("position");
   slider.max = duration;
-  if (!window.blockPosSlider) {
-    slider.value = position;
-  }
+  slider.value = position;
   pos.innerHTML = format_time(slider.value);
 }
 
 document.getElementById("mediaPosition").onchange = function() {
   const slider = document.getElementById("mediaPosition");
   send("set_position", slider.value);
-  window.blockPosSlider = false;
 };
 
 document.getElementById("mediaPosition").onmousemove = function(e) {
@@ -428,7 +423,6 @@ document.getElementById("mediaPosition").onmousemove = function(e) {
 };
 
 document.getElementById("mediaPosition").oninput = function() {
-  window.blockPosSlider = true;
   const slider = document.getElementById("mediaPosition");
   const pos = document.getElementById("position");
   pos.innerHTML = format_time(slider.value);
@@ -437,17 +431,14 @@ document.getElementById("mediaPosition").oninput = function() {
 function setVolumeSlider(volume, volumeMax) {
   const slider = document.getElementById("mediaVolume");
   const vol = document.getElementById("volume");
-  if (!window.blockVolSlider) {
-    slider.value = volume;
-    slider.max = volumeMax;
-  }
+  slider.value = volume;
+  slider.max = volumeMax;
   vol.innerHTML = slider.value + "%";
 }
 
 document.getElementById("mediaVolume").onchange = function() {
   const slider = document.getElementById("mediaVolume");
   send("set_volume", slider.value);
-  window.blockVolSlider = false;
 };
 
 document.getElementById("mediaVolume").onmousemove = function(e) {
@@ -457,7 +448,6 @@ document.getElementById("mediaVolume").onmousemove = function(e) {
 };
 
 document.getElementById("mediaVolume").oninput = function() {
-  window.blockVolSlider = true;
   const slider = document.getElementById("mediaVolume");
   const vol = document.getElementById("volume");
   vol.innerHTML = slider.value + "%";
