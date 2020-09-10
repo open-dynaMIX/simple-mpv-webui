@@ -547,6 +547,9 @@ local function handle_post(path)
   local param1 = components() or ""
   local param2 = components() or ""
 
+  param1 = url.unescape(param1)
+  param2 = url.unescape(param2)
+
   local f = commands[command]
   if f ~= nil then
     local _, success, ret = f(param1, param2)
