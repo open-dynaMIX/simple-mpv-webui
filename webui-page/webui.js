@@ -404,11 +404,16 @@ function setMetadata(metadata, playlist, filename) {
 }
 
 function touchRangeOffset(e) {
-  if (!e.layerX){
+  if (!e.layerX) {
+    document.getElementById("mediaPosition").removeEventListener('touchstart', handleMediaPositionStart, false);
+    document.getElementById("mediaPosition").removeEventListener('touchmove', handleMediaPositionMove, false);
+    document.getElementById("mediaPosition").removeEventListener('touchend', handleMediaPositionEnd, false);
+    document.getElementById("mediaVolume").removeEventListener('touchstart', handleVolumeStart, false);
+    document.getElementById("mediaVolume").removeEventListener('touchmove', handleVolumeMove, false);
+    document.getElementById("mediaVolume").removeEventListener('touchend', handleVolumeEnd, false);
     return false
-  }else{
-    e.preventDefault();
   }
+  e.preventDefault();
   const slider = e.target;
   const offset = slider.max * (e.layerX / slider.scrollWidth);
   return offset;
@@ -422,32 +427,20 @@ function setPosSlider(position, duration) {
   pos.innerHTML = format_time(slider.value);
 }
 
-function updatePosSlider(position) {
-  if(position === false){
-    return
-  }
-  const slider = document.getElementById("mediaPosition");
-  const pos = document.getElementById("position");
-  slider.value = position;
-  pos.innerHTML = format_time(slider.value);
-}
-
 function handleMediaPositionStart(e) {
-  window.blockPosSlider = true;
   const offset = touchRangeOffset(e);
-  updatePosSlider(offset);
+  setPosSlider(offset, document.getElementById("mediaPosition").max);
 };
 
 function handleMediaPositionMove(e){
   const offset = touchRangeOffset(e);
-  updatePosSlider(offset);
+  setPosSlider(offset, document.getElementById("mediaPosition").max);
 };
 
 function handleMediaPositionEnd(e) {
   const offset = touchRangeOffset(e);
-  updatePosSlider(offset);
+  setPosSlider(offset, document.getElementById("mediaPosition").max);
   (offset != false) && send("set_position", offset);
-  window.blockPosSlider = false;
 };
 
 document.getElementById("mediaPosition").addEventListener('touchstart', handleMediaPositionStart, false);
@@ -479,33 +472,21 @@ function setVolumeSlider(volume, volumeMax) {
   vol.innerHTML = slider.value + "%";
 }
 
-function updateVolSlider(position) {
-  if (position === false) {
-    return
-  }
-  const slider = document.getElementById("mediaVolume");
-  const vol = document.getElementById("volume");
-  slider.value = position;
-  vol.innerHTML = `${position.toFixed(1)}%`;
-}
-
 function handleVolumeStart(e) {
-  window.blockVolSlider = true;
   const offset = touchRangeOffset(e);
-  updateVolSlider(offset);
+  setVolumeSlider(offset, document.getElementById(mediaVolume).max);
 };
 
 function handleVolumeMove(e) {
   const offset = touchRangeOffset(e);
   console.log("vol", offset);
-  updateVolSlider(offset);
+  setVolumeSlider(offset, document.getElementById(mediaVolume).max);
 };
 
 function handleVolumeEnd(e) {
   const offset = touchRangeOffset(e);
-  updateVolSlider(offset);
+  setVolumeSlider(offset, document.getElementById(mediaVolume).max);
   (offset != false) && send("set_volume", offset);
-  window.blockVolSlider = false;
 };
 
 document.getElementById("mediaVolume").addEventListener('touchstart', handleVolumeStart, false);
