@@ -2,3 +2,4 @@
 .htpasswd
 dummy/
 __pycache__/
+.DS_Store

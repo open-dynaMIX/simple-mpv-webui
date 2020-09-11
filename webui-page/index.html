@@ -1,7 +1,9 @@
 <html>
+
   <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="user-scalable=no">
+    <meta charset="utf-8" />
+    <!-- <meta name="viewport" content="user-scalable=no"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="author" content="Fabio Ambauen">
     <title>simple-mpv-webui</title>
     <link rel="apple-touch-icon" sizes="180x180" href="static/favicons/apple-touch-icon.png">
@@ -18,204 +20,338 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="static/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="webui.css">
-    <link rel="stylesheet" href="static/fontawesome-free-5.0.2/css/fontawesome-all.min.css">
+    <script src="static/fontawesome-free-5.14.0/js/all.min.js"></script>
+    <script>
+      const alertUp = () => alert("Up")
+      const alertDel = () => alert("del")
+      const alertWrap = () => alert("wrap")
+    </script>
   </head>
+
   <body>
-    <div id="playlist-overlay" class="overlay">
-      <table class="playlist-control">
-        <tr>
-          <td>
-              <div onClick="send('toggle_pause')" class="button green content icon-content playPauseButton playlist-controls">
-                <i class="fas fa-play"></i><i class="fas fa-pause"></i>
+    <nav class="navbar navbar-expand navbar-dark bg-dark">
+      <a class="navbar-brand" href="#" onClick="return false;">
+        <img src="static/favicons/favicon-32x32.png" width="30" height="30" alt="" loading="lazy">
+        MPV WebUI
+      </a>
+
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-toggle="modal" data-target="#playlistModal">
+              <i class="fas fa-list-ul"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-toggle="modal" data-target="#shortcutsModal">
+              <i class="fas fa-keyboard"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- playlist modal -->
+    <div class="modal fade" id="playlistModal" tabindex="-1" aria-labelledby="playlistModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-xl  modal-dialog-scrollable">
+        <div class="modal-content bg-dark">
+          <div class="modal-header">
+            <h5 class="modal-title">Playlist</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true" class="text-white">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body p-0">
+            <div class="container-fluid p-3">
+              <div class="row">
+                <div class="col mb-2">
+                  <button type="button" class="btn btn-outline-success btn-lg btn-block" onClick="send('toggle_pause')">
+                    <span class="playPauseButton">
+                      <i class="fas fa-play"></i>
+                      <i class="fas fa-pause"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="col mb-2">
+                  <button type="button" class="btn btn-outline-primary btn-lg btn-block"
+                    onClick="playlist_loop_cycle()">
+                    <i class="fas fa-redo-alt"></i>
+                  </button>
+                </div>
+                <div class="col mb-2">
+                  <button type="button" class="btn btn-outline-primary btn-lg btn-block"
+                    onClick="send('playlist_shuffle')">
+                    <i class="fas fa-random"></i>
+                  </button>
+                </div>
+                <div class="col mb-2">
+                  <button type="button" class="btn btn-outline-danger btn-lg btn-block" onClick="send('quit')">
+                    <i class="fas fa-power-off"></i>
+                  </button>
+                </div>
               </div>
-          </td>
-          <td>
-              <div onClick="playlist_loop_cycle()" class="button blue content icon-content playlist-controls playlistLoopButton">
-                <i class="fas fa-redo-alt"></i>
-              </div>
-          </td>
-          <td>
-              <div onClick="send('playlist_shuffle')" class="button blue content icon-content playlist-controls">
-                <i class="fas fa-random"></i>
-              </div>
-          </td>
-          <td>
-              <div onClick="send('quit')" class="button violet content icon-content playlist-controls">
-                <i class="fas fa-power-off"></i>
-              </div>
-          </td>
-          <td>
-              <div onClick="togglePlaylist()" class="button violet content icon-content playlist-controls">
-                <i class="fas fa-times-circle"></i>
-              </div>
-          </td>
-        </tr>
-      </table>
-      <div id="playlist"></div>
-    </div>
+            </div>
+            <div id="playlist" class="list-group list-group-flush mb-3">
+              <!-- <div class="list-group-item list-group-item-action bg-dark text-white">
+                <div class="d-flex w-100 justify-content-between align-items-center">
+                  <div class="playlist-position">
 
-    <div id="shortcuts-overlay" class="overlay">
-      <div onClick="toggleShortcutsOverlay()" class="button violet content icon-content">
-        <i class="fas fa-times-circle"></i>
-      </div>
-      <table id="shortcuts-table">
-        <tr>
-          <td><b class="fas fa-keyboard"></b></td>
-          <td>Action</td>
-        </tr>
-      </table>
-    </div>
-
-    <div class="burger">
-      <a href="#" onClick="togglePlaylist(); return false;" title="Show playlist"><i class="fas fa-list-ul"></i></a>
-    </div>
-    <h1 id="title">Title</h1>
-    <h2 id="artist">Artist</h2>
-    <h3 id="album">Album</h3>
-
-    <div class="table">
-      <table class="prop-table">
-        <tr>
-          <td>Speed:</td>
-          <td id="speed"></td>
-        </tr>
-        <tr>
-          <td>Sub-delay:</td>
-          <td id="sub-delay"></td>
-        </tr>
-        <tr>
-          <td>Audio-delay:</td>
-          <td id="audio-delay"></td>
-        </tr>
-        <tr class="chapter">
-          <td>Chapter:</td>
-          <td id="chapterContent"></td>
-        </tr>
-      </table>
-    </div>
-
-    <div class="slidecontainer">
-      <input type="range" min="0" max="0" value="0" step="any" class="slider" id="mediaPosition" list="chapters">
-      <datalist id="chapters">
-      </datalist>
-      <div class="sliderInfoContainer">
-        <div class="left" id="remaining"></div>
-        <div class="sliderCenter" id="position"></div>
-        <div class="right" id="duration"></div>
+                  </div>
+                  <div>Title</div>
+                  <div>
+                    <button class="btn btn-outline-primary btn-sm position-relative" onclick="alertUp()">Up</button>
+                    <button class="btn btn-outline-danger btn-sm position-relative" onclick="alertDel()">Del</button>
+                    <a class="stretched-link" onclick="alertWrap()"></a>
+                  </div>
+                </div>
+              </div> -->
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="slidecontainer">
-      <input type="range" min="0" max="130" value="100" step=".1" class="slider" id="mediaVolume">
-      <div class="sliderInfoContainer sliderVolume">
-        <div class="left sliderVolume"><i class="fas fa-volume-down"></i></div>
-        <div class="sliderCenter" id="volume"></div>
-        <div class="right"><i class="fas fa-volume-up"></i></div>
+    <!-- Shortcuts modal -->
+    <div class="modal fade" id="shortcutsModal" tabindex="-1" aria-labelledby="shortcutsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content bg-dark">
+          <div class="modal-header">
+            <h5 class="modal-title">Shortcuts</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true" class="text-white">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body p-0">
+            <table id="shortcuts-table" class="table table-striped table-dark">
+              <tr class="text-center">
+                <th><b class="fas fa-keyboard"></b></th>
+                <th>Action</th>
+              </tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div onClick="send('toggle_pause')" class="button full-width green" title="Play/Pause (Space)">
-      <div class="content icon-content playPauseButton">
-        <i class="fas fa-play"></i><i class="fas fa-pause"></i>
+    <div class="container-lg">
+      <div class="row my-3">
+        <div class="col">
+          <div class="card bg-dark w-100">
+            <div class="card-body">
+              <h5 class="card-title" id="title">Title</h5>
+              <h6 class="card-subtitle mb-2 text-muted" id="artist">Artist</h6>
+              <h6 class="card-subtitle mb-2 text-muted" id="album">Album</h6>
+            </div>
+            <table class="table table-borderless table-dark">
+              <thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Speed: </th>
+                  <td id="speed"></td>
+                </tr>
+                <tr>
+                  <th scope="row">Sub delay: </th>
+                  <td id="sub-delay"></td>
+                </tr>
+                <tr>
+                  <th scope="row">Audio delay: </th>
+                  <td id="audio-delay"></td>
+                </tr>
+                <tr>
+                  <th scope="row">Chapter: </th>
+                  <td id="chapterContent"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div onClick="send('seek', '-10')" class="button left blue" title="Rewind 10 sec (ArrowLeft)">
-      <div class="content icon-content">
-        <i class="fas fa-backward"></i>
+      <!-- Media Position -->
+      <div class="row mb-3">
+        <div class="col-12">
+          <input type="range" min="0" max="0" value="0" step="any" class="slider mb-1 w-100 rounded " id="mediaPosition"
+            list="chapters">
+          <datalist id="chapters"></datalist>
+        </div>
+        <div class="col-12 d-flex justify-content-between">
+          <div id="remaining"></div>
+          <div id="position"></div>
+          <div id="duration"></div>
+        </div>
       </div>
-    </div>
-    <div onClick="send('seek', '10')" class="button right blue" title="Forward 10 sec (ArrowRight)">
-      <div class="content icon-content">
-        <i class="fas fa-forward"></i>
-      </div>
-    </div>
 
-    <div onClick="send('add_chapter', '-1')" class="button left blue chapter" title="Previous chapter">
-      <div class="content icon-content">
-        <i class="fas fa-step-backward"></i>
+      <!-- Media Volume -->
+      <div class="row mb-3">
+        <div class="col-12">
+          <input type="range" min="0" max="130" value="100" step=".1" class="slider mb-1 w-100 rounded "
+            id="mediaVolume">
+          <datalist id="chapters"></datalist>
+        </div>
+        <div class="col-12 d-flex justify-content-between">
+          <div class="left sliderVolume"><i class="fas fa-volume-down"></i></div>
+          <div class="sliderCenter" id="volume"></div>
+          <div class="right"><i class="fas fa-volume-up"></i></div>
+        </div>
       </div>
-    </div>
-    <div onClick="send('add_chapter', '1')" class="button right blue chapter" title="Next chapter">
-      <div class="content icon-content">
-        <i class="fas fa-step-forward"></i>
-      </div>
-    </div>
 
-    <div onClick="send('playlist_prev')" class="button left blue" title="Previous playlist (p)">
-      <div class="content icon-content">
-        <i class="fas fa-fast-backward"></i>
+      <!-- Start toggle playback buttons -->
+      <div class="row d-none mb-3 d-sm-none d-md-block">
+        <div class="col">
+          <div class="btn-group w-100" role="group" aria-label="Toggle playback (lg)">
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('playlist_prev')"
+              title="Previous playlist (p)">
+              <i class="fas fa-fast-backward"></i>
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('add_chapter', '-1')"
+              title="Previous chapter">
+              <i class="fas fa-step-backward"></i>
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('seek', '-10')"
+              title="Rewind 10 sec (ArrowLeft)">
+              <i class="fas fa-backward"></i>
+            </button>
+            <button type="button" class="btn btn-outline-success btn-lg" onClick="send('toggle_pause')"
+              title="Play/Pause (Space)">
+              <span class="playPauseButton">
+                <i class="fas fa-play"></i>
+                <i class="fas fa-pause"></i>
+              </span>
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('seek', '10')"
+              title="Forward 10 sec (ArrowRight)">
+              <i class="fas fa-forward"></i>
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('add_chapter', '1')"
+              title="Next chapter">
+              <i class="fas fa-step-forward"></i>
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('playlist_next')"
+              title="Next playlist (n)">
+              <i class="fas fa-fast-forward"></i>
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
-    <div onClick="send('playlist_next')" class="button right blue" title="Next playlist (n)">
-      <div class="content icon-content">
-        <i class="fas fa-fast-forward"></i>
-      </div>
-    </div>
 
-    <div onClick="send('speed_adjust', '0.9091')" class="button button-x3 left blue" title="Slower playback speed ([)">
-      <div class="content text-content slant-left">
-        Slower
+      <div class="row mb-3 d-sm-block d-md-none">
+        <div class="col-12 mb-3">
+          <div class="btn-group w-100" role="group" aria-label="Toggle playback (sm-1)">
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('seek', '-10')"
+              title="Rewind 10 sec (ArrowLeft)">
+              <i class="fas fa-backward"></i>
+            </button>
+            <button type="button" class="btn btn-outline-success btn-lg" onClick="send('toggle_pause')"
+              title="Play/Pause (Space)">
+              <span class="playPauseButton">
+                <i class="fas fa-play"></i>
+                <i class="fas fa-pause"></i>
+              </span>
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('seek', '10')"
+              title="Forward 10 sec (ArrowRight)">
+              <i class="fas fa-forward"></i>
+            </button>
+            </button>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="btn-group w-100" role="group" aria-label="Toggle playback (sm-2)">
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('playlist_prev')"
+              title="Previous playlist (p)">
+              <i class="fas fa-fast-backward"></i>
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('add_chapter', '-1')"
+              title="Previous chapter">
+              <i class="fas fa-step-backward"></i>
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('add_chapter', '1')"
+              title="Next chapter">
+              <i class="fas fa-step-forward"></i>
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('playlist_next')"
+              title="Next playlist (n)">
+              <i class="fas fa-fast-forward"></i>
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
-    <div onClick="send('speed_set')" class="button button-x3 center blue" title="Normal playback speed (Backspace)">
-      <div class="content text-content">
-        Normal
-      </div>
-    </div>
-    <div onClick="send('speed_adjust', '1.1')" class="button button-x3 right blue" title="Faster playback speed (])">
-      <div class="content text-content slant-right">
-        Faster
-      </div>
-    </div>
+      <!-- End toggle playback buttons -->
 
-    <div onClick="send('cycle_sub')" class="button left violet" title="Cycle subtitles (j)">
-      <div id="nextSub" class="content text-content">
-        Next sub
-      </div>
-    </div>
-    <div onClick="send('cycle_audio')" class="button right violet">
-      <div id="nextAudio" class="content text-content">
-        Next audio
-      </div>
-    </div>
 
-    <div onClick="send('add_sub_delay', '-0.05')" class="button left yellow">
-      <div class="content text-content">
-        Sub delay -
+      <div class="row">
+        <!-- Toggle subtitle -->
+        <div class="col-12 col-md-6 mb-3">
+          <div class="btn-group w-100" role="group" aria-label="Toggle audio delay">
+            <button type="button" class="btn btn-outline-warning btn-lg" onClick="send('add_sub_delay', '-0.05')">
+              Delay -
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('cycle_sub')"
+              title="Cycle subtitles (j)">
+              <span id="nextSub">Next sub</span>
+            </button>
+            <button type="button" class="btn btn-outline-warning btn-lg" onClick="send('add_sub_delay', '0.05')">
+              Delay +
+            </button>
+          </div>
+        </div>
+        <!-- Toggle audio -->
+        <div class="col-12 col-md-6 mb-3">
+          <div class="btn-group w-100" role="group" aria-label="Toggle audio delay">
+            <button type="button" class="btn btn-outline-warning btn-lg" onClick="send('add_audio_delay', '-0.05')">
+              Delay -
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('cycle_audio')">
+              <span id="nextAudio">Next audio</span>
+            </button>
+            <button type="button" class="btn btn-outline-warning btn-lg" onClick="send('add_audio_delay', '0.05')">
+              Delay +
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
-    <div onClick="send('add_sub_delay', '0.05')" class="button right yellow">
-      <div class="content text-content">
-        Sub delay +
-      </div>
-    </div>
 
-    <div onClick="send('add_audio_delay', '-0.05')" class="button left yellow">
-      <div class="content text-content">
-        Audio delay -
+      <div class="row">
+        <!-- Toggle fullscreen & audio device -->
+        <div class="col-6 col-md-3 mb-3">
+          <button type="button" class="btn btn-outline-primary btn-block btn-lg" onClick="send('fullscreen')"
+            title="Toggle fullscreen (f)">
+            <span id="fullscreenButton">Fullscreen</span>
+          </button>
+        </div>
+        <div class="col-6 col-md-3 mb-3">
+          <button type="button" class="btn btn-outline-primary btn-block btn-lg" onClick="send('cycle_audio_device')">
+            Audio device
+          </button>
+        </div>
+        <!-- Toggle playback speed -->
+        <div class="col mb-3">
+          <div class="btn-group w-100" role="group" aria-label="First group">
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('speed_adjust', '0.9091')"
+              title="Slower playback speed ([)">
+              Slower
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('speed_set')"
+              title="Normal playback speed (Backspace)">
+              Normal
+            </button>
+            <button type="button" class="btn btn-outline-primary btn-lg" onClick="send('speed_adjust', '1.1')"
+              title="Faster playback speed (])">
+              Faster
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
-    <div onClick="send('add_audio_delay', '0.05')" class="button right yellow">
-      <div class="content text-content">
-        Audio delay +
-      </div>
-    </div>
 
-    <div onClick="send('fullscreen')" class="button left gray" title="Toggle fullscreen (f)">
-      <div id="fullscreenButton" class="content text-content">
-        Fullscreen
-      </div>
+      <audio id="audio" src="static/audio/silence.mp3" loop></audio>
     </div>
-    <div onClick="send('cycle_audio_device')" class="button right gray">
-      <div class="content text-content">
-        Audio device
-      </div>
-    </div>
-
-    <audio id="audio" src="static/audio/silence.mp3" loop></audio>
-
   </body>
+  <!-- load bootstrap js -->
+  <script src="static/bootstrap/jquery-3.5.1.slim.min.js"></script>
+  <script src="static/bootstrap/popper.min.js"></script>
+  <script src="static/bootstrap/bootstrap.min.js"></script>
   <script src="webui.js"></script>
+
 </html>

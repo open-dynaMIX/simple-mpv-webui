@@ -45,23 +45,6 @@ function hideOverlays() {
 }
 
 function createPlaylistTable(entry, position, pause, first) {
-  function setActive(set) {
-    if (set === true) {
-      td_left.classList.add('active');
-      td_2.classList.add('active');
-    } else {
-      td_left.classList.remove('active');
-      td_2.classList.remove('active');
-    }
-  }
-
-  function blink() {
-     td_left.classList.add('click');
-     td_2.classList.add('click');
-     setTimeout(function(){ td_left.classList.remove('click');
-     td_2.classList.remove('click');}, 100);
-  }
-
   let title;
   if (entry.title) {
     title = entry.title;
@@ -70,82 +53,66 @@ function createPlaylistTable(entry, position, pause, first) {
     title = filename_array[filename_array.length - 1];
   }
 
-  const table = document.createElement('table');
-  const tr = document.createElement('tr');
-  const td_left = document.createElement('td');
-  const td_2 = document.createElement('td');
-  const td_3 = document.createElement('td')
-  const td_right = document.createElement('td');
-  table.className = 'playlist';
-  tr.className = 'playlist';
-  td_2.className = 'playlist';
-  td_left.className = 'playlist';
-  td_right.className = 'playlist';
-  td_2.innerText = title;
-  if (first === false) {
-    td_3.innerHTML = '<i class="fas fa-arrow-up"></i>';
-    td_3.className = 'playlist';
-  }
-  td_right.innerHTML = '<i class="fas fa-trash"></i>';
-
-  if (entry.hasOwnProperty('playing')) {
-    if (pause) {
-      td_left.innerHTML = '<i class="fas fa-pause"></i>';
-    } else {
-      td_left.innerHTML = '<i class="fas fa-play"></i>';
-    }
-
-    td_left.classList.add('playing');
-    td_left.classList.add('violet');
-    td_2.classList.add('playing');
-    td_2.classList.add('violet');
-      first || td_3.classList.add('violet');
-    td_right.classList.add('violet');
-
-  } else {
-    td_left.classList.add('gray');
-    td_2.classList.add('gray');
-    first || td_3.classList.add('gray');
-    td_right.classList.add('gray');
-
-    td_left.onclick = td_2.onclick = function(arg) {
-        return function() {
-            send("playlist_jump", arg);
-            return false;
-        }
-    }(position);
-
-    td_left.addEventListener("mouseover", function() {setActive(true)});
-    td_left.addEventListener("mouseout", function() {setActive(false)});
-    td_2.addEventListener("mouseover", function() {setActive(true)});
-    td_2.addEventListener("mouseout", function() {setActive(false)});
-
-    td_left.addEventListener("click", blink);
-    td_2.addEventListener("click", blink);
-  }
+  const listWrapper = document.createElement("div");
+  const contentWrapper = document.createElement("div");
+  const iconHolder = document.createElement("div");
+  const titleHolder = document.createElement("div");
+  const actionsHolder = document.createElement("div");
+  const btnPlay = document.createElement("a");
+  const btnDelete = document.createElement("a");
+  listWrapper.classList.add("list-group-item", "list-group-item-action", "text-white");
+  contentWrapper.classList.add("d-flex", "w-100", "justify-content-between", "align-items-center");
+  iconHolder.className = "playlist-icon";
+  titleHolder.classList.add("flex-grow-1", "px-2");
+  titleHolder.innerText = title;
+  actionsHolder.className = "playlist-actions";
+  btnPlay.classList.add("stretched-link");
+  btnDelete.classList.add("btn", "btn-outline-danger", "btn-sm", "position-relative");
+  btnDelete.innerHTML = '<i class="fas fa-trash"></i>';
+  btnDelete.style.zIndex = 3;
 
   if (first === false) {
-    td_3.onclick = function (arg) {
+    const btnMoveUp = document.createElement("a");
+    btnMoveUp.classList.add("btn", "btn-outline-primary", "btn-sm", "mr-2", "position-relative");
+    btnMoveUp.innerHTML = '<i class="fas fa-arrow-up"></i>';
+    btnMoveUp.style.zIndex = 3;
+    btnMoveUp.onclick = function (arg) {
       return function () {
         send("playlist_move_up", arg);
         return false;
       }
     }(position);
+    actionsHolder.appendChild(btnMoveUp);
+  };
+  actionsHolder.appendChild(btnDelete);
+  actionsHolder.appendChild(btnPlay);
+
+  if (entry.hasOwnProperty('playing')) {
+    iconHolder.innerHTML = (pause) ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+    listWrapper.classList.add("list-group-item-dark");
+  } else {
+    listWrapper.classList.add("bg-dark");
   }
 
-  td_right.onclick = function(arg) {
-      return function() {
-          send("playlist_remove", arg);
-          return false;
-      }
+  btnPlay.onclick = function (arg) {
+    return function () {
+      send("playlist_jump", arg);
+      return false;
+    };
   }(position);
 
-  tr.appendChild(td_left);
-  tr.appendChild(td_2);
-  first || tr.appendChild(td_3);
-  tr.appendChild(td_right);
-  table.appendChild(tr);
-  return table;
+  btnDelete.onclick = function (arg) {
+    return function () {
+      send("playlist_remove", arg);
+      return false;
+    };
+  }(position);
+
+  contentWrapper.appendChild(iconHolder);
+  contentWrapper.appendChild(titleHolder);
+  contentWrapper.appendChild(actionsHolder);
+  listWrapper.appendChild(contentWrapper);
+  return listWrapper;
 }
 
 function populatePlaylist(json, pause) {
