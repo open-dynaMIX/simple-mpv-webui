@@ -154,6 +154,38 @@ build script and pre-built binaries.
 
 Thanks to [@chuck-](https://github.com/chuck-) for providing this!
 
+### macOS
+
+#### Install luarocks
+
+```
+brew install luarocks
+```
+
+#### Install luasocket with luarocks
+
+Check lua version of your mpv instance.
+
+```
+mpv -v
+
+...
+--lua=51deb # <- this is your lua version
+...
+```
+
+Proceed to install correct luasocket.
+
+```
+luarocks --lua-dir=/usr/local/opt/lua@5.1 install luasocket
+```
+
+#### Set correct path
+
+```
+eval $(luarocks --lua-dir=/usr/local/opt/lua@5.1 path --bin)
+```
+
 ## Screenshots
 ![webui screenshot](screenshots/webui.png#2)
 
