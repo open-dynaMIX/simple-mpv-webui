@@ -403,6 +403,21 @@ function setMetadata(metadata, playlist, filename) {
   document.getElementById("album").innerHTML = window.metadata.album;
 }
 
+function touchRangeOffset(e) {
+  if (!e.layerX) {
+    document.getElementById("mediaPosition").removeEventListener('touchstart', handleMediaPositionStart, false);
+    document.getElementById("mediaPosition").removeEventListener('touchmove', handleMediaPositionMove, false);
+    document.getElementById("mediaPosition").removeEventListener('touchend', handleMediaPositionEnd, false);
+    document.getElementById("mediaVolume").removeEventListener('touchstart', handleVolumeStart, false);
+    document.getElementById("mediaVolume").removeEventListener('touchmove', handleVolumeMove, false);
+    document.getElementById("mediaVolume").removeEventListener('touchend', handleVolumeEnd, false);
+    return false
+  }
+  e.preventDefault();
+  const slider = e.target;
+  return slider.max * (e.layerX / slider.scrollWidth);
+}
+
 function setPosSlider(position, duration) {
   const slider = document.getElementById("mediaPosition");
   const pos = document.getElementById("position");
@@ -410,6 +425,26 @@ function setPosSlider(position, duration) {
   slider.value = position;
   pos.innerHTML = format_time(slider.value);
 }
+
+function handleMediaPositionStart(e) {
+  const offset = touchRangeOffset(e);
+  setPosSlider(offset, document.getElementById("mediaPosition").max);
+}
+
+function handleMediaPositionMove(e){
+  const offset = touchRangeOffset(e);
+  setPosSlider(offset, document.getElementById("mediaPosition").max);
+}
+
+function handleMediaPositionEnd(e) {
+  const offset = touchRangeOffset(e);
+  setPosSlider(offset, document.getElementById("mediaPosition").max);
+  send("set_position", offset);
+}
+
+document.getElementById("mediaPosition").addEventListener('touchstart', handleMediaPositionStart, false);
+document.getElementById("mediaPosition").addEventListener('touchmove', handleMediaPositionMove, false);
+document.getElementById("mediaPosition").addEventListener('touchend', handleMediaPositionEnd, false);
 
 document.getElementById("mediaPosition").onchange = function() {
   const slider = document.getElementById("mediaPosition");
@@ -435,6 +470,26 @@ function setVolumeSlider(volume, volumeMax) {
   slider.max = volumeMax;
   vol.innerHTML = slider.value + "%";
 }
+
+function handleVolumeStart(e) {
+  const offset = touchRangeOffset(e);
+  setVolumeSlider(offset, document.getElementById("mediaVolume").max);
+}
+
+function handleVolumeMove(e) {
+  const offset = touchRangeOffset(e);
+  setVolumeSlider(offset, document.getElementById("mediaVolume").max);
+}
+
+function handleVolumeEnd(e) {
+  const offset = touchRangeOffset(e);
+  setVolumeSlider(offset, document.getElementById("mediaVolume").max);
+  send("set_volume", offset);
+}
+
+document.getElementById("mediaVolume").addEventListener('touchstart', handleVolumeStart, false);
+document.getElementById("mediaVolume").addEventListener('touchmove', handleVolumeMove, false);
+document.getElementById("mediaVolume").addEventListener('touchend', handleVolumeEnd, false);
 
 document.getElementById("mediaVolume").onchange = function() {
   const slider = document.getElementById("mediaVolume");
