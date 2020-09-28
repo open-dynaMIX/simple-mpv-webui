@@ -12,6 +12,6 @@ pexpect==4.8.0
 pre-commit==2.7.1
 pytest==6.1.0
 pytest-randomly==3.4.1
-python-semantic-release==7.2.5
+python-semantic-release==7.3.0
 requests==2.24.0
 snapshottest==0.5.1
