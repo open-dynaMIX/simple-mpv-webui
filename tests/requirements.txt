@@ -14,4 +14,4 @@ pytest==6.1.0
 pytest-randomly==3.4.1
 python-semantic-release==7.3.0
 requests==2.24.0
-snapshottest==0.5.1
+snapshottest==0.6.0
