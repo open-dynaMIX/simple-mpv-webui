@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.9.0
 
 RUN mkdir -p /app \
 #    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 90BD7EACED8E640A \
