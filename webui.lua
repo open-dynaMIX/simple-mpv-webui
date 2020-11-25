@@ -599,9 +599,16 @@ if passwd ~= 1 then
       server:settimeout(0)
       mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
     end
+
+    -- https://stackoverflow.com/questions/7046291/get-ip-address-in-lua/8979647#8979647
+    local s = socket.udp()
+    s:setpeername("74.125.115.104", 80)
+    local ip, _ = s:getsockname()
+
     startup_msg = ("v" .. VERSION .. "\nServing on "
             .. concatkeys(servers, ':' .. options.port .. ' and ')
             .. ":" .. options.port
+            .. "\nIP " .. ip
     )
     message = function() mp.osd_message(MSG_PREFIX .. startup_msg, 5) end
     mp.msg.info(startup_msg)
