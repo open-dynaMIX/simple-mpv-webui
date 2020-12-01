@@ -8,8 +8,15 @@ local url = require("socket.url")
 local MSG_PREFIX = "[webui] "
 local VERSION = "2.0.0"
 
+function string.starts(String, Start)
+  return string.sub(String,1,string.len(Start))==Start
+end
+
 local function script_path()
-  local str = debug.getinfo(2, "S").source:sub(2)
+  local str = debug.getinfo(2, "S").source
+  if string.starts(str,"@") then
+    str = str:sub(2)
+  end
   return str:match("(.*/)")
 end
 
@@ -429,10 +436,6 @@ local function header(code, content_type, content_length)
   elseif code == 503 then
     return 'HTTP/1.1 503 Service Unavailable'..common
   end
-end
-
-function string.starts(String, Start)
-  return string.sub(String,1,string.len(Start))==Start
 end
 
 local function concatkeys(tab, sep)
