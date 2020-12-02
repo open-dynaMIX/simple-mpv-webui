@@ -602,7 +602,7 @@ if passwd ~= 1 then
 
     -- https://stackoverflow.com/questions/7046291/get-ip-address-in-lua/8979647#8979647
     local s = socket.udp()
-    s:setpeername("74.125.115.104", 80)
+    s:setpeername("91.198.174.192", 80)
     local ip, _ = s:getsockname()
 
     startup_msg = ("v" .. VERSION .. "\nServing on "
