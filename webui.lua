@@ -712,7 +712,7 @@ local function init_servers()
   end
   if options.ipv6 then
     local address = '::0'
-    servers[address] = socket.bind(address, options.port)
+    servers["["..address.."]"] = socket.bind(address, options.port)
   end
   if options.ipv4 then
     local address = '0.0.0.0'
