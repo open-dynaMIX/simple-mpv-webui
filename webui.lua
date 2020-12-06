@@ -438,14 +438,6 @@ local function header(code, content_type, content_length)
   end
 end
 
-local function concatkeys(tab, sep)
-  local inter = {}
-  for key,_ in pairs(tab) do
-    inter[#inter+1] = key
-  end
-  return table.concat(inter, sep)
-end
-
 local function file_exists(file)
   local f = io.open(file, "rb")
   if f then f:close() end
@@ -665,7 +657,7 @@ local function parse_request(connection)
 end
 
 local function listen(server, passwd)
-  local connection = server:accept()
+  local connection = server["server"]:accept()
   if connection == nil then
     return
   end
@@ -704,6 +696,13 @@ local function get_passwd(path)
   end
 end
 
+local function get_ip(udp_method, check_ip)
+  local s = udp_method()
+  s:setpeername(check_ip, 80)
+  local ip, _ = s:getsockname()
+  return ip
+end
+
 local function init_servers()
   local servers = {}
   if not options.ipv4 and not options.ipv6 then
@@ -712,11 +711,15 @@ local function init_servers()
   end
   if options.ipv6 then
     local address = '::0'
-    servers["["..address.."]"] = socket.bind(address, options.port)
+    servers[address] = {server = socket.bind(address, options.port)}
+    local ip = get_ip(socket.udp6, "2620:0:862:ed1a::1")
+    servers[address]["listen"] = "[" .. ip .. "]:" .. options.port
   end
   if options.ipv4 then
     local address = '0.0.0.0'
-    servers[address] = socket.bind(address, options.port)
+    servers[address] = {server = socket.bind(address, options.port)}
+    local ip = get_ip(socket.udp, "91.198.174.192")
+    servers[address]["listen"] = ip .. ":" .. options.port
   end
 
   return servers
@@ -738,14 +741,17 @@ if passwd ~= 1 then
     error_msg = "Error: Couldn't spawn server on port " .. options.port
     message = function() mp.msg.error(error_msg); log_osd(error_msg) end
   else
+    local listen_string = ""
     for _, server in pairs(servers) do
-      server:settimeout(0)
+      server["server"]:settimeout(0)
       mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
+      if listen_string ~= "" then
+        listen_string = listen_string .. "\n"
+      end
+      listen_string = listen_string .. server["listen"]
     end
-    startup_msg = ("v" .. VERSION .. "\nServing on "
-            .. concatkeys(servers, ':' .. options.port .. ' and ')
-            .. ":" .. options.port
-    )
+
+    local startup_msg = ("v" .. VERSION .. "\n" .. listen_string)
     message = function() log_osd(startup_msg) end
     mp.msg.info(startup_msg)
     if passwd  ~= nil then
