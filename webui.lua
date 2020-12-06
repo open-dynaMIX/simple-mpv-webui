@@ -386,6 +386,25 @@ local commands = {
 
   quit = function()
     return pcall(mp.commandv, 'osd-msg', 'quit')
+  end,
+
+  loadfile = function(uri, mode)
+    if uri == nil or type(uri) ~= "string" then
+      return true, false, "No url provided!"
+    end
+    if mode ~= nil and
+            mode ~= "" and
+            mode ~= "replace" and
+            mode ~= "append" and
+            mode ~= "append-play"
+    then
+      print('Invalid mode: "' .. mode .. '"')
+      return true, false, "Invalid mode: '" .. mode .. "'"
+    end
+    if mode == nil or mode == "" then
+      mode = "replace"
+    end
+    return pcall(mp.commandv, "loadfile", uri, mode)
   end
 }
 
@@ -546,6 +565,9 @@ local function handle_post(path)
   local command = components()
   local param1 = components() or ""
   local param2 = components() or ""
+
+  param1 = url.unescape(param1)
+  param2 = url.unescape(param2)
 
   local f = commands[command]
   if f ~= nil then
