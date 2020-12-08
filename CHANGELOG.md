@@ -1,5 +1,20 @@
 # Changelog
 
+## v2.1.0
+### Feature
+* **api:** Expose webui version in /api/status response ([`504bac4`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/504bac4b1069428ff5bcaafba4f2a02f6ca2c265))
+* Add link to repo in ui ([`7a0e3a7`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/7a0e3a77956b6b94eefcdfbb84331eec7cea02a8))
+* **api:** Add `loadfile` endpoint ([`0bfda78`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/0bfda782548132a4748e45172325f2078ad2f6b8))
+* Display local IP addresses the webui is available at ([`a50062b`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/a50062b48f3d7e05b0e415d4437e81526474d2a1)) - thanks to [@rofrol](https://github.com/rofrol)
+* Add macOS dependencies ([`c6661b7`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/c6661b711c8062e915c849509a69435b491ee636)) - thanks to [@agiz](https://github.com/agiz)
+
+### Fix
+* Add brackets around ipv6 address in msgs ([`4aa95b6`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/4aa95b6de2611f24a23ad22cf0ef71248886145c))
+* Handle optional leading "@" in script_path() ([`2410f91`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/2410f91b3ec27bb2612076ecc5ec9eb2ed0793a8))
+* Tap and drag on range to work on safari(iOS) ([`2168933`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/21689336be024c857ee1e0f9fa91911e56ab5ffb))
+* Range not value not showing on safari ([`d76c3d6`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/d76c3d6557b8fc79aa374577fc2965481db044d7)) - thanks to [@oozorataiyou](https://github.com/oozorataiyou)
+* **server:** Handle invalid HTTP requests ([`fbe1cab`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/fbe1cab3ce21bc48f54a16a5836bf338b4e86b5a))
+
 ## v2.0.0
 ### Feature
 * Add subtitle keyboard shortcuts (e91322e2d48ed8f1b9ca0916da1612cc0c548b94, bfd54da2c5ea815700da5a0590443b3f27ccefd4)
