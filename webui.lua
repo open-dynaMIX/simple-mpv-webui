@@ -521,6 +521,7 @@ local function build_status_response()
     speed = mp.get_property_native('speed') or '',
     ["sub-delay"] = mp.get_property_osd("sub-delay") or '',
     ["track-list"] = mp.get_property_native("track-list") or '',
+    ["webui-version"] = VERSION,
     volume = mp.get_property_native("volume") or '',
     ["volume-max"] = mp.get_property_native("volume-max") or ''
   }
