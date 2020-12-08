@@ -5,6 +5,32 @@
 
 A web based user interface with controls for the [mpv mediaplayer](https://mpv.io/).
 
+  * [Usage](#usage)
+    + [Options](#options)
+      - [port (int)](#port--int-)
+      - [ipv4 (bool)](#ipv4--bool-)
+      - [ipv6 (bool)](#ipv6--bool-)
+      - [disable (bool)](#disable--bool-)
+      - [logging (bool)](#logging--bool-)
+      - [osd_logging (bool)](#osd-logging--bool-)
+      - [audio_devices (string)](#audio-devices--string-)
+      - [static_dir](#static-dir)
+      - [htpasswd_path](#htpasswd-path)
+    + [Authentication](#authentication)
+  * [Dependencies](#dependencies)
+    + [Linux](#linux)
+    + [Windows](#windows)
+    + [macOS](#macos)
+  * [Screenshots](#screenshots)
+  * [Key bindings](#key-bindings)
+  * [Media Session API](#media-session-api)
+  * [Endpoints](#endpoints)
+    + [List of endpoints](#list-of-endpoints)
+    + [/api/status](#-api-status)
+  * [Thanks](#thanks)
+  * [Differences to mpv-web-ui](#differences-to-mpv-web-ui)
+  * [Contributing](#contributing)
+
 ## Usage
 To use it, simply copy `webui.lua` and the `webui-page`-folder to `~/.config/mpv/scripts/`, mpv will then run it 
 automatically.
@@ -156,13 +182,11 @@ Thanks to [@chuck-](https://github.com/chuck-) for providing this!
 
 ### macOS
 
-#### Install luarocks
+Install luarocks:
 
 ```
 brew install luarocks
 ```
-
-#### Install luasocket with luarocks
 
 Check lua version of your mpv instance.
 
@@ -174,13 +198,13 @@ mpv -v
 ...
 ```
 
-Proceed to install correct luasocket.
+Proceed to install correct luasocket:
 
 ```
 luarocks --lua-dir=/usr/local/opt/lua@5.1 install luasocket
 ```
 
-#### Set correct path
+Set correct path:
 
 ```
 eval $(luarocks --lua-dir=/usr/local/opt/lua@5.1 path --bin)
@@ -227,7 +251,8 @@ API to provide a notification with some metadata and controls:
 In order to have the notification work properly you need to at least once trigger play from the webui.
 
 ## Endpoints
-You can also directly talk to the endpoints:
+
+### List of endpoints
 
 | URI                                | Method | Parameter                                                                                 | Description                                                               |
 | ---------------------------------- | ------ | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
