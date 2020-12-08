@@ -66,6 +66,7 @@ snapshots["test_status 1"] = {
             "type": "audio",
         }
     ],
+    "webui-version": "2.0.0",
     "volume": 0,
     "volume-max": 130,
 }
