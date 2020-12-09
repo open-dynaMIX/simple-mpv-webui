@@ -269,14 +269,11 @@ class TestsRequests:
         assert get_order(status) == order[:2]
 
     @staticmethod
-    @pytest.mark.parametrize("upper", [True, False])
     @pytest.mark.parametrize(
         "method",
         ["head", "patch", "not_a_valid_http_method"],
     )
-    def test_not_allowed_methods(mpv_instance, method, upper):
-        if upper:
-            method = method.upper()
+    def test_not_allowed_methods(mpv_instance, method):
         resp = requests.request(method, f"{get_uri('api/status')}")
         assert resp.status_code == 405
 
