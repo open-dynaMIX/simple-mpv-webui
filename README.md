@@ -1,6 +1,6 @@
 # simple-mpv-webui
 
-[![Build Status](https://github.com/open-dynaMIX/raiseorlaunch/workflows/Tests/badge.svg)](https://github.com/open-dynaMIX/simple-mpv-webui/actions?query=workflow%3ATests)
+[![Build Status](https://github.com/open-dynaMIX/simple-mpv-webui/workflows/Tests/badge.svg)](https://github.com/open-dynaMIX/simple-mpv-webui/actions?query=workflow%3ATests)
 [![License](https://img.shields.io/badge/license-MIT-green)](https://opensource.org/licenses/MIT)
 
 A web based user interface with controls for the [mpv mediaplayer](https://mpv.io/).
