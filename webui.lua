@@ -437,24 +437,18 @@ local function get_content_type(file_type)
 end
 
 local function header(code, content_type, content_length)
-  local common = '\nAccess-Control-Allow-Origin: *'..
-          '\nContent-Type: '..content_type..
-          '\nContent-Length: '..content_length..
-          '\nServer: simple-mpv-webui'..
-          '\nConnection: close\n\n'
-  if code == 200 then
-    return 'HTTP/1.1 200 OK'..common
-  elseif code == 400 then
-    return 'HTTP/1.1 400 Bad Request'..common
-  elseif code == 401 then
-    return 'HTTP/1.1 401 Unauthorized\nWWW-Authenticate: Basic realm="Simple MPV WebUI"'..common
-  elseif code == 404 then
-    return 'HTTP/1.1 404 Not Found'..common
-  elseif code == 405 then
-    return 'HTTP/1.1 405 Method Not Allowed\nAllow: GET,POST'..common
-  elseif code == 503 then
-    return 'HTTP/1.1 503 Service Unavailable'..common
-  end
+  local status_headers = {
+    [200] = "OK",
+    [400] = "Bad Request",
+    [401] = 'Unauthorized\nWWW-Authenticate: Basic realm="Simple MPV WebUI',
+    [404] = "Not Found",
+    [405] = "Method Not Allowed\nAllow: GET,POST",
+    [503] = "Service Unavailable"
+  }
+
+  return "HTTP/1.1 " .. tostring(code) .. " " .. status_headers[code] ..
+         '\nAccess-Control-Allow-Origin: *\nContent-Type: ' .. content_type ..
+         '\nContent-Length: ' .. content_length .. '\nServer: simple-mpv-webui\nConnection: close\n\n'
 end
 
 local function file_exists(file)
