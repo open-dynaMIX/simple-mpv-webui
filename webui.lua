@@ -627,7 +627,7 @@ local function handle_request(request, passwd)
     request.password = nil
   end
   if request.method == "POST" then
-    return handle_post(request['path'])
+    return handle_post(request.path)
 
   elseif request.method == "GET" then
     if request.path == "api/status" or request.path == "api/status/" then
@@ -674,7 +674,7 @@ local function parse_request(connection)
 end
 
 local function listen(server, passwd)
-  local connection = server["server"]:accept()
+  local connection = server.server:accept()
   if connection == nil then
     return
   end
@@ -730,13 +730,13 @@ local function init_servers()
     local address = '::0'
     servers[address] = {server = socket.bind(address, options.port)}
     local ip = get_ip(socket.udp6, "2620:0:862:ed1a::1")
-    servers[address]["listen"] = "[" .. ip .. "]:" .. options.port
+    servers[address].listen = "[" .. ip .. "]:" .. options.port
   end
   if options.ipv4 then
     local address = '0.0.0.0'
     servers[address] = {server = socket.bind(address, options.port)}
     local ip = get_ip(socket.udp, "91.198.174.192")
-    servers[address]["listen"] = ip .. ":" .. options.port
+    servers[address].listen = ip .. ":" .. options.port
   end
 
   return servers
@@ -760,12 +760,12 @@ if passwd ~= 1 then
   else
     local listen_string = ""
     for _, server in pairs(servers) do
-      server["server"]:settimeout(0)
+      server.server:settimeout(0)
       mp.add_periodic_timer(0.2, function() listen(server, passwd) end)
       if listen_string ~= "" then
         listen_string = listen_string .. "\n"
       end
-      listen_string = listen_string .. server["listen"]
+      listen_string = listen_string .. server.listen
     end
 
     local startup_msg = ("v" .. VERSION .. "\n" .. listen_string)
