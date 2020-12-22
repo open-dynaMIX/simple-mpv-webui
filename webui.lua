@@ -13,11 +13,8 @@ function string.starts(String, Start)
 end
 
 local function script_path()
-  local str = debug.getinfo(2, "S").source
-  if string.starts(str,"@") then
-    str = str:sub(2)
-  end
-  return str:match("(.*/)")
+  -- https://stackoverflow.com/questions/6380820/get-containing-path-of-lua-file/35072122#35072122
+  return debug.getinfo(1).source:match("@?(.*/)")
 end
 
 local options = {
