@@ -355,6 +355,21 @@ function setTrackList(tracklist) {
   document.getElementById("nextAudio").innerText = 'Next audio ' + window.audios.selected + '/' + window.audios.count;
 }
 
+function sanitize(string) {
+  // https://stackoverflow.com/a/48226843
+  const map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#x27;',
+      "/": '&#x2F;',
+      "`": '&grave;',
+  };
+  const reg = /[&<>"'/`]/ig;
+  return string.replace(reg, (match)=>(map[match]));
+}
+
 function setMetadata(metadata, playlist, filename) {
   // try to gather the track number
   let track = '';
@@ -375,25 +390,25 @@ function setMetadata(metadata, playlist, filename) {
   // 3. metadata['TITLE']
   // 4. filename
   if (pl_title) {
-    window.metadata.title = track + pl_title;
+    window.metadata.title = sanitize(track + pl_title);
   } else if (metadata['title']) {
-    window.metadata.title = track + metadata['title'];
+    window.metadata.title = track + sanitize(metadata['title']);
   } else if (metadata['TITLE']) {
-    window.metadata.title = track + metadata['TITLE'];
+    window.metadata.title = track + sanitize(metadata['TITLE']);
   } else {
-    window.metadata.title = track + filename;
+    window.metadata.title = track + sanitize(filename);
   }
 
   // set the artist
   if (metadata['artist']) {
-    window.metadata.artist = metadata['artist'];
+    window.metadata.artist = sanitize(metadata['artist']);
   } else {
     window.metadata.artist = ''
   }
 
   // set the album
   if (metadata['album']) {
-    window.metadata.album = metadata['album'];
+    window.metadata.album = sanitize(metadata['album']);
   } else {
     window.metadata.album = ''
   }
