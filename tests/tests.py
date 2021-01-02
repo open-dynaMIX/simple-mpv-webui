@@ -329,12 +329,27 @@ class TestsRequests:
 
     @staticmethod
     @pytest.mark.parametrize(
-        "method",
-        ["head", "patch", "not_a_valid_http_method"],
+        "endpoint,method,expected",
+        [
+            ("api/status", "head", "GET"),
+            ("api/status", "patch", "GET"),
+            ("api/status", "post", "GET"),
+            ("api/status", "not_a_valid_http_method", "GET"),
+            ("webui.js", "head", "GET"),
+            ("webui.js", "patch", "GET"),
+            ("webui.js", "post", "GET"),
+            ("webui.js", "not_a_valid_http_method", "GET"),
+            ("api/play", "head", "POST"),
+            ("api/play", "patch", "POST"),
+            ("api/play", "get", "POST"),
+            ("api/play", "not_a_valid_http_method", "POST"),
+        ],
     )
-    def test_not_allowed_methods(mpv_instance, method):
-        resp = requests.request(method, f"{get_uri('api/status')}")
+    def test_not_allowed_methods(mpv_instance, endpoint, method, expected):
+        resp = requests.request(method, f"{get_uri(endpoint)}")
         assert resp.status_code == 405
+        assert "Allow" in resp.headers
+        assert resp.headers["Allow"] == expected
 
 
 def test_loadfile(mpv_instance):
