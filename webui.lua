@@ -42,7 +42,7 @@ local function validate_number_param(param)
 end
 
 local function validate_name_param(param)
-  if not string.match(param, '^[a-z0-9/-]+$') then
+  if not string.match(param, '^[a-z0-9_/-]+$') then
     return false, 'Parameter name contains invalid characters'
   else
     return true, nil
