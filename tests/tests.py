@@ -134,6 +134,60 @@ class TestsRequests:
 
     @staticmethod
     @pytest.mark.parametrize(
+        "endpoint,arg,arg2",
+        [
+            ("seek", "g", None),
+            ("seek", None, None),
+            ("add", "&", "foo"),
+            ("add", "foo", "&"),
+            ("cycle", "&", "foo"),
+            ("cycle", "foo", "&"),
+            ("multiply", "&", "23"),
+            ("multiply", "23", "&"),
+            ("multiply", "23", None),
+            ("set", "&", "foo"),
+            ("set", "foo", " "),
+            ("toggle", "&", None),
+            ("toggle", None, None),
+            ("set_position", "&", None),
+            ("set_position", None, None),
+            ("playlist_jump", "&", None),
+            ("playlist_jump", None, None),
+            ("playlist_remove", "&", None),
+            ("playlist_remove", None, None),
+            ("playlist_move", "&", "23"),
+            ("playlist_move", "23", "&"),
+            ("playlist_move", "23", None),
+            ("playlist_move_up", "&", None),
+            ("playlist_move_up", None, None),
+            ("loop_file", "&", None),
+            ("loop_file", None, None),
+            ("loop_playlist", "&", None),
+            ("add_volume", "&", None),
+            ("set_volume", "&", None),
+            ("add_sub_delay", "&", None),
+            ("set_sub_delay", "&", None),
+            ("add_audio_delay", "&", None),
+            ("set_audio_delay", "&", None),
+            ("speed_set", "&", None),
+            ("speed_adjust", "&", None),
+            ("add_chapter", "&", None),
+            ("loadfile", None, None),
+            ("loadfile", "http://foo", "invalid"),
+        ],
+    )
+    def test_post_wrong_args(mpv_instance, snapshot, endpoint, arg, arg2):
+        send(endpoint, arg=arg, arg2=arg2, expect=400)
+        api = f"api/{endpoint}"
+        for a in [arg, arg2]:
+            if a is not None:
+                api += f"/{a}"
+        response = requests.post(get_uri(api))
+        assert response.status_code == 400
+        snapshot.assert_match(response.json())
+
+    @staticmethod
+    @pytest.mark.parametrize(
         "endpoint,arg,position",
         [("seek", "1", 1.008979), ("set_position", "2", 2.0)],
     )

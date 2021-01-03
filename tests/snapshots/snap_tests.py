@@ -6,6 +6,158 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
+snapshots["TestsRequests.test_post_wrong_args[add-&-foo] 1"] = {
+    "message": "Parameter name contains invalid characters"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[add-foo-&] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[add_audio_delay-&-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[add_chapter-&-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[add_sub_delay-&-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[add_volume-&-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[cycle-&-foo] 1"] = {
+    "message": "Parameter name contains invalid characters"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[cycle-foo-&] 1"] = {
+    "message": 'Cycle paramater is not "up" or "down"'
+}
+
+snapshots["TestsRequests.test_post_wrong_args[loadfile-None-None] 1"] = {
+    "message": "No url provided!"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[loadfile-http://foo-invalid] 1"] = {
+    "message": "Invalid mode: 'foo'"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[loop_file-&-None] 1"] = {
+    "message": "Invalid parameter!"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[loop_file-None-None] 1"] = {
+    "message": "Invalid parameter!"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[loop_playlist-&-None] 1"] = {
+    "message": "Invalid parameter!"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[multiply-&-23] 1"] = {
+    "message": "Parameter name contains invalid characters"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[multiply-23-&] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[multiply-23-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[playlist_jump-&-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[playlist_jump-None-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[playlist_move-&-23] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[playlist_move-23-&] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[playlist_move-23-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[playlist_move_up-&-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[playlist_move_up-None-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[playlist_remove-&-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[playlist_remove-None-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[seek-None-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[seek-g-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[set-&-foo] 1"] = {
+    "message": "Parameter name contains invalid characters"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[set-foo- ] 1"] = {
+    "message": "Parameter value contains invalid characters"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[set_audio_delay-&-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[set_position-&-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[set_position-None-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[set_sub_delay-&-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[set_volume-&-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[speed_adjust-&-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[speed_set-&-None] 1"] = {
+    "message": "Parameter needs to be an integer or float"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[toggle-&-None] 1"] = {
+    "message": "Parameter name contains invalid characters"
+}
+
+snapshots["TestsRequests.test_post_wrong_args[toggle-None-None] 1"] = {
+    "message": "Parameter name contains invalid characters"
+}
+
 snapshots["test_status 1"] = {
     "audio-delay": 0,
     "audio-devices": [

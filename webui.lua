@@ -389,7 +389,7 @@ local commands = {
   end,
 
   loadfile = function(uri, mode)
-    if uri == nil or type(uri) ~= "string" then
+    if uri == "" or type(uri) ~= "string" then
       return true, false, "No url provided!"
     end
     if mode ~= nil and
