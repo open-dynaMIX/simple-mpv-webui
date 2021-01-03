@@ -73,6 +73,11 @@ class TestsRequests:
                 "application/xml; charset=UTF-8",
             ),
             (
+                "static/favicons/site.webmanifest",
+                200,
+                "application/manifest+json; charset=UTF-8",
+            ),
+            (
                 "static/fontawesome-free-5.0.2/css/fontawesome-all.min.css",
                 200,
                 "text/css; charset=UTF-8",

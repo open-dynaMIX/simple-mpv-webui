@@ -432,7 +432,7 @@ local function get_content_type(file_type)
   elseif file_type == 'mp3' then
     return 'audio/mpeg'
   elseif file_type == 'webmanifest' then
-    return 'application/manifest+json'
+    return 'application/manifest+json; charset=UTF-8'
   end
 end
 
