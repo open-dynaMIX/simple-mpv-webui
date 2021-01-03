@@ -771,9 +771,11 @@ local function call_endpoint(endpoint, req_method, request)
         allowed = allowed .. "," .. method
       end
     end
-    return allowed
+    return allowed .. ",OPTIONS"
   end
-  if endpoint[req_method] == nil then
+  if req_method == "OPTIONS" then
+    return response(204, "plain", "", {Allow = get_allowed(endpoint)})
+  elseif endpoint[req_method] == nil then
     return response(
             405,
             "plain",
@@ -801,8 +803,10 @@ local function handle_request(request, passwd)
 
   if request.method == "GET" then
     return handle_static_get(request.path)
+  elseif file_exists(options.static_dir .. "/" .. request.path) and request.method == "OPTIONS" then
+    return response(204, "plain", "", {Allow = "GET,OPTIONS"})
   elseif file_exists(options.static_dir .. "/" .. request.path) then
-    return response(405, "plain", "Error: Method not allowed", {Allow = "GET"})
+    return response(405, "plain", "Error: Method not allowed", {Allow = "GET,OPTIONS"})
   end
   return response(404, "plain", "Error: Requested URL /"..request.path.." not found", {})
 end

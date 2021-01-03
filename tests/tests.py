@@ -329,20 +329,35 @@ class TestsRequests:
 
     @staticmethod
     @pytest.mark.parametrize(
+        "endpoint,expected",
+        [
+            ("api/status", "GET,OPTIONS"),
+            ("webui.js", "GET,OPTIONS"),
+            ("api/play", "POST,OPTIONS"),
+        ],
+    )
+    def test_options(mpv_instance, endpoint, expected):
+        resp = requests.options(f"{get_uri(endpoint)}")
+        assert resp.status_code == 204
+        assert "Allow" in resp.headers
+        assert resp.headers["Allow"] == expected
+
+    @staticmethod
+    @pytest.mark.parametrize(
         "endpoint,method,expected",
         [
-            ("api/status", "head", "GET"),
-            ("api/status", "patch", "GET"),
-            ("api/status", "post", "GET"),
-            ("api/status", "not_a_valid_http_method", "GET"),
-            ("webui.js", "head", "GET"),
-            ("webui.js", "patch", "GET"),
-            ("webui.js", "post", "GET"),
-            ("webui.js", "not_a_valid_http_method", "GET"),
-            ("api/play", "head", "POST"),
-            ("api/play", "patch", "POST"),
-            ("api/play", "get", "POST"),
-            ("api/play", "not_a_valid_http_method", "POST"),
+            ("api/status", "head", "GET,OPTIONS"),
+            ("api/status", "patch", "GET,OPTIONS"),
+            ("api/status", "post", "GET,OPTIONS"),
+            ("api/status", "not_a_valid_http_method", "GET,OPTIONS"),
+            ("webui.js", "head", "GET,OPTIONS"),
+            ("webui.js", "patch", "GET,OPTIONS"),
+            ("webui.js", "post", "GET,OPTIONS"),
+            ("webui.js", "not_a_valid_http_method", "GET,OPTIONS"),
+            ("api/play", "head", "POST,OPTIONS"),
+            ("api/play", "patch", "POST,OPTIONS"),
+            ("api/play", "get", "POST,OPTIONS"),
+            ("api/play", "not_a_valid_http_method", "POST,OPTIONS"),
         ],
     )
     def test_not_allowed_methods(mpv_instance, endpoint, method, expected):
