@@ -42,7 +42,7 @@ local function validate_number_param(param)
 end
 
 local function validate_name_param(param)
-  if not string.match(param, '^[a-z0-9/-]+$') then
+  if not string.match(param, '^[a-z0-9_/-]+$') then
     return false, 'Parameter name contains invalid characters'
   else
     return true, nil
@@ -123,290 +123,61 @@ local function get_audio_devices_list()
   return devices_list
 end
 
+local function build_status_response()
+  local values = {
+    ["audio-delay"] = mp.get_property_osd("audio-delay") or '',
+    ["audio-devices"] = get_audio_devices(),
+    chapter = mp.get_property_native("chapter") or 0,
+    ["chapter-list"] = mp.get_property_native("chapter-list") or '',
+    chapters = mp.get_property_native("chapters") or '',
+    duration = mp.get_property_native("duration") or '',
+    filename = mp.get_property('filename') or '',
+    fullscreen = mp.get_property_native("fullscreen"),
+    ["loop-file"] = mp.get_property_native("loop-file"),
+    ["loop-playlist"] = mp.get_property_native("loop-playlist"),
+    metadata = mp.get_property_native("metadata") or '',
+    pause = mp.get_property_native("pause"),
+    playlist = mp.get_property_native("playlist") or '',
+    position = mp.get_property_native("time-pos") or '',
+    remaining = mp.get_property_native("playtime-remaining") or '',
+    speed = mp.get_property_native('speed') or '',
+    ["sub-delay"] = mp.get_property_osd("sub-delay") or '',
+    ["track-list"] = mp.get_property_native("track-list") or '',
+    volume = mp.get_property_native("volume") or '',
+    ["volume-max"] = mp.get_property_native("volume-max") or '',
+    ["webui-version"] = VERSION,
+  }
 
-local commands = {
-  play = function()
-    return pcall(mp.set_property_bool, "pause", false)
-  end,
-
-  pause = function()
-    return pcall(mp.set_property_bool, "pause", true)
-  end,
-
-  toggle_pause = function()
-    local curr = mp.get_property_bool("pause")
-    return pcall(mp.set_property_bool, "pause", not curr)
-  end,
-
-  fullscreen = function()
-    local curr = mp.get_property_bool("fullscreen")
-    return pcall(mp.set_property_bool, "fullscreen", not curr)
-  end,
-
-  seek = function(t)
-    local valid, msg = validate_number_param(t)
-    if not valid then
-      return true, false, msg
+  for _, value in pairs({"fullscreen", "loop-file", "loop-playlist", "pause"}) do
+    if values[value] == nil then
+      values[value] = ''
     end
-    return pcall(mp.commandv, 'osd-msg', "seek", t)
-  end,
-
-  add = function(name, value)
-    local valid, msg = validate_name_param(name)
-    if not valid then
-      return true, false, msg
-    end
-    if value ~= nil and value ~= '' then
-      local valid, msg = validate_number_param(value)
-      if not valid then
-        return true, false, msg
-      end
-      return pcall(mp.commandv, 'osd-msg', 'add', name, value)
-    else
-      return pcall(mp.commandv, 'osd-msg', 'add', name)
-    end
-  end,
-
-  cycle = function(name, value)
-    local valid, msg = validate_name_param(name)
-    if not valid then
-      return true, false, msg
-    end
-    if value ~= nil and value ~= '' then
-      local valid, msg = validate_cycle_param(value)
-      if not valid then
-        return true, false, msg
-      end
-      return pcall(mp.commandv, 'osd-msg', 'cycle', name, value)
-    else
-      return pcall(mp.commandv, 'osd-msg', 'cycle', name)
-    end
-  end,
-
-  multiply = function(name, value)
-    local valid, msg = validate_name_param(name)
-    if not valid then
-      return true, false, msg
-    end
-    local valid, msg = validate_number_param(value)
-    if not valid then
-      return true, false, msg
-    end
-    return pcall(mp.commandv, 'osd-msg', 'multiply', name, value)
-  end,
-
-  set = function(name, value)
-    local valid, msg = validate_name_param(name)
-    if not valid then
-      return true, false, msg
-    end
-    local valid, msg = validate_value_param(value)
-    if not valid then
-      return true, false, msg
-    end
-    return pcall(mp.commandv, 'osd-msg', 'set', name, value)
-  end,
-
-  toggle = function(name)
-    local valid, msg = validate_name_param(name)
-    if not valid then
-      return true, false, msg
-    end
-    local curr = mp.get_property_bool(name)
-    return pcall(mp.set_property_bool, name, not curr)
-  end,
-
-  set_position = function(t)
-    local valid, msg = validate_number_param(t)
-    if not valid then
-      return true, false, msg
-    end
-    return pcall(mp.commandv, 'osd-msg', "seek", t, "absolute")
-  end,
-
-  playlist_prev = function()
-    local position = tonumber(mp.get_property("time-pos") or 0)
-    if position > 1 then
-      return pcall(mp.commandv, 'osd-msg', "seek", -position)
-    else
-      return pcall(mp.commandv, 'osd-msg', "playlist-prev")
-    end
-  end,
-
-  playlist_next = function()
-    return pcall(mp.commandv, 'osd-msg', "playlist-next")
-  end,
-
-  playlist_jump = function(p)
-    local valid, msg = validate_number_param(p)
-    if not valid then
-      return true, false, msg
-    end
-    return pcall(mp.set_property('playlist-pos', p))
-  end,
-
-  playlist_remove = function(p)
-    local valid, msg = validate_number_param(p)
-    if not valid then
-      return true, false, msg
-    end
-    return pcall(mp.commandv('playlist-remove', p))
-  end,
-
-  playlist_move = function(s, t)
-    args = {s, t}
-    for count = 1, 2 do
-      local valid, msg = validate_number_param(args[count])
-      if not valid then
-        return true, false, msg
-      end
-    end
-    return pcall(mp.commandv('playlist-move', s, t))
-  end,
-
-  playlist_move_up = function(p)
-    local valid, msg = validate_number_param(p)
-    if not valid then
-      return true, false, msg
-    end
-    if p - 1 >= 0 then
-      return pcall(mp.commandv('playlist-move', p, p - 1))
-    else
-      return true, true, true
-    end
-  end,
-
-  playlist_shuffle = function()
-    return pcall(mp.commandv('osd-msg', 'playlist-shuffle'))
-  end,
-
-  loop_file = function(mode)
-    local valid, msg = validate_loop_param(mode, {"inf", "no"})
-    if not valid then
-      return true, false, msg
-    end
-    return pcall(mp.set_property('loop-file', mode))
-  end,
-
-  loop_playlist = function(mode)
-    local valid, msg = validate_loop_param(mode, {"inf", "no", "force"})
-    if not valid then
-      return true, false, msg
-    end
-    return pcall(mp.set_property('loop-playlist', mode))
-  end,
-
-  add_volume = function(v)
-    local valid, msg = validate_number_param(v)
-    if not valid then
-      return true, false, msg
-    end
-    return pcall(mp.commandv, 'osd-msg', 'add', 'volume', v)
-  end,
-
-  set_volume = function(v)
-    local valid, msg = validate_number_param(v)
-    if not valid then
-      return true, false, msg
-    end
-    return pcall(mp.commandv, 'osd-msg', 'set', 'volume', v)
-  end,
-
-  add_sub_delay = function(sec)
-    local valid, msg = validate_number_param(sec)
-    if not valid then
-      return true, false, msg
-    end
-    return pcall(mp.commandv, 'osd-msg', 'add', 'sub-delay', sec)
-  end,
-
-  set_sub_delay = function(sec)
-    local valid, msg = validate_number_param(sec)
-    if not valid then
-      return true, false, msg
-    end
-    return pcall(mp.commandv, 'osd-msg', 'set', 'sub-delay', sec)
-  end,
-
-  add_audio_delay = function(sec)
-    local valid, msg = validate_number_param(sec)
-    if not valid then
-      return true, false, msg
-    end
-    return pcall(mp.commandv, 'osd-msg', 'add', 'audio-delay', sec)
-  end,
-
-  set_audio_delay = function(sec)
-    local valid, msg = validate_number_param(sec)
-    if not valid then
-      return true, false, msg
-    end
-    return pcall(mp.commandv, 'osd-msg', 'set', 'audio-delay', sec)
-  end,
-
-  cycle_sub = function()
-    return pcall(mp.commandv, 'osd-msg', "cycle", "sub")
-  end,
-
-  cycle_audio = function()
-    return pcall(mp.commandv, 'osd-msg', "cycle", "audio")
-  end,
-
-  cycle_audio_device = function()
-    local audio_devices_list = get_audio_devices_list()
-    return pcall(mp.commandv, "osd-msg", "cycle_values", "audio-device", unpack(audio_devices_list))
-  end,
-
-  speed_set = function(speed)
-    if speed == '' then
-      speed = '1'
-    end
-    local valid, msg = validate_number_param(speed)
-    if not valid then
-      return true, false, msg
-    end
-    return pcall(mp.commandv, 'osd-msg', 'set', 'speed', speed)
-  end,
-
-  speed_adjust = function(amount)
-    local valid, msg = validate_number_param(amount)
-    if not valid then
-      return true, false, msg
-    end
-    return pcall(mp.commandv, 'osd-msg', 'multiply', 'speed', amount)
-  end,
-
-  add_chapter = function(num)
-    local valid, msg = validate_number_param(num)
-    if not valid then
-      return true, false, msg
-    end
-    return pcall(mp.commandv, 'osd-msg', 'add', 'chapter', num)
-  end,
-
-  quit = function()
-    return pcall(mp.commandv, 'osd-msg', 'quit')
-  end,
-
-  loadfile = function(uri, mode)
-    if uri == nil or type(uri) ~= "string" then
-      return true, false, "No url provided!"
-    end
-    if mode ~= nil and
-            mode ~= "" and
-            mode ~= "replace" and
-            mode ~= "append" and
-            mode ~= "append-play"
-    then
-      print('Invalid mode: "' .. mode .. '"')
-      return true, false, "Invalid mode: '" .. mode .. "'"
-    end
-    if mode == nil or mode == "" then
-      mode = "replace"
-    end
-    return pcall(mp.commandv, "loadfile", uri, mode)
   end
-}
+
+  for _, value in pairs({"audio-delay", "sub-delay"}) do
+    if values[value] ~= nil then
+      values[value] = tonumber(values[value]:sub(1, -4))
+    end
+  end
+
+  -- We need to check if the value is available.
+  -- If the file just started playing, mp-functions return nil for a short time.
+
+  fail = false
+  for k, v in pairs(values) do
+    if v == '' then
+      mp.msg.log("WARN", 'Could not fetch "'.. k .. '" from mpv.')
+      fail = true
+    end
+  end
+
+  if fail then
+      mp.msg.log("WARN", 'This is normal during startup.')
+      return false
+  end
+
+  return utils.format_json(values)
+end
 
 local function get_content_type(file_type)
   if file_type == 'html' then
@@ -432,24 +203,479 @@ local function get_content_type(file_type)
   elseif file_type == 'mp3' then
     return 'audio/mpeg'
   elseif file_type == 'webmanifest' then
-    return 'application/manifest+json'
+    return 'application/manifest+json; charset=UTF-8'
   end
 end
 
-local function header(code, content_type, content_length)
+local function headers(code, content_type, content_length, add_headers)
+  if add_headers == nil then
+    add_headers = {}
+  end
+
+  custom_headers = ""
+  for key,value in pairs(add_headers) do
+    custom_headers = custom_headers .. "\n" .. key .. ": " .. value
+  end
+
   local status_headers = {
     [200] = "OK",
+    [204] = "No Content",
     [400] = "Bad Request",
-    [401] = 'Unauthorized\nWWW-Authenticate: Basic realm="Simple MPV WebUI',
+    [401] = 'Unauthorized\nWWW-Authenticate: Basic realm="Simple MPV WebUI"',
     [404] = "Not Found",
-    [405] = "Method Not Allowed\nAllow: GET,POST",
+    [405] = "Method Not Allowed",
     [503] = "Service Unavailable"
   }
 
   return "HTTP/1.1 " .. tostring(code) .. " " .. status_headers[code] ..
-         '\nAccess-Control-Allow-Origin: *\nContent-Type: ' .. content_type ..
-         '\nContent-Length: ' .. content_length .. '\nServer: simple-mpv-webui\nConnection: close\n\n'
+         "\nAccess-Control-Allow-Origin: *\nContent-Type: " .. content_type ..
+         "\nContent-Length: " .. content_length .. custom_headers .. "\nServer: simple-mpv-webui\nConnection: close\n\n"
 end
+
+local function response(code, file_type, content, add_headers)
+  local content_type = get_content_type(file_type)
+  return {
+    code = code,
+    content_length = #content,
+    content = content,
+    content_type = content_type,
+    add_headers = add_headers,
+    headers = headers(code, content_type, #content, add_headers),
+  }
+end
+
+local function handle_post(success, msg)
+  if success and msg == nil then
+    msg = "success"
+  end
+  response_json = utils.format_json({message = msg})
+  if success then
+    return response(200, 'json', response_json, {})
+  end
+  return response(400, "json", response_json, {})
+end
+
+local endpoints = {
+  ["api/status"] = {
+    GET = function(_)
+      local json = build_status_response()
+      if not json then
+        return response(503, "plain", "Error: Not ready to handle requests.", {})
+      else
+        return response(200, "json", json, {})
+      end
+    end
+  },
+
+  ["api/play"] = {
+    POST = function(_)
+      local _, success, ret = pcall(mp.set_property_bool, "pause", false)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/pause"] = {
+    POST = function(_)
+      local _, success, ret = pcall(mp.set_property_bool, "pause", true)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/toggle_pause"] = {
+    POST = function(_)
+      local curr = mp.get_property_bool("pause")
+      local _, success, ret = pcall(mp.set_property_bool, "pause", not curr)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/fullscreen"] = {
+    POST = function(_)
+      local curr = mp.get_property_bool("fullscreen")
+      local _, success, ret = pcall(mp.set_property_bool, "fullscreen", not curr)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/seek"] = {
+    POST = function(request)
+      local t = request.param1
+      local valid, msg = validate_number_param(t)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', "seek", t)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/add"] = {
+    POST = function(request)
+      local name, value = request.param1, request.param2
+      local valid, msg = validate_name_param(name)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      if value ~= nil and value ~= '' then
+        local valid, msg = validate_number_param(value)
+        if not valid then
+          return response(400, "json", utils.format_json({message = msg}), {})
+        end
+        local _, success, ret = pcall(mp.commandv, 'osd-msg', 'add', name, value)
+        return handle_post(success, ret)
+      else
+        local _, success, ret = pcall(mp.commandv, 'osd-msg', 'add', name)
+        return handle_post(success, ret)
+      end
+    end
+  },
+
+  ["api/cycle"] = {
+    POST = function(request)
+      local name, value = request.param1, request.param2
+      local valid, msg = validate_name_param(name)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      if value ~= nil and value ~= '' then
+        local valid, msg = validate_cycle_param(value)
+        if not valid then
+          return response(400, "json", utils.format_json({message = msg}), {})
+        end
+        local _, success, ret = pcall(mp.commandv, 'osd-msg', 'cycle', name, value)
+        return handle_post(success, ret)
+      else
+        local _, success, ret = pcall(mp.commandv, 'osd-msg', 'cycle', name)
+        return handle_post(success, ret)
+      end
+    end
+  },
+
+  ["api/multiply"] = {
+    POST = function(request)
+      local name, value = request.param1, request.param2
+      local valid, msg = validate_name_param(name)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local valid, msg = validate_number_param(value)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', 'multiply', name, value)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/set"] = {
+    POST = function(request)
+      local name, value = request.param1, request.param2
+      local valid, msg = validate_name_param(name)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local valid, msg = validate_value_param(value)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', 'set', name, value)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/toggle"] = {
+    POST = function(request)
+      local name = request.param1
+      local valid, msg = validate_name_param(name)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local curr = mp.get_property_bool(name)
+      local _, success, ret = pcall(mp.set_property_bool, name, not curr)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/set_position"] = {
+    POST = function(request)
+      local t = request.param1
+      local valid, msg = validate_number_param(t)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', "seek", t, "absolute")
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/playlist_prev"] = {
+    POST = function(_)
+      local position = tonumber(mp.get_property("time-pos") or 0)
+      if position > 1 then
+        local _, success, ret = pcall(mp.commandv, 'osd-msg', "seek", -position)
+        return handle_post(success, ret)
+      else
+        local _, success, ret = pcall(mp.commandv, 'osd-msg', "playlist-prev")
+        return handle_post(success, ret)
+      end
+    end
+  },
+
+  ["api/playlist_next"] = {
+    POST = function(_)
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', "playlist-next")
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/playlist_jump"] = {
+    POST = function(request)
+      local p = request.param1
+      local valid, msg = validate_number_param(p)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.set_property('playlist-pos', p))
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/playlist_remove"] = {
+    POST = function(request)
+      local p = request.param1
+      local valid, msg = validate_number_param(p)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.commandv('playlist-remove', p))
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/playlist_move"] = {
+    POST = function(request)
+      local s, t = request.param1, request.param2
+      args = {s, t}
+      for count = 1, 2 do
+        local valid, msg = validate_number_param(args[count])
+        if not valid then
+          return response(400, "json", utils.format_json({message = msg}), {})
+        end
+      end
+      local _, success, ret = pcall(mp.commandv('playlist-move', s, t))
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/playlist_move_up"] = {
+    POST = function(request)
+      local p = request.param1
+      local valid, msg = validate_number_param(p)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      if p - 1 >= 0 then
+        local _, success, ret = pcall(mp.commandv('playlist-move', p, p - 1))
+        return handle_post(success, ret)
+      else
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+    end
+  },
+
+  ["api/playlist_shuffle"] = {
+    POST = function(_)
+      local _, success, ret = pcall(mp.commandv('osd-msg', 'playlist-shuffle'))
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/loop_file"] = {
+    POST = function(request)
+      local mode = request.param1
+      local valid, msg = validate_loop_param(mode, {"inf", "no"})
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.set_property('loop-file', mode))
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/loop_playlist"] = {
+    POST = function(request)
+      local mode = request.param1
+      local valid, msg = validate_loop_param(mode, {"inf", "no", "force"})
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.set_property('loop-playlist', mode))
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/add_volume"] = {
+    POST = function(request)
+      local v = request.param1
+      local valid, msg = validate_number_param(v)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', 'add', 'volume', v)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/set_volume"] = {
+    POST = function(request)
+      local v = request.param1
+      local valid, msg = validate_number_param(v)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', 'set', 'volume', v)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/add_sub_delay"] = {
+    POST = function(request)
+      local sec = request.param1
+      local valid, msg = validate_number_param(sec)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', 'add', 'sub-delay', sec)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/set_sub_delay"] = {
+    POST = function(request)
+      local sec = request.param1
+      local valid, msg = validate_number_param(sec)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', 'set', 'sub-delay', sec)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/add_audio_delay"] = {
+    POST = function(request)
+      local sec = request.param1
+      local valid, msg = validate_number_param(sec)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', 'add', 'audio-delay', sec)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/set_audio_delay"] = {
+    POST = function(request)
+      local sec = request.param1
+      local valid, msg = validate_number_param(sec)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', 'set', 'audio-delay', sec)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/cycle_sub"] = {
+    POST = function(_)
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', "cycle", "sub")
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/cycle_audio"] = {
+    POST = function(_)
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', "cycle", "audio")
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/cycle_audio_device"] = {
+    POST = function(_)
+      local audio_devices_list = get_audio_devices_list()
+      local _, success, ret = pcall(mp.commandv, "osd-msg", "cycle_values", "audio-device", unpack(audio_devices_list))
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/speed_set"] = {
+    POST = function(request)
+      local speed = request.param1
+      if speed == '' then
+        speed = '1'
+      end
+      local valid, msg = validate_number_param(speed)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', 'set', 'speed', speed)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/speed_adjust"] = {
+    POST = function(request)
+      local amount = request.param1
+      local valid, msg = validate_number_param(amount)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', 'multiply', 'speed', amount)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/add_chapter"] = {
+    POST = function(request)
+      local num = request.param1
+      local valid, msg = validate_number_param(num)
+      if not valid then
+        return response(400, "json", utils.format_json({message = msg}), {})
+      end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', 'add', 'chapter', num)
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/quit"] = {
+    POST = function(_)
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', 'quit')
+      return handle_post(success, ret)
+    end
+  },
+
+  ["api/loadfile"] = {
+    POST = function(request)
+      local uri, mode = request.param1, request.param2
+      if uri == "" or type(uri) ~= "string" then
+        return response(400, "json", utils.format_json({message = "No url provided!"}), {})
+      end
+      if mode ~= nil and
+              mode ~= "" and
+              mode ~= "replace" and
+              mode ~= "append" and
+              mode ~= "append-play"
+      then
+        return response(400, "json", utils.format_json({message = "Invalid mode: '" .. mode .. "'"}), {})
+      end
+      if mode == nil or mode == "" then
+        mode = "replace"
+      end
+      local _, success, ret = pcall(mp.commandv, "loadfile", uri, mode)
+      return handle_post(success, ret)
+    end
+  }
+}
 
 local function file_exists(file)
   local f = io.open(file, "rb")
@@ -495,101 +721,6 @@ local function log_osd(text)
   mp.osd_message(MSG_PREFIX .. text, 5)
 end
 
-local function build_status_response()
-  local values = {
-    ["audio-delay"] = mp.get_property_osd("audio-delay") or '',
-    ["audio-devices"] = get_audio_devices(),
-    chapter = mp.get_property_native("chapter") or 0,
-    chapters = mp.get_property_native("chapters") or '',
-    ["chapter-list"] = mp.get_property_native("chapter-list") or '',
-    duration = mp.get_property_native("duration") or '',
-    filename = mp.get_property('filename') or '',
-    fullscreen = mp.get_property_native("fullscreen"),
-    ["loop-file"] = mp.get_property_native("loop-file"),
-    ["loop-playlist"] = mp.get_property_native("loop-playlist"),
-    metadata = mp.get_property_native("metadata") or '',
-    pause = mp.get_property_native("pause"),
-    playlist = mp.get_property_native("playlist") or '',
-    position = mp.get_property_native("time-pos") or '',
-    remaining = mp.get_property_native("playtime-remaining") or '',
-    speed = mp.get_property_native('speed') or '',
-    ["sub-delay"] = mp.get_property_osd("sub-delay") or '',
-    ["track-list"] = mp.get_property_native("track-list") or '',
-    ["webui-version"] = VERSION,
-    volume = mp.get_property_native("volume") or '',
-    ["volume-max"] = mp.get_property_native("volume-max") or ''
-  }
-
-  for _, value in pairs({"fullscreen", "loop-file", "loop-playlist", "pause"}) do
-    if values[value] == nil then
-      values[value] = ''
-    end
-  end
-
-  for _, value in pairs({"audio-delay", "sub-delay"}) do
-    if values[value] ~= nil then
-      values[value] = tonumber(values[value]:sub(1, -4))
-    end
-  end
-
-  -- We need to check if the value is available.
-  -- If the file just started playing, mp-functions return nil for a short time.
-
-  fail = false
-  for k, v in pairs(values) do
-    if v == '' then
-      mp.msg.log("WARN", 'Could not fetch "'.. k .. '" from mpv.')
-      fail = true
-    end
-  end
-
-  if fail then
-      mp.msg.log("WARN", 'This is normal during startup.')
-      return false
-  end
-
-  return utils.format_json(values)
-end
-
-local function handle_post(path)
-  local components = string.gmatch(path, "[^/]+")
-  local api_prefix = components()
-  if api_prefix ~= 'api' then
-    return 404, get_content_type('plain'), "Error: Requested URL /"..path.." not found"
-  end
-  local command = components()
-  local param1 = components() or ""
-  local param2 = components() or ""
-
-  param1 = url.unescape(param1)
-  param2 = url.unescape(param2)
-
-  local f = commands[command]
-  if f ~= nil then
-    local _, success, ret = f(param1, param2)
-    if success and ret == nil then
-      ret = "success"
-    end
-    response_json = utils.format_json({message = ret})
-    if success then
-      return 200, get_content_type('json'), response_json
-    else
-      return 400, get_content_type('json'), response_json
-    end
-  else
-    return 404, get_content_type('plain'), "Error: Requested URL /"..path.." not found"
-  end
-end
-
-local function handle_status_get()
-  local json = build_status_response()
-  if not json then
-    return 503, get_content_type('plain'), "Error: Not ready to handle requests."
-  else
-    return 200, get_content_type("json"), json
-  end
-end
-
 local function handle_static_get(path)
   if path == "" then
     path = 'index.html'
@@ -597,11 +728,10 @@ local function handle_static_get(path)
 
   local content = read_file(options.static_dir .. "/" .. path)
   local extension = path:match("[^.]+$") or ""
-  local content_type = get_content_type(extension)
-  if content == nil or content_type == nil then
-    return 404, get_content_type('plain'), "Error: Requested URL /"..path.." not found"
+  if content == nil or extension == nil then
+    return response(404, "plain", "Error: Requested URL /"..path.." not found", {})
   else
-    return 200, content_type, content
+    return response(200, extension, content, {})
   end
 end
 
@@ -617,31 +747,81 @@ local function is_authenticated(request, passwd)
   return false
 end
 
+local function parse_path(raw_path)
+  local path_components = string.gmatch(raw_path, "[^/]+")
+  local path = path_components()
+  if path == 'api' then
+    path = path .. "/" .. path_components()
+  end
+  local param1 = path_components() or ""
+  local param2 = path_components() or ""
+
+  param1 = url.unescape(param1)
+  param2 = url.unescape(param2)
+  return path, param1, param2
+end
+
+local function call_endpoint(endpoint, req_method, request)
+  local function get_allowed(ep)
+    local allowed = ""
+    for method in pairs(ep) do
+      if allowed == "" then
+        allowed = method
+      else
+        allowed = allowed .. "," .. method
+      end
+    end
+    return allowed .. ",OPTIONS"
+  end
+  if req_method == "OPTIONS" then
+    return response(204, "plain", "", {Allow = get_allowed(endpoint)})
+  elseif endpoint[req_method] == nil then
+    return response(
+            405,
+            "plain",
+            "Error: Method not allowed",
+            {Allow = get_allowed(endpoint)}
+    )
+  end
+  return endpoint[req_method](request)
+end
+
 local function handle_request(request, passwd)
   if passwd ~= nil then
     if not is_authenticated(request, passwd) then
-      return 401, get_content_type('plain'), "Authentication required."
+      return response(401, "plain", "Authentication required.", {})
     end
   else
     request.user = nil
     request.password = nil
   end
-  if request.method == "POST" then
-    return handle_post(request.path)
 
-  elseif request.method == "GET" then
-    if request.path == "api/status" or request.path == "api/status/" then
-      return handle_status_get()
-    else
-      return handle_static_get(request.path)
-    end
-  else
-    return 405, get_content_type('plain'), "Error: Method not allowed"
+  local endpoint = endpoints[request.path]
+  if endpoint ~= nil then
+    return call_endpoint(endpoint, request.method, request)
   end
+
+  if request.method == "GET" then
+    return handle_static_get(request.path)
+  elseif file_exists(options.static_dir .. "/" .. request.path) and request.method == "OPTIONS" then
+    return response(204, "plain", "", {Allow = "GET,OPTIONS"})
+  elseif file_exists(options.static_dir .. "/" .. request.path) then
+    return response(405, "plain", "Error: Method not allowed", {Allow = "GET,OPTIONS"})
+  end
+  return response(404, "plain", "Error: Requested URL /"..request.path.." not found", {})
+end
+
+local function new_request()
+  return {
+    agent = "",
+    referer = "",
+    user = nil,
+    password = nil,
+  }
 end
 
 local function parse_request(connection)
-  local request = {}
+  local request = new_request()
   request.clientip = connection:getpeername()
   local line = connection:receive()
   if line == nil or line == "" then
@@ -670,6 +850,9 @@ local function parse_request(connection)
     end
     line = connection:receive()
   end
+  if request.method == "POST" then
+    request.path, request.param1, request.param2 = parse_path(request.path)
+  end
   return request
 end
 
@@ -679,9 +862,7 @@ local function listen(server, passwd)
     return
   end
 
-  local code = 400
-  local content_type = get_content_type("plain")
-  local content = "Bad request!"
+  local response = response(400, "plain", "Bad request!", {})
 
   local success, request = pcall(parse_request, connection)
 
@@ -689,13 +870,13 @@ local function listen(server, passwd)
     if request == nil then
       return
     end
-    code, content_type, content = handle_request(request, passwd)
+    response = handle_request(request, passwd)
   end
 
-  connection:send(header(code, content_type, #content))
-  connection:send(content)
+  connection:send(response.headers)
+  connection:send(response.content)
   connection:close()
-  log_line(request, code, #content)
+  log_line(request, response.code, response.content_length)
   return
 end
 

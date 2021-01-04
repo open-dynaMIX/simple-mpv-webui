@@ -73,6 +73,11 @@ class TestsRequests:
                 "application/xml; charset=UTF-8",
             ),
             (
+                "static/favicons/site.webmanifest",
+                200,
+                "application/manifest+json; charset=UTF-8",
+            ),
+            (
                 "static/fontawesome-free-5.0.2/css/fontawesome-all.min.css",
                 200,
                 "text/css; charset=UTF-8",
@@ -131,6 +136,60 @@ class TestsRequests:
             value = status[key] + value
 
         assert send(endpoint, arg=arg, status=key) == value
+
+    @staticmethod
+    @pytest.mark.parametrize(
+        "endpoint,arg,arg2",
+        [
+            ("seek", "g", None),
+            ("seek", None, None),
+            ("add", "&", "foo"),
+            ("add", "foo", "&"),
+            ("cycle", "&", "foo"),
+            ("cycle", "foo", "&"),
+            ("multiply", "&", "23"),
+            ("multiply", "23", "&"),
+            ("multiply", "23", None),
+            ("set", "&", "foo"),
+            ("set", "foo", " "),
+            ("toggle", "&", None),
+            ("toggle", None, None),
+            ("set_position", "&", None),
+            ("set_position", None, None),
+            ("playlist_jump", "&", None),
+            ("playlist_jump", None, None),
+            ("playlist_remove", "&", None),
+            ("playlist_remove", None, None),
+            ("playlist_move", "&", "23"),
+            ("playlist_move", "23", "&"),
+            ("playlist_move", "23", None),
+            ("playlist_move_up", "&", None),
+            ("playlist_move_up", None, None),
+            ("loop_file", "&", None),
+            ("loop_file", None, None),
+            ("loop_playlist", "&", None),
+            ("add_volume", "&", None),
+            ("set_volume", "&", None),
+            ("add_sub_delay", "&", None),
+            ("set_sub_delay", "&", None),
+            ("add_audio_delay", "&", None),
+            ("set_audio_delay", "&", None),
+            ("speed_set", "&", None),
+            ("speed_adjust", "&", None),
+            ("add_chapter", "&", None),
+            ("loadfile", None, None),
+            ("loadfile", "http://foo", "invalid"),
+        ],
+    )
+    def test_post_wrong_args(mpv_instance, snapshot, endpoint, arg, arg2):
+        send(endpoint, arg=arg, arg2=arg2, expect=400)
+        api = f"api/{endpoint}"
+        for a in [arg, arg2]:
+            if a is not None:
+                api += f"/{a}"
+        response = requests.post(get_uri(api))
+        assert response.status_code == 400
+        snapshot.assert_match(response.json())
 
     @staticmethod
     @pytest.mark.parametrize(
@@ -270,12 +329,42 @@ class TestsRequests:
 
     @staticmethod
     @pytest.mark.parametrize(
-        "method",
-        ["head", "patch", "not_a_valid_http_method"],
+        "endpoint,expected",
+        [
+            ("api/status", "GET,OPTIONS"),
+            ("webui.js", "GET,OPTIONS"),
+            ("api/play", "POST,OPTIONS"),
+        ],
     )
-    def test_not_allowed_methods(mpv_instance, method):
-        resp = requests.request(method, f"{get_uri('api/status')}")
+    def test_options(mpv_instance, endpoint, expected):
+        resp = requests.options(f"{get_uri(endpoint)}")
+        assert resp.status_code == 204
+        assert "Allow" in resp.headers
+        assert resp.headers["Allow"] == expected
+
+    @staticmethod
+    @pytest.mark.parametrize(
+        "endpoint,method,expected",
+        [
+            ("api/status", "head", "GET,OPTIONS"),
+            ("api/status", "patch", "GET,OPTIONS"),
+            ("api/status", "post", "GET,OPTIONS"),
+            ("api/status", "not_a_valid_http_method", "GET,OPTIONS"),
+            ("webui.js", "head", "GET,OPTIONS"),
+            ("webui.js", "patch", "GET,OPTIONS"),
+            ("webui.js", "post", "GET,OPTIONS"),
+            ("webui.js", "not_a_valid_http_method", "GET,OPTIONS"),
+            ("api/play", "head", "POST,OPTIONS"),
+            ("api/play", "patch", "POST,OPTIONS"),
+            ("api/play", "get", "POST,OPTIONS"),
+            ("api/play", "not_a_valid_http_method", "POST,OPTIONS"),
+        ],
+    )
+    def test_not_allowed_methods(mpv_instance, endpoint, method, expected):
+        resp = requests.request(method, f"{get_uri(endpoint)}")
         assert resp.status_code == 405
+        assert "Allow" in resp.headers
+        assert resp.headers["Allow"] == expected
 
 
 def test_loadfile(mpv_instance):
