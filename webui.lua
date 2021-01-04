@@ -36,33 +36,29 @@ read_options(options, "webui")
 local function validate_number_param(param)
   if not tonumber(param) then
     return false, 'Parameter needs to be an integer or float'
-  else
-    return true, nil
   end
+  return true, nil
 end
 
 local function validate_name_param(param)
   if not string.match(param, '^[a-z0-9_/-]+$') then
     return false, 'Parameter name contains invalid characters'
-  else
-    return true, nil
   end
+  return true, nil
 end
 
 local function validate_value_param(param)
   if not string.match(param, '^%g+$') then
     return false, 'Parameter value contains invalid characters'
-  else
-    return true, nil
   end
+  return true, nil
 end
 
 local function validate_cycle_param(param)
   if param ~= 'up' and param ~= 'down' then
     return false, 'Cycle paramater is not "up" or "down"'
-  else
-    return true, nil
   end
+  return true, nil
 end
 
 local function validate_loop_param(param, valid_table)
@@ -235,9 +231,8 @@ local endpoints = {
       local json = build_status_response()
       if not json then
         return response(503, "plain", "Error: Not ready to handle requests.", {})
-      else
-        return response(200, "json", json, {})
       end
+      return response(200, "json", json, {})
     end
   },
 
@@ -297,10 +292,9 @@ local endpoints = {
         end
         local _, success, ret = pcall(mp.commandv, 'osd-msg', 'add', name, value)
         return handle_post(success, ret)
-      else
-        local _, success, ret = pcall(mp.commandv, 'osd-msg', 'add', name)
-        return handle_post(success, ret)
       end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', 'add', name)
+      return handle_post(success, ret)
     end
   },
 
@@ -318,10 +312,9 @@ local endpoints = {
         end
         local _, success, ret = pcall(mp.commandv, 'osd-msg', 'cycle', name, value)
         return handle_post(success, ret)
-      else
-        local _, success, ret = pcall(mp.commandv, 'osd-msg', 'cycle', name)
-        return handle_post(success, ret)
       end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', 'cycle', name)
+      return handle_post(success, ret)
     end
   },
 
@@ -388,10 +381,9 @@ local endpoints = {
       if position > 1 then
         local _, success, ret = pcall(mp.commandv, 'osd-msg', "seek", -position)
         return handle_post(success, ret)
-      else
-        local _, success, ret = pcall(mp.commandv, 'osd-msg', "playlist-prev")
-        return handle_post(success, ret)
       end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', "playlist-prev")
+      return handle_post(success, ret)
     end
   },
 
@@ -451,9 +443,8 @@ local endpoints = {
       if p - 1 >= 0 then
         local _, success, ret = pcall(mp.commandv('playlist-move', p, p - 1))
         return handle_post(success, ret)
-      else
-        return response(400, "json", utils.format_json({message = msg}), {})
       end
+      return response(400, "json", utils.format_json({message = msg}), {})
     end
   },
 
@@ -704,9 +695,8 @@ local function handle_static_get(path)
   local extension = path:match("[^.]+$") or ""
   if content == nil or extension == nil then
     return response(404, "plain", "Error: Requested URL /"..path.." not found", {})
-  else
-    return response(200, extension, content, {})
   end
+  return response(200, extension, content, {})
 end
 
 local function is_authenticated(request, passwd)
@@ -859,13 +849,12 @@ local function get_passwd(path)
   if path ~= '' then
     if file_exists(path) then
       return lines_from(path)
-    else
-      msg = "Provided htpasswd_path \"" .. path .. "\" could not be found!"
-      mp.msg.error("Error: " .. msg)
-      message = function() log_osd(msg .. "\nwebui is disabled.") end
-      mp.register_event("file-loaded", message)
-      return 1
     end
+    msg = "Provided htpasswd_path \"" .. path .. "\" could not be found!"
+    mp.msg.error("Error: " .. msg)
+    message = function() log_osd(msg .. "\nwebui is disabled.") end
+    mp.register_event("file-loaded", message)
+    return 1
   end
 end
 
