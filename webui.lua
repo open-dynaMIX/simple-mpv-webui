@@ -79,34 +79,18 @@ local function validate_loop_param(param, valid_table)
 end
 
 local function get_audio_devices()
-  local function add_device(d, active, ad)
-    ad[#ad+1] = {
-          name = d.name,
-          description = d.description,
-          active = d.name == active
-    }
-    return ad
-  end
   local active_device = mp.get_property_native("audio-device")
   local audio_devices = {}
   for _, device in pairs(mp.get_property_native("audio-device-list")) do
-    if options.audio_devices ~= "" then
-      if options.audio_devices == device.name
+    if options.audio_devices == "" or options.audio_devices == device.name
               or string.find(options.audio_devices, " "..device.name, 1, true)
               or string.find(options.audio_devices, device.name.." ", 1, true)
-      then
-        audio_devices = add_device(
-                device,
-                active_device,
-                audio_devices
-        )
-      end
-    else
-      audio_devices = add_device(
-                device,
-                active_device,
-                audio_devices
-        )
+    then
+      audio_devices[#audio_devices+1] = {
+            name = device.name,
+            description = device.description,
+            active = device.name == active_device
+      }
     end
   end
 
