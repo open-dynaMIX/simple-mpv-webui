@@ -168,8 +168,8 @@ snapshots["test_status 1"] = {
         {"active": False, "description": "Default (sndio)", "name": "sndio"},
     ],
     "chapter": 0,
-    "chapters": 0,
     "chapter-list": [],
+    "chapters": 0,
     "duration": 6.024,
     "filename": "01 - dummy.mp3",
     "fullscreen": False,
@@ -218,7 +218,7 @@ snapshots["test_status 1"] = {
             "type": "audio",
         }
     ],
-    "webui-version": "2.1.0",
     "volume": 0,
     "volume-max": 130,
+    "webui-version": "2.1.0",
 }

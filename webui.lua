@@ -128,8 +128,8 @@ local function build_status_response()
     ["audio-delay"] = mp.get_property_osd("audio-delay") or '',
     ["audio-devices"] = get_audio_devices(),
     chapter = mp.get_property_native("chapter") or 0,
-    chapters = mp.get_property_native("chapters") or '',
     ["chapter-list"] = mp.get_property_native("chapter-list") or '',
+    chapters = mp.get_property_native("chapters") or '',
     duration = mp.get_property_native("duration") or '',
     filename = mp.get_property('filename') or '',
     fullscreen = mp.get_property_native("fullscreen"),
@@ -143,9 +143,9 @@ local function build_status_response()
     speed = mp.get_property_native('speed') or '',
     ["sub-delay"] = mp.get_property_osd("sub-delay") or '',
     ["track-list"] = mp.get_property_native("track-list") or '',
-    ["webui-version"] = VERSION,
     volume = mp.get_property_native("volume") or '',
-    ["volume-max"] = mp.get_property_native("volume-max") or ''
+    ["volume-max"] = mp.get_property_native("volume-max") or '',
+    ["webui-version"] = VERSION,
   }
 
   for _, value in pairs({"fullscreen", "loop-file", "loop-playlist", "pause"}) do
