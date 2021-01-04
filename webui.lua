@@ -180,31 +180,21 @@ local function build_status_response()
 end
 
 local function get_content_type(file_type)
-  if file_type == 'html' then
-    return 'text/html; charset=UTF-8'
-  elseif file_type == 'plain' then
-    return 'text/plain; charset=UTF-8'
-  elseif file_type == 'json' then
-    return 'application/json; charset=UTF-8'
-  elseif file_type == 'js' then
-    return 'application/javascript; charset=UTF-8'
-  elseif file_type == 'png' then
-    return 'image/png'
-  elseif file_type == 'ico' then
-    return 'image/x-icon'
-  elseif file_type == 'svg' then
-    return 'image/svg+xml'
-  elseif file_type == 'xml' then
-    return 'application/xml; charset=UTF-8'
-  elseif file_type == 'css' then
-    return 'text/css; charset=UTF-8'
-  elseif file_type == 'woff2' then
-    return 'font/woff2; charset=UTF-8'
-  elseif file_type == 'mp3' then
-    return 'audio/mpeg'
-  elseif file_type == 'webmanifest' then
-    return 'application/manifest+json; charset=UTF-8'
-  end
+  content_types = {
+    html        = "text/html; charset=UTF-8",
+    plain       = "text/plain; charset=UTF-8",
+    json        = "application/json; charset=UTF-8",
+    js          = "application/javascript; charset=UTF-8",
+    png         = "image/png",
+    ico         = "image/x-icon",
+    svg         = "image/svg+xml",
+    xml         = "application/xml; charset=UTF-8",
+    css         = "text/css; charset=UTF-8",
+    woff2       = "font/woff2; charset=UTF-8",
+    mp3         = "audio/mpeg",
+    webmanifest = "application/manifest+json; charset=UTF-8",
+  }
+  return content_types[file_type]
 end
 
 local function headers(code, content_type, content_length, add_headers)
