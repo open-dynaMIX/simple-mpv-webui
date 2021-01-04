@@ -33,36 +33,41 @@ local options = {
 }
 read_options(options, "webui")
 
+local function table_key_concat(tab, sep)
+  local ctab, n = {}, 1
+  for k, _ in pairs(tab) do
+    ctab[n] = k
+    n = n + 1
+  end
+  return table.concat(ctab, sep)
+end
+
 local function validate_number_param(param)
   if not tonumber(param) then
     return false, 'Parameter needs to be an integer or float'
-  else
-    return true, nil
   end
+  return true, nil
 end
 
 local function validate_name_param(param)
   if not string.match(param, '^[a-z0-9_/-]+$') then
     return false, 'Parameter name contains invalid characters'
-  else
-    return true, nil
   end
+  return true, nil
 end
 
 local function validate_value_param(param)
   if not string.match(param, '^%g+$') then
     return false, 'Parameter value contains invalid characters'
-  else
-    return true, nil
   end
+  return true, nil
 end
 
 local function validate_cycle_param(param)
   if param ~= 'up' and param ~= 'down' then
     return false, 'Cycle paramater is not "up" or "down"'
-  else
-    return true, nil
   end
+  return true, nil
 end
 
 local function validate_loop_param(param, valid_table)
@@ -79,34 +84,18 @@ local function validate_loop_param(param, valid_table)
 end
 
 local function get_audio_devices()
-  local function add_device(d, active, ad)
-    ad[#ad+1] = {
-          name = d.name,
-          description = d.description,
-          active = d.name == active
-    }
-    return ad
-  end
   local active_device = mp.get_property_native("audio-device")
   local audio_devices = {}
   for _, device in pairs(mp.get_property_native("audio-device-list")) do
-    if options.audio_devices ~= "" then
-      if options.audio_devices == device.name
+    if options.audio_devices == "" or options.audio_devices == device.name
               or string.find(options.audio_devices, " "..device.name, 1, true)
               or string.find(options.audio_devices, device.name.." ", 1, true)
-      then
-        audio_devices = add_device(
-                device,
-                active_device,
-                audio_devices
-        )
-      end
-    else
-      audio_devices = add_device(
-                device,
-                active_device,
-                audio_devices
-        )
+    then
+      audio_devices[#audio_devices+1] = {
+            name = device.name,
+            description = device.description,
+            active = device.name == active_device
+      }
     end
   end
 
@@ -180,31 +169,21 @@ local function build_status_response()
 end
 
 local function get_content_type(file_type)
-  if file_type == 'html' then
-    return 'text/html; charset=UTF-8'
-  elseif file_type == 'plain' then
-    return 'text/plain; charset=UTF-8'
-  elseif file_type == 'json' then
-    return 'application/json; charset=UTF-8'
-  elseif file_type == 'js' then
-    return 'application/javascript; charset=UTF-8'
-  elseif file_type == 'png' then
-    return 'image/png'
-  elseif file_type == 'ico' then
-    return 'image/x-icon'
-  elseif file_type == 'svg' then
-    return 'image/svg+xml'
-  elseif file_type == 'xml' then
-    return 'application/xml; charset=UTF-8'
-  elseif file_type == 'css' then
-    return 'text/css; charset=UTF-8'
-  elseif file_type == 'woff2' then
-    return 'font/woff2; charset=UTF-8'
-  elseif file_type == 'mp3' then
-    return 'audio/mpeg'
-  elseif file_type == 'webmanifest' then
-    return 'application/manifest+json; charset=UTF-8'
-  end
+  content_types = {
+    html        = "text/html; charset=UTF-8",
+    plain       = "text/plain; charset=UTF-8",
+    json        = "application/json; charset=UTF-8",
+    js          = "application/javascript; charset=UTF-8",
+    png         = "image/png",
+    ico         = "image/x-icon",
+    svg         = "image/svg+xml",
+    xml         = "application/xml; charset=UTF-8",
+    css         = "text/css; charset=UTF-8",
+    woff2       = "font/woff2; charset=UTF-8",
+    mp3         = "audio/mpeg",
+    webmanifest = "application/manifest+json; charset=UTF-8",
+  }
+  return content_types[file_type]
 end
 
 local function headers(code, content_type, content_length, add_headers)
@@ -261,9 +240,8 @@ local endpoints = {
       local json = build_status_response()
       if not json then
         return response(503, "plain", "Error: Not ready to handle requests.", {})
-      else
-        return response(200, "json", json, {})
       end
+      return response(200, "json", json, {})
     end
   },
 
@@ -323,10 +301,9 @@ local endpoints = {
         end
         local _, success, ret = pcall(mp.commandv, 'osd-msg', 'add', name, value)
         return handle_post(success, ret)
-      else
-        local _, success, ret = pcall(mp.commandv, 'osd-msg', 'add', name)
-        return handle_post(success, ret)
       end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', 'add', name)
+      return handle_post(success, ret)
     end
   },
 
@@ -344,10 +321,9 @@ local endpoints = {
         end
         local _, success, ret = pcall(mp.commandv, 'osd-msg', 'cycle', name, value)
         return handle_post(success, ret)
-      else
-        local _, success, ret = pcall(mp.commandv, 'osd-msg', 'cycle', name)
-        return handle_post(success, ret)
       end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', 'cycle', name)
+      return handle_post(success, ret)
     end
   },
 
@@ -414,10 +390,9 @@ local endpoints = {
       if position > 1 then
         local _, success, ret = pcall(mp.commandv, 'osd-msg', "seek", -position)
         return handle_post(success, ret)
-      else
-        local _, success, ret = pcall(mp.commandv, 'osd-msg', "playlist-prev")
-        return handle_post(success, ret)
       end
+      local _, success, ret = pcall(mp.commandv, 'osd-msg', "playlist-prev")
+      return handle_post(success, ret)
     end
   },
 
@@ -477,9 +452,8 @@ local endpoints = {
       if p - 1 >= 0 then
         local _, success, ret = pcall(mp.commandv('playlist-move', p, p - 1))
         return handle_post(success, ret)
-      else
-        return response(400, "json", utils.format_json({message = msg}), {})
       end
+      return response(400, "json", utils.format_json({message = msg}), {})
     end
   },
 
@@ -722,7 +696,7 @@ local function log_osd(text)
 end
 
 local function handle_static_get(path)
-  if path == "" then
+  if path == "/" then
     path = 'index.html'
   end
 
@@ -730,9 +704,8 @@ local function handle_static_get(path)
   local extension = path:match("[^.]+$") or ""
   if content == nil or extension == nil then
     return response(404, "plain", "Error: Requested URL /"..path.." not found", {})
-  else
-    return response(200, extension, content, {})
   end
+  return response(200, extension, content, {})
 end
 
 local function is_authenticated(request, passwd)
@@ -762,25 +735,14 @@ local function parse_path(raw_path)
 end
 
 local function call_endpoint(endpoint, req_method, request)
-  local function get_allowed(ep)
-    local allowed = ""
-    for method in pairs(ep) do
-      if allowed == "" then
-        allowed = method
-      else
-        allowed = allowed .. "," .. method
-      end
-    end
-    return allowed .. ",OPTIONS"
-  end
   if req_method == "OPTIONS" then
-    return response(204, "plain", "", {Allow = get_allowed(endpoint)})
+    return response(204, "plain", "", {Allow = table_key_concat(endpoint, ",") .. ",OPTIONS"})
   elseif endpoint[req_method] == nil then
     return response(
             405,
             "plain",
             "Error: Method not allowed",
-            {Allow = get_allowed(endpoint)}
+            {Allow = table_key_concat(endpoint, ",") .. ",OPTIONS"}
     )
   end
   return endpoint[req_method](request)
@@ -832,9 +794,10 @@ local function parse_request(connection)
       local raw_request = string.gmatch(line, "%S+")
       request.request = line
       request.method = raw_request()
-      request.path = ""
+      request.path = "/"
       raw_path = string.sub(raw_request(), 2)
       if raw_path ~= "" then
+        raw_path = raw_path:gsub("/+","/")
         request = url.parse(raw_path, request)
       end
     end
@@ -884,13 +847,12 @@ local function get_passwd(path)
   if path ~= '' then
     if file_exists(path) then
       return lines_from(path)
-    else
-      msg = "Provided htpasswd_path \"" .. path .. "\" could not be found!"
-      mp.msg.error("Error: " .. msg)
-      message = function() log_osd(msg .. "\nwebui is disabled.") end
-      mp.register_event("file-loaded", message)
-      return 1
     end
+    msg = "Provided htpasswd_path \"" .. path .. "\" could not be found!"
+    mp.msg.error("Error: " .. msg)
+    message = function() log_osd(msg .. "\nwebui is disabled.") end
+    mp.register_event("file-loaded", message)
+    return 1
   end
 end
 

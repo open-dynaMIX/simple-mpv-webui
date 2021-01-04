@@ -88,6 +88,11 @@ class TestsRequests:
                 200,
                 "font/woff2; charset=UTF-8",
             ),
+            (
+                "static///fontawesome-free-5.0.2/webfonts//////fa-solid-900.woff2",
+                200,
+                "font/woff2; charset=UTF-8",
+            ),
             ("nothing_here", 404, None),
         ],
     )
@@ -104,6 +109,21 @@ class TestsRequests:
             "Server": "simple-mpv-webui",
             "Connection": "close",
         }
+
+    @staticmethod
+    @pytest.mark.parametrize("uri", ["", "/", "//", "///"])
+    def test_index(mpv_instance, uri):
+        resp = requests.get(get_uri(uri))
+        assert resp.status_code == 200
+
+        resp.headers.pop("Content-Length")
+        assert dict(resp.headers) == {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "text/html; charset=UTF-8",
+            "Server": "simple-mpv-webui",
+            "Connection": "close",
+        }
+        assert b"<title>simple-mpv-webui</title>" in resp.content
 
     @staticmethod
     @pytest.mark.parametrize(
