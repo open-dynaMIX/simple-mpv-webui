@@ -712,7 +712,7 @@ local function log_osd(text)
 end
 
 local function handle_static_get(path)
-  if path == "" then
+  if path == "/" then
     path = 'index.html'
   end
 
@@ -822,9 +822,10 @@ local function parse_request(connection)
       local raw_request = string.gmatch(line, "%S+")
       request.request = line
       request.method = raw_request()
-      request.path = ""
+      request.path = "/"
       raw_path = string.sub(raw_request(), 2)
       if raw_path ~= "" then
+        raw_path = raw_path:gsub("/+","/")
         request = url.parse(raw_path, request)
       end
     end
