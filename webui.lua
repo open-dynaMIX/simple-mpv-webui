@@ -33,6 +33,15 @@ local options = {
 }
 read_options(options, "webui")
 
+local function table_key_concat(tab, sep)
+  local ctab, n = {}, 1
+  for k, _ in pairs(tab) do
+    ctab[n] = k
+    n = n + 1
+  end
+  return table.concat(ctab, sep)
+end
+
 local function validate_number_param(param)
   if not tonumber(param) then
     return false, 'Parameter needs to be an integer or float'
@@ -726,25 +735,14 @@ local function parse_path(raw_path)
 end
 
 local function call_endpoint(endpoint, req_method, request)
-  local function get_allowed(ep)
-    local allowed = ""
-    for method in pairs(ep) do
-      if allowed == "" then
-        allowed = method
-      else
-        allowed = allowed .. "," .. method
-      end
-    end
-    return allowed .. ",OPTIONS"
-  end
   if req_method == "OPTIONS" then
-    return response(204, "plain", "", {Allow = get_allowed(endpoint)})
+    return response(204, "plain", "", {Allow = table_key_concat(endpoint, ",") .. ",OPTIONS"})
   elseif endpoint[req_method] == nil then
     return response(
             405,
             "plain",
             "Error: Method not allowed",
-            {Allow = get_allowed(endpoint)}
+            {Allow = table_key_concat(endpoint, ",") .. ",OPTIONS"}
     )
   end
   return endpoint[req_method](request)
