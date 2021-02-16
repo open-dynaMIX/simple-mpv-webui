@@ -3,10 +3,22 @@ let DEBUG = false;
     metadata = {};
     subs = {};
     audios = {};
+    settings = {"disableNotifications": false}
+
+window.onload = function() {
+  if (document.cookie.split('; ').find(row => row.startsWith('disableNotifications'))) {
+    settings.disableNotifications = true;
+    document.getElementById("disableNotifications").checked = true;
+  }
+}
+
+function useNotifications() {
+  return 'mediaSession' in navigator && !settings.disableNotifications;
+}
 
 function send(command, ...args) {
   DEBUG && console.log(`Sending command: ${command} params: ${args}`);
-  if ('mediaSession' in navigator) {
+  if (useNotifications()) {
     audioLoad();
   }
   const path = ['api', command, ...args].join('/');
@@ -34,6 +46,7 @@ function hideOverlay(id) {
 function hideOverlays() {
   hideOverlay('playlist-overlay');
   hideOverlay('shortcuts-overlay');
+  hideOverlay('settings-overlay');
 }
 
 function createPlaylistTable(entry, position, pause, first) {
@@ -518,7 +531,7 @@ document.getElementById("mediaVolume").oninput = function() {
 function setPlayPause(value) {
   const playPause = document.getElementsByClassName('playPauseButton');
 
-  if ('mediaSession' in navigator) {
+  if (useNotifications()) {
     navigator.mediaSession.playbackState = value ? 'paused' : 'playing';
   }
 
@@ -527,14 +540,14 @@ function setPlayPause(value) {
     [].slice.call(playPause).forEach(function (div) {
       div.innerHTML = '<i class="fas fa-play"></i>';
     });
-    if ('mediaSession' in navigator) {
+    if (useNotifications()) {
       audioPause();
     }
   } else {
     [].slice.call(playPause).forEach(function (div) {
       div.innerHTML = '<i class="fas fa-pause"></i>';
     });
-    if ('mediaSession' in navigator) {
+    if (useNotifications()) {
       audioPlay();
     }
   }
@@ -656,6 +669,23 @@ function status(){
   request.send(null);
 }
 
+document.getElementById("disableNotifications").onchange = function() {
+  const disableNotifications = document.getElementById("disableNotifications").checked;
+  settings.disableNotifications = disableNotifications;
+  let cookie = "disableNotifications= ; expires = Thu, 23 May 2014 20:00:00 UTC";
+  if (disableNotifications) {
+    cookie = "disableNotifications=true ; expires = Thu, 23 May 2200 20:00:00 UTC";
+  }
+  document.cookie = cookie;
+  const audio = document.getElementById("audio");
+  audio.src = "static/audio/silence.mp3";
+  if (disableNotifications) {
+    audio.src = "";
+  } else {
+    audioLoad()
+  }
+};
+
 function audioLoad() {
   if (!window.loaded) {
     DEBUG && console.log('Loading dummy audio');
@@ -682,7 +712,7 @@ function audioPause() {
 }
 
 function setupNotification({duration, speed, position}) {
-  if ('mediaSession' in navigator) {
+  if (useNotifications()) {
     if (navigator.mediaSession.setPositionState) {
       navigator.mediaSession.setPositionState({
         duration: duration,

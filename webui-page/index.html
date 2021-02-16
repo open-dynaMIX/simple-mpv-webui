@@ -56,8 +56,8 @@
     </div>
 
     <div id="shortcuts-overlay" class="overlay">
-      <div onClick="toggleOverlay('shortcuts-overlay')" class="button violet content icon-content overlay-top">
-        <i class="fas fa-times-circle"></i>
+      <div onClick="toggleOverlay('shortcuts-overlay')" class="overlay-top">
+        <i class="far fa-times-circle"></i>
       </div>
       <table id="shortcuts-table">
         <tr>
@@ -67,11 +67,28 @@
       </table>
     </div>
 
+    <div id="settings-overlay" class="overlay">
+      <div onClick="toggleOverlay('settings-overlay')" class="overlay-top">
+        <i class="far fa-times-circle"></i>
+      </div>
+      <h4>Settings</h4>
+      <table id="settings-table">
+        <tr>
+          <td>
+            <input class="tgl tgl-light" type="checkbox" value="1" id="disableNotifications" name="disableNotifications"/>
+            <label class="tgl-btn" for="disableNotifications"></label>
+          </td>
+          <td>Disable usage of MediaSession API (notifications)</td>
+        </tr>
+      </table>
+      <a class="repo-link" href="https://github.com/open-dynaMIX/simple-mpv-webui" target="_blank" title="simple-mpv-webui on GitHub"><i class="fab fa-github"></i></a>
+    </div>
+
     <div class="burger">
       <a href="#" onClick="toggleOverlay('playlist-overlay'); return false;" title="Show playlist"><i class="fas fa-list-ul"></i></a>
     </div>
     <div class="info">
-      <a href="https://github.com/open-dynaMIX/simple-mpv-webui" target="_blank" title="simple-mpv-webui on GitHub"><i class="fas fa-info"></i></a>
+      <a href="#" onClick="toggleOverlay('settings-overlay'); return false;" title="Show settings"><i class="fas fa-cogs"></i></a>
     </div>
     <h1 id="title">Title</h1>
     <h2 id="artist">Artist</h2>

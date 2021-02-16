@@ -24,6 +24,7 @@ A web based user interface with controls for the [mpv mediaplayer](https://mpv.i
   * [Screenshots](#screenshots)
   * [Key bindings](#key-bindings)
   * [Media Session API](#media-session-api)
+    + [Playing other audio while using the webui on Android](#playing-other-audio-while-using-the-webui-on-android)
   * [Endpoints](#endpoints)
     + [List of endpoints](#list-of-endpoints)
     + [/api/status](#-api-status)
@@ -249,6 +250,14 @@ API to provide a notification with some metadata and controls:
 ![notification screenshot](screenshots/notification.png#1)
 
 In order to have the notification work properly you need to at least once trigger play from the webui.
+
+### Playing other audio while using the webui on Android
+For the notification to work, the webui plays a silent audio file in a loop. This is
+necessary in order for Chrome on Android to create such notification
+([see](https://developers.google.com/web/updates/2017/02/media-session#implementation_notes)).
+As soon as this silent mp3 is played, audio from other apps is paused automatically by Android.
+The only way to prevent this from happening is to disable the notifications, which is
+possible in the settings of the webui (client).
 
 ## Endpoints
 
