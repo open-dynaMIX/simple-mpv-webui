@@ -46,7 +46,7 @@
               </div>
           </td>
           <td>
-              <div onClick="togglePlaylist()" class="button violet content icon-content playlist-controls">
+              <div onClick="toggleOverlay('playlist-overlay')" class="button violet content icon-content playlist-controls">
                 <i class="fas fa-times-circle"></i>
               </div>
           </td>
@@ -56,7 +56,7 @@
     </div>
 
     <div id="shortcuts-overlay" class="overlay">
-      <div onClick="toggleShortcutsOverlay()" class="button violet content icon-content">
+      <div onClick="toggleOverlay('shortcuts-overlay')" class="button violet content icon-content overlay-top">
         <i class="fas fa-times-circle"></i>
       </div>
       <table id="shortcuts-table">
@@ -68,7 +68,7 @@
     </div>
 
     <div class="burger">
-      <a href="#" onClick="togglePlaylist(); return false;" title="Show playlist"><i class="fas fa-list-ul"></i></a>
+      <a href="#" onClick="toggleOverlay('playlist-overlay'); return false;" title="Show playlist"><i class="fas fa-list-ul"></i></a>
     </div>
     <div class="info">
       <a href="https://github.com/open-dynaMIX/simple-mpv-webui" target="_blank" title="simple-mpv-webui on GitHub"><i class="fas fa-info"></i></a>

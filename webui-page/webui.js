@@ -31,14 +31,6 @@ function hideOverlay(id) {
     toggleOverlay(id);
 }
 
-function togglePlaylist() {
-  toggleOverlay('playlist-overlay');
-}
-
-function toggleShortcutsOverlay() {
-  toggleOverlay('shortcuts-overlay');
-}
-
 function hideOverlays() {
   hideOverlay('playlist-overlay');
   hideOverlay('shortcuts-overlay');
@@ -172,7 +164,7 @@ const keyboardBindings = [
     "help": "toggle keyboard shortcuts overlay",
     "key": "?",
     "code": 191,
-    "command": toggleShortcutsOverlay,
+    "command": () => toggleOverlay("shortcuts-overlay"),
   },
   {
     "help": "Play/Pause",

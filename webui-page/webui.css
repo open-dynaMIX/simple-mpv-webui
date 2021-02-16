@@ -401,3 +401,7 @@ table#shortcuts-table tr:first-child td {
   font-weight: bold;
   border-bottom: 3px solid var(--main-fg-color);
 }
+
+.overlay-top {
+  margin-top: 8px;
+}
