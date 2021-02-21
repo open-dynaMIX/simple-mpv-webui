@@ -180,7 +180,11 @@ local function get_content_type(file_type)
     mp3         = "audio/mpeg",
     webmanifest = "application/manifest+json; charset=UTF-8",
   }
-  return content_types[file_type]
+  content_type = content_types[file_type]
+  if content_type == nil then
+    error('Content type for file type "'..file_type..'" not found!')
+  end
+  return content_type
 end
 
 local function headers(code, content_type, content_length, add_headers)
