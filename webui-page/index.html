@@ -55,21 +55,12 @@
       <div id="playlist"></div>
     </div>
 
-    <div id="shortcuts-overlay" class="overlay">
-      <div onClick="toggleOverlay('shortcuts-overlay')" class="overlay-top">
-        <i class="far fa-times-circle"></i>
-      </div>
-      <table id="shortcuts-table">
-        <tr>
-          <td><b class="fas fa-keyboard"></b></td>
-          <td>Action</td>
-        </tr>
-      </table>
-    </div>
-
     <div id="settings-overlay" class="overlay">
       <div onClick="toggleOverlay('settings-overlay')" class="overlay-top">
         <i class="far fa-times-circle"></i>
+      </div>
+      <div onClick="toggleOverlay('shortcuts-overlay')" class="overlay-top keyboard-button">
+        <i class="far fa-keyboard"></i>
       </div>
       <h4>Settings</h4>
       <table id="settings-table">
@@ -82,6 +73,18 @@
         </tr>
       </table>
       <a class="repo-link" href="https://github.com/open-dynaMIX/simple-mpv-webui" target="_blank" title="simple-mpv-webui on GitHub"><i class="fab fa-github"></i></a>
+    </div>
+
+    <div id="shortcuts-overlay" class="overlay">
+      <div onClick="toggleOverlay('shortcuts-overlay')" class="overlay-top">
+        <i class="far fa-times-circle"></i>
+      </div>
+      <table id="shortcuts-table">
+        <tr>
+          <td><b class="fas fa-keyboard"></b></td>
+          <td>Action</td>
+        </tr>
+      </table>
     </div>
 
     <div class="burger">

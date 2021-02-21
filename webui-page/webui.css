@@ -42,6 +42,7 @@ h3 {
 h4 {
   font-size: 7vmin;
   margin-top: 30px;
+  clear: right;
 }
 
 .burger {
@@ -64,6 +65,10 @@ h4 {
 
 .overlay-top a {
   color: var(--main-fg-color);
+}
+
+.keyboard-button {
+  margin: 30px 30px 0 0;
 }
 
 .info {
