@@ -78,13 +78,13 @@ class TestsRequests:
                 "application/manifest+json; charset=UTF-8",
             ),
             (
-                "static/fontawesome-free-5.0.2/css/fontawesome-all.min.css",
+                "static/fontawesome-free/css/all.min.css",
                 200,
                 "text/css; charset=UTF-8",
             ),
             ("static/audio/silence.mp3", 200, "audio/mpeg"),
             (
-                "static/fontawesome-free-5.0.2/webfonts/fa-solid-900.woff2",
+                "static/fontawesome-free/webfonts/fa-solid-900.woff2",
                 200,
                 "font/woff2; charset=UTF-8",
             ),
