@@ -7,7 +7,7 @@ flake8-string-format==0.3.0
 flake8-tuple==0.4.1
 gitlint==0.15.1
 ipython==7.24.1
-isort==5.8.0
+isort==5.9.0
 pexpect==4.8.0
 pre-commit==2.13.0
 pytest==6.2.4
