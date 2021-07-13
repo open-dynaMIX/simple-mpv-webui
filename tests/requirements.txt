@@ -13,5 +13,5 @@ pre-commit==2.13.0
 pytest==6.2.4
 pytest-randomly==3.8.0
 python-semantic-release==7.16.2
-requests==2.25.1
+requests==2.26.0
 snapshottest==0.6.0
