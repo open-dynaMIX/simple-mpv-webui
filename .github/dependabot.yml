@@ -1,0 +1,18 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/tests"
+  schedule:
+    interval: daily
+    time: "11:00"
+  commit-message:
+    prefix: chore
+    include: scope
+- package-ecosystem: docker
+  directory: "/tests"
+  schedule:
+    interval: daily
+    time: "11:00"
+  commit-message:
+    prefix: chore
+    include: scope
