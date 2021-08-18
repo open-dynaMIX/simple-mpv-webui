@@ -27,6 +27,7 @@ local options = {
   audio_devices = '',
   static_dir = script_path() .. "webui-page",
   htpasswd_path = "",
+  collections = "",
 }
 read_options(options, "webui")
 
@@ -660,13 +661,91 @@ local endpoints = {
       local _, success, ret = pcall(mp.commandv, "loadfile", uri, mode)
       return handle_post(success, ret)
     end
+  },
+  ["api/collections"] = {
+    GET = function(request)
+      local fs_path = request.params[1] or ""
+
+      if string.find(fs_path, "%/%.%.") then
+        return response(404, "plain", "Error: Requested URL /"..request.raw_path.." not found", {})
+      end
+
+      if fs_path == "" then
+        local json = {}
+        for _,collection in ipairs(options.collections) do
+          table.insert(json, {path = collection, ["is-directory"] = true})
+        end
+        return response(200, "json", utils.format_json(json), {})
+      end
+
+      if not is_path_in_collection(fs_path) or not is_dir(fs_path) then
+        return response(404, "plain", "Error: Requested URL /"..request.raw_path.." not found", {})
+      end
+
+      local json = {}
+
+      for dir in scandir(fs_path, "d") do
+        table.insert(json, {path = dir, ["is-directory"] = true})
+      end
+
+      for file in scandir(fs_path, "f") do
+        table.insert(json, {path = file, ["is-directory"] = false})
+      end
+
+      return response(200, "json", utils.format_json(json), {})
+    end
   }
 }
 
-local function file_exists(file)
-  local f = io.open(file, "rb")
-  if f then f:close() end
-  return f ~= nil
+function is_path_in_collection(path)
+  for _,collection in ipairs(options.collections) do
+    if string.starts(path, collection) then
+      return true
+    end
+  end
+  return false
+end
+
+local function scandir_windows(directory, type)
+  local w_type = "/a-d"
+  if type == "d" then
+    w_type = "/ad"
+  end
+
+  local pfile = assert(io.popen(('chcp 65001 > nul & dir "%s" /s/b %s'):format(directory, w_type), 'r'))
+  local list = pfile:read('*a')
+  pfile:close()
+
+  return list:gmatch("[^\r\n]+")
+end
+
+-- Adapted from https://stackoverflow.com/a/59368633
+function scandir(directory, type)
+  if package.config:sub(1, 1) ~= "/" then
+    return scandir_windows(directory, type)
+  end
+
+  local pfile = assert(io.popen(("find '%s' -mindepth 1 -maxdepth 1 -type %s -print0"):format(directory, type), 'r'))
+  local list = pfile:read('*a')
+  pfile:close()
+
+  return string.gmatch(list, '[^%z]+')
+end
+
+function _is_file_or_dir(path, property)
+  local file_info = utils.file_info(path)
+  if file_info == nil then
+    return false
+  end
+  return file_info[property]
+end
+
+local function is_file(file)
+  return _is_file_or_dir(file, "is_file")
+end
+
+function is_dir(path)
+  return _is_file_or_dir(path, "is_dir")
 end
 
 local function lines_from(file)
@@ -777,9 +856,9 @@ local function handle_request(request, passwd)
 
   if request.method == "GET" then
     return handle_static_get(request.raw_path)
-  elseif file_exists(options.static_dir .. "/" .. request.path) and request.method == "OPTIONS" then
+  elseif is_file(options.static_dir .. "/" .. request.path) and request.method == "OPTIONS" then
     return response(204, "plain", "", {Allow = "GET,OPTIONS"})
-  elseif file_exists(options.static_dir .. "/" .. request.path) then
+  elseif is_file(options.static_dir .. "/" .. request.path) then
     return response(405, "plain", "Error: Method not allowed", {Allow = "GET,OPTIONS"})
   end
   return response(404, "plain", "Error: Requested URL /"..request.raw_path.." not found", {})
@@ -857,7 +936,7 @@ end
 
 local function get_passwd(path)
   if path ~= '' then
-    if file_exists(path) then
+    if is_file(path) then
       return lines_from(path)
     end
     msg = "Provided htpasswd_path \"" .. path .. "\" could not be found!"
@@ -917,6 +996,18 @@ local function init_servers()
   return servers
 end
 
+local function parse_collections()
+  local collections = {}
+  for collection in string.gmatch(options.collections, "[^;]+") do
+    if not is_dir(collection) then
+      mp.msg.error("No such directory: " .. collection)
+    else
+      table.insert(collections, collection)
+    end
+  end
+  options.collections = collections
+end
+
 if options.disable then
   mp.msg.info("disabled")
   message = function() log_osd("disabled") end
@@ -927,6 +1018,7 @@ end
 
 local passwd = get_passwd(options.htpasswd_path)
 local servers = init_servers()
+parse_collections()
 
 if passwd ~= 1 then
   if next(servers) == nil then

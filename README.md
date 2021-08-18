@@ -16,6 +16,7 @@ A web based user interface with controls for the [mpv mediaplayer](https://mpv.i
       - [audio_devices (string)](#audio-devices--string-)
       - [static_dir](#static-dir)
       - [htpasswd_path](#htpasswd-path)
+      - [collections](#collections)
     + [Authentication](#authentication)
   * [Dependencies](#dependencies)
     + [Linux](#linux)
@@ -165,6 +166,18 @@ so stick to absolute paths all the time.
 
 Shortcuts to your homedir like `~/` are not supported.
 
+#### collections
+
+In order to use the basic file-browser API at `/api/collections`, the absolute paths of
+to-be exposed directories need to be configured here (semicolon delimited). By default,
+responses from `/api/collections` remain empty.
+
+Example:
+
+```
+webui-collections="/home/user/Music;/home/user/Videos"
+```
+
 ### Authentication
 There is a very simple implementation of
 [Basic Authentication](https://en.wikipedia.org/wiki/Basic_access_authentication).
@@ -312,7 +325,8 @@ possible in the settings of the webui (client).
 | /api/cycle_audio_device            | POST   |                                                                                           | Cycle trough audio devices. [More information.](#audio-devices-string)    |
 | /api/speed_set/:speed              | POST   | `int` or `float`                                                                          | Set playback speed to `:speed` (defaults to `1` for quick reset)          |
 | /api/speed_adjust/:amount          | POST   | `int` or `float`                                                                          | Multiply playback speed by `:amount` (where `1.0` is no change)           |
-| /api/loadfile /:url/:mode          | POST   | :url `string` <br />:mode `string`  options: `replace` (default), `append`, `append-play` | Load file to playlist. Together with youtube-dl, this also works for URLs |
+| /api/loadfile/:url/:mode           | POST   | :url `string` <br />:mode `string`  options: `replace` (default), `append`, `append-play` | Load file to playlist. Together with youtube-dl, this also works for URLs |
+| /api/collections/:path             | GET    | If no :path is provided, the configured collections are returned.                         | List directories and files (see [collections](#collections)) |
 
 
 All POST endpoints return a JSON message. If successful: `{"message": "success"}`, otherwise, the message will contain

@@ -6,6 +6,35 @@ from snapshottest import Snapshot
 
 snapshots = Snapshot()
 
+snapshots["TestsRequests.test_collections[api/collections-200-mpv_instance0] 1"] = [
+    {
+        "is-directory": True,
+        "path": "/app/scripts/simple-mpv-webui/tests/environment/collection",
+    }
+]
+
+snapshots[
+    "TestsRequests.test_collections[api/collections/%2Fapp%2Fscripts%2Fsimple-mpv-webui%2Ftests%2Fenvironment%2Fcollection-200-mpv_instance0] 1"
+] = [
+    {
+        "is-directory": False,
+        "path": "/app/scripts/simple-mpv-webui/tests/environment/collection/'file b'.log",
+    },
+    {
+        "is-directory": True,
+        "path": "/app/scripts/simple-mpv-webui/tests/environment/collection/A folder",
+    },
+    {
+        "is-directory": False,
+        "path": "/app/scripts/simple-mpv-webui/tests/environment/collection/file a.log",
+    },
+    {
+        "is-directory": False,
+        "path": """/app/scripts/simple-mpv-webui/tests/environment/collection/line
+break""",
+    },
+]
+
 snapshots["TestsRequests.test_post_wrong_args[add-&-foo] 1"] = {
     "message": "Parameter name contains invalid characters"
 }
