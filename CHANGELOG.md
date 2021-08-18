@@ -1,5 +1,22 @@
 # Changelog
 
+## v2.2.0
+### Feature
+* Add keyboard shortcut button in settings overlay ([`62b824d`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/62b824d5f11cb5e4cdbe6c982ba6d41bede7c4dd))
+* Allow disabling notifications ([`3d2fa0d`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/3d2fa0d2b754c2f017904a9bc4dfe5bdb1a3b374))
+* **api:** Respond to OPTIONS requests ([`ec855f4`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/ec855f4ee9e33794aa06d8c438e5f7f00f0efc0e))
+
+### Fix
+* Button text should not be selectable ([`034fc50`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/034fc50ae7a7549d383fc35c8e4cb0ea905a91dc))
+* Move settings h4 to next line ([`905095e`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/905095ee68586ce147f37bda6bcdf22e1858756c))
+* Move shortcuts overlay in front of settings ([`f038794`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/f038794bb6145a3a79b93bbe4a01c0e5bb1a85f1))
+* **api:** Correctly handle multiple slashes in url ([`b804ed1`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/b804ed14660e445abf45beed0fa32f80cd92a4f1))
+* **api:** Refactor request handling; fix `Allow` header ([`1163b90`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/1163b906b932f8d4171c2696859bc27a51d54494))
+* Set charset in webmanifest content-type and also test serving it ([`853209d`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/853209d005bbc98e7c14a1f5c9b01f376da3cfc4))
+* Handle missing file parameter in /api/loadfile ([`c7b897d`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/c7b897d7a000ab331f7155299f3fb01313f355c5))
+* Allow to modify parameters with underscore ([`411ca7b`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/411ca7bb406193c4a3ac29507c51ac98a8d2d5f8))
+* **js:** Sanitize metadata in order to prevent unlikely XSS ([`99822d6`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/99822d6ac6c8f0b223b47e6e29df48624b0b395d))
+
 ## v2.1.0
 ### Feature
 * **api:** Expose webui version in /api/status response ([`504bac4`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/504bac4b1069428ff5bcaafba4f2a02f6ca2c265))
