@@ -222,5 +222,5 @@ snapshots["test_status 1"] = {
     ],
     "volume": 0,
     "volume-max": 130,
-    "webui-version": "2.1.0",
+    "webui-version": "2.2.0",
 }
