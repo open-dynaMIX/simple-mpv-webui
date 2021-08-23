@@ -207,9 +207,20 @@ local function headers(code, content_type, content_length, add_headers)
     [503] = "Service Unavailable"
   }
 
-  return "HTTP/1.1 " .. tostring(code) .. " " .. status_headers[code] ..
-         "\nAccess-Control-Allow-Origin: *\nContent-Type: " .. content_type ..
-         "\nContent-Length: " .. content_length .. custom_headers .. "\nServer: simple-mpv-webui\nConnection: close\n\n"
+  return ([[HTTP/1.1 %s %s
+Access-Control-Allow-Origin: *
+Content-Type: %s
+Content-Length: %s%s
+Server: simple-mpv-webui
+Connection: close
+
+]]):format(
+          tostring(code),
+          status_headers[code],
+          content_type,
+          content_length,
+          custom_headers
+  )
 end
 
 local function response(code, file_type, content, add_headers)
@@ -685,8 +696,9 @@ local function log_line(request, code, length)
   local referer = request.referer or '-'
   local agent = request.agent or '-'
   local time = os.date('%d/%b/%Y:%H:%M:%S %z', os.time())
-  mp.msg.info(
-    clientip..' - '..user..' ['..time..'] "'..path..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
+  mp.msg.info(('%s - %s [%s] "%s" %s %s "%s" "%s"'):format(
+          clientip, user, time, path, code, length, referer, agent)
+  )
 end
 
 local function log_osd(text)
