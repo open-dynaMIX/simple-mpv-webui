@@ -207,9 +207,20 @@ local function headers(code, content_type, content_length, add_headers)
     [503] = "Service Unavailable"
   }
 
-  return "HTTP/1.1 " .. tostring(code) .. " " .. status_headers[code] ..
-         "\nAccess-Control-Allow-Origin: *\nContent-Type: " .. content_type ..
-         "\nContent-Length: " .. content_length .. custom_headers .. "\nServer: simple-mpv-webui\nConnection: close\n\n"
+  return ([[HTTP/1.1 %s %s
+Access-Control-Allow-Origin: *
+Content-Type: %s
+Content-Length: %s%s
+Server: simple-mpv-webui
+Connection: close
+
+]]):format(
+          tostring(code),
+          status_headers[code],
+          content_type,
+          content_length,
+          custom_headers
+  )
 end
 
 local function response(code, file_type, content, add_headers)
@@ -685,8 +696,9 @@ local function log_line(request, code, length)
   local referer = request.referer or '-'
   local agent = request.agent or '-'
   local time = os.date('%d/%b/%Y:%H:%M:%S %z', os.time())
-  mp.msg.info(
-    clientip..' - '..user..' ['..time..'] "'..path..'" '..code..' '..length..' "'..referer..'" "'..agent..'"')
+  mp.msg.info(('%s - %s [%s] "%s" %s %s "%s" "%s"'):format(
+          clientip, user, time, path, code, length, referer, agent)
+  )
 end
 
 local function log_osd(text)
@@ -864,6 +876,32 @@ local function get_ip(udp_method, check_ip)
   return ip
 end
 
+local function get_server(ipv)
+  local address = "0.0.0.0"
+  local udp_method = socket.udp
+  local check_ip = "91.198.174.192"
+  local listen_format = "%s:%s"
+  if ipv == 6 then
+    address = "::0"
+    udp_method = socket.udp6
+    check_ip = "2620:0:862:ed1a::1"
+    listen_format = "[%s]:%s"
+  end
+
+  local server = {}
+  local s = socket.bind(address, options.port)
+  if s == nil then
+    return {}
+  end
+
+  server.server = s
+  local ip = get_ip(udp_method, check_ip)
+
+  server.listen = listen_format:format(ip, options.port)
+
+  return {[address] = server}
+end
+
 local function init_servers()
   local servers = {}
   if not options.ipv4 and not options.ipv6 then
@@ -871,16 +909,10 @@ local function init_servers()
     return servers
   end
   if options.ipv6 then
-    local address = '::0'
-    servers[address] = {server = socket.bind(address, options.port)}
-    local ip = get_ip(socket.udp6, "2620:0:862:ed1a::1")
-    servers[address].listen = "[" .. ip .. "]:" .. options.port
+    for k,v in pairs(get_server(6)) do servers[k] = v end
   end
   if options.ipv4 then
-    local address = '0.0.0.0'
-    servers[address] = {server = socket.bind(address, options.port)}
-    local ip = get_ip(socket.udp, "91.198.174.192")
-    servers[address].listen = ip .. ":" .. options.port
+    for k,v in pairs(get_server(4)) do servers[k] = v end
   end
 
   return servers
