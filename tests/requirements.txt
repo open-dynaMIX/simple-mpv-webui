@@ -9,7 +9,7 @@ gitlint==0.15.1
 ipython==7.26.0
 isort==5.9.3
 pexpect==4.8.0
-pre-commit==2.14.0
+pre-commit==2.14.1
 pytest==6.2.4
 pytest-randomly==3.10.1
 python-semantic-release==7.18.0
