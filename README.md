@@ -33,13 +33,26 @@ A web based user interface with controls for the [mpv mediaplayer](https://mpv.i
   * [Contributing](#contributing)
 
 ## Usage
-To use it, simply copy `webui.lua` and the `webui-page`-folder to `~/.config/mpv/scripts/`, mpv will then run it 
-automatically.
 
-Alternatively you can also use the `--script` option from mpv or add something like 
-`scripts-add=/path/to/simple-mpv-webui/webui.lua` to `mpv.conf`.
+For mpv>=v0.33.0 you can just clone/copy the whole repository into your mpv scripts
+directory.
 
-You can access the webui when accessing [http://127.0.0.1:8080](http://127.0.0.1:8080) or
+Alternatively you can also use the `--script` or `--scripts-append` option from mpv or
+add something like `scripts-append=/path/to/simple-mpv-webui/` to `mpv.conf`.
+
+<details>
+  <summary>Installing for mpv &lt;v0.33.0</summary>
+
+  Copy `webui.lua` and the `webui-page`-folder into your mpv scripts directory, mpv will
+  then run it automatically.
+
+  Alternatively you can also use the `--script` or `--scripts-append` option from mpv or
+  add something like `scripts-append=/path/to/simple-mpv-webui/webui.lua` to `mpv.conf`.
+</details>
+
+See [Dependencies](#dependencies) for more information about the installation.
+
+You can access the webui when visiting [http://127.0.0.1:8080](http://127.0.0.1:8080) or
 [http://[::1]:8080](http://[::1]:8080) in your webbrowser.
 
 By default it listens on `0.0.0.0:8080` and `[::0]:8080`. As described below, this can be changed.
