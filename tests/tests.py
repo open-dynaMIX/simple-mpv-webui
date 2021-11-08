@@ -134,10 +134,9 @@ class TestsRequests:
             ("toggle_pause", "", "pause", False, True),
             ("fullscreen", "", "fullscreen", True, True),
             ("loop_file", "no", "loop-file", False, False),
-            ("loop_file", "inf", "loop-file", True, False),
+            ("loop_file", "inf", "loop-file", "inf", False),
             ("loop_playlist", "no", "loop-playlist", False, False),
             ("loop_playlist", "inf", "loop-playlist", "inf", False),
-            # Thats a quirk from mpv. For `loop-file` it returns True, for `loop-playlist` it returns `"inf"`
             ("add_volume", "10", "volume", 10, False),
             ("set_volume", "100", "volume", 100, False),
             ("add_sub_delay", "0.1", "sub-delay", 100, False),
@@ -210,18 +209,6 @@ class TestsRequests:
         response = requests.post(get_uri(api))
         assert response.status_code == 400
         snapshot.assert_match(response.json())
-
-    @staticmethod
-    @pytest.mark.parametrize(
-        "endpoint,arg,position",
-        [("seek", "1", 1.008979), ("set_position", "2", 2.0)],
-    )
-    def test_seek(mpv_instance, endpoint, arg, position):
-        # reset position
-        send("pause")
-        send("set_position", arg="0")
-
-        assert send(endpoint, arg=arg, status="position") == position
 
     @staticmethod
     def test_speed(mpv_instance):
@@ -387,6 +374,18 @@ class TestsRequests:
         assert resp.headers["Allow"] == expected
 
 
+@pytest.mark.parametrize(
+    "endpoint,arg,position",
+    [("seek", "1", 0.999979), ("set_position", "2", 2.0)],
+)
+def test_seek(mpv_instance, endpoint, arg, position):
+    # reset position
+    send("pause")
+    send("set_position", arg="0")
+
+    assert send(endpoint, arg=arg, status="position") == position
+
+
 def test_loadfile(mpv_instance):
     def send_loadfile(url, mode=None, expect=200):
         return send(
@@ -430,8 +429,22 @@ def test_loadfile(mpv_instance):
     "mpv_instance,status_code",
     [
         ({}, 404),
-        (get_script_opts({"static_dir": "/app/tests/environment/static_test"}), 200),
-        (get_script_opts({"static_dir": "/app/tests/environment/static_test/"}), 200),
+        (
+            get_script_opts(
+                {
+                    "static_dir": "/app/scripts/simple-mpv-webui/tests/environment/static_test"
+                }
+            ),
+            200,
+        ),
+        (
+            get_script_opts(
+                {
+                    "static_dir": "/app/scripts/simple-mpv-webui/tests/environment/static_test/"
+                }
+            ),
+            200,
+        ),
         (get_script_opts({"static_dir": "environment/static_test"}), 200),
         (get_script_opts({"static_dir": "./environment/static_test/"}), 200),
     ],
@@ -448,10 +461,10 @@ def test_static_dir_config(mpv_instance, status_code):
 @pytest.mark.parametrize(
     "mpv_instance,expected_devices",
     [
-        ({}, ["auto", "alsa", "jack", "sdl", "sndio"]),
+        ({}, ["auto", "alsa", "jack", "sdl"]),
         (
-            get_script_opts({"audio_devices": "auto jack sndio"}),
-            ["auto", "jack", "sndio"],
+            get_script_opts({"audio_devices": "auto jack"}),
+            ["auto", "jack"],
         ),
     ],
     indirect=["mpv_instance"],
@@ -527,7 +540,7 @@ def test_disablers(mpv_instance, v4_works, v6_works):
             HTTPBasicAuth("user", "secret"),
             200,
         ),
-        (get_script_opts({"htpasswd_path": "/app/.does-not-exist"}), None, None),
+        (get_script_opts({"htpasswd_path": "/tmp/.does-not-exist"}), None, None),
     ],
     indirect=["mpv_instance"],
 )
@@ -606,7 +619,7 @@ def test_logging(htpasswd, mpv_instance, use_auth, username, password, status_co
 
     assert (
         mpv_instance.expect(
-            fr"\[main\] ::1 - {user} \[\d\d?/[A-Z][a-z][a-z][a-z]?/?/\d{{4}}:\d{{2}}:\d{{2}}:\d{{2}} \+0{{4}}\] "
+            fr"\[simple_mpv_webui\] ::1 - {user} \[\d\d?/[A-Z][a-z][a-z][a-z]?/?/\d{{4}}:\d{{2}}:\d{{2}}:\d{{2}} \+0{{4}}\] "
             fr'"GET /api/status HTTP/1.1" {status_code} \d* "https://referer" "python-requests/',
             timeout=1,
         )

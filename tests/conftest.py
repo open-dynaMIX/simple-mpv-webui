@@ -15,7 +15,7 @@ def mpv_instance(request):
     )
     options = params.get("options", [])
 
-    process = pexpect.spawn("mpv", ["--config-dir=./environment/", *options, *files])
+    process = pexpect.spawn("mpv", [*options, *files])
 
     # uncomment for printing mpv output to stdout
     # import sys

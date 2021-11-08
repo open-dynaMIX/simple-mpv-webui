@@ -358,10 +358,11 @@ information about the error.
         {
             "current": true,
             "filename": "./environment/test_media/01 - dummy.mp3",
+            "id": 1,
             "playing": true,
         },
-        {"filename": "./environment/test_media/02 - dummy.mp3"},
-        {"filename": "./environment/test_media/03 - dummy.mp3"},
+        {"filename": "./environment/test_media/02 - dummy.mp3", "id": 2},
+        {"filename": "./environment/test_media/03 - dummy.mp3", "id": 3},
     ],
     "position": -0.0,        # <-- seconds
     "remaining": 6.024,      # <-- seconds
@@ -382,6 +383,7 @@ information about the error.
             "ff-index": 0,
             "forced": false,
             "id": 1,
+            "main-selection": 0,
             "selected": true,
             "src-id": 0,
             "type": "audio",

@@ -1,18 +1,17 @@
-FROM python:3.9.6
+FROM ubuntu:22.04
 
-RUN mkdir -p /app \
-#    && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 90BD7EACED8E640A \
-#    && apt-get update \
-#    && apt-get install --no-install-recommends -y software-properties-common \
-#    && add-apt-repository -y ppa:mc3man/mpv-tests \
+ENV MPV_HOME=/app
+
+RUN mkdir -p $MPV_HOME/scripts/simple-mpv-webui \
     && apt-get update \
-    && apt-get install --no-install-recommends -y mpv lua-socket
+    && apt-get install --no-install-recommends -y python3-pip mpv lua-socket
 
-COPY . /app
+COPY . $MPV_HOME/scripts/simple-mpv-webui
+COPY tests/environment/mpv.conf $MPV_HOME/mpv.conf
 
-WORKDIR /app/tests
+WORKDIR $MPV_HOME/scripts/simple-mpv-webui/tests
 
-RUN pip install --no-cache-dir --upgrade -r requirements.txt --disable-pip-version-check
+RUN pip3 install --no-cache-dir --upgrade -r requirements.txt --disable-pip-version-check
 
 EXPOSE 8080
 
