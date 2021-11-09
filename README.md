@@ -354,6 +354,7 @@ information about the error.
         },
     ],
     "duration": 6.024,       # <-- seconds
+    "end": null,             # <-- seconds as string or null
     "filename": "01 - dummy.mp3",
     "fullscreen": false,
     "loop-file": false,      # <-- false, true or integer
@@ -381,6 +382,7 @@ information about the error.
     "position": -0.0,        # <-- seconds
     "remaining": 6.024,      # <-- seconds
     "speed": 1,              # <-- multiplier
+    "start": null, ,         # <-- seconds as string or null
     "sub-delay": 0,          # <-- milliseconds
     "track-list": [          # <-- all available video, audio and sub tracks
         {

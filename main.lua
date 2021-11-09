@@ -118,6 +118,7 @@ local function build_status_response()
     ["chapter-list"] = mp.get_property_native("chapter-list") or '',
     chapters = mp.get_property_native("chapters") or '',
     duration = mp.get_property_native("duration") or '',
+    ["end"] = mp.get_property_native("end") or '',
     filename = mp.get_property('filename') or '',
     fullscreen = mp.get_property_native("fullscreen"),
     ["loop-file"] = mp.get_property_native("loop-file"),
@@ -128,6 +129,7 @@ local function build_status_response()
     position = mp.get_property_native("time-pos") or '',
     remaining = mp.get_property_native("playtime-remaining") or '',
     speed = mp.get_property_native('speed') or '',
+    start = mp.get_property_native('start') or '',
     ["sub-delay"] = mp.get_property_osd("sub-delay") or '',
     ["track-list"] = mp.get_property_native("track-list") or '',
     volume = mp.get_property_native("volume") or '',
@@ -163,7 +165,11 @@ local function build_status_response()
       return false
   end
 
-  return utils.format_json(values)
+  local result = utils.format_json(values)
+  -- hack to have null values in the resulting json
+  result = result:gsub('"none"', "null")
+
+  return result
 end
 
 local function get_content_type(file_type)

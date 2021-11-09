@@ -580,6 +580,26 @@ function setChapter(chapters, chapter, chapterList) {
   }
 }
 
+function setOrHideStartEnd(elementsClass, contentId, value) {
+  const elements = document.getElementsByClassName(elementsClass);
+  const content = document.getElementById(contentId);
+  if (value == null) {
+    [].slice.call(elements).forEach(function (div) {
+      div.classList.add('hidden');
+    });
+  } else {
+    [].slice.call(elements).forEach(function (div) {
+      div.classList.remove('hidden');
+    });
+    content.innerText = format_time(value);
+  }
+}
+
+function setStartEnd(start, end) {
+  setOrHideStartEnd("start", "startContent", start)
+  setOrHideStartEnd("end", "endContent", end)
+}
+
 function playlist_loop_cycle() {
   const loopButton = document.getElementsByClassName('playlistLoopButton');
   if (loopButton.value === "no") {
@@ -636,6 +656,7 @@ function handleStatusResponse(json) {
   setLoop(json["loop-file"], json["loop-playlist"]);
   setFullscreenButton(json['fullscreen']);
   setChapter(json['chapters'], json['chapter'], json['chapter-list']);
+  setStartEnd(json['start'], json['end']);
   populatePlaylist(json['playlist'], json['pause']);
   setupNotification(json);
 }
