@@ -152,13 +152,13 @@ local function build_status_response()
   fail = false
   for k, v in pairs(values) do
     if v == '' then
-      mp.msg.log("WARN", 'Could not fetch "'.. k .. '" from mpv.')
+      mp.msg.debug('Could not fetch "'.. k .. '" from mpv.')
       fail = true
     end
   end
 
   if fail then
-      mp.msg.log("WARN", 'This is normal during startup.')
+      mp.msg.debug('This is normal during startup.')
       return false
   end
 
@@ -646,16 +646,11 @@ local endpoints = {
       if uri == "" or type(uri) ~= "string" then
         return response(400, "json", utils.format_json({message = "No url provided!"}), {})
       end
-      if mode ~= nil and
-              mode ~= "" and
-              mode ~= "replace" and
-              mode ~= "append" and
-              mode ~= "append-play"
+      if mode ~= "replace" and
+         mode ~= "append" and
+         mode ~= "append-play"
       then
         return response(400, "json", utils.format_json({message = "Invalid mode: '" .. mode .. "'"}), {})
-      end
-      if mode == nil or mode == "" then
-        mode = "replace"
       end
       local _, success, ret = pcall(mp.commandv, "loadfile", uri, mode)
       return handle_post(success, ret)
@@ -739,12 +734,18 @@ local function parse_path(raw_path)
   if path == 'api' then
     path = path .. "/" .. path_components()
   end
-  local param1 = path_components() or ""
-  local param2 = path_components() or ""
+  if path == 'api/loadfile' then
+    -- The raw path itself might contain '/' which thus needs to be passed as a base64-encoded string.
+    -- The base64-encoded path might itself contain '/', handling that by reversing the path for parsing.
+    local rev_path = string.reverse(raw_path)
+    param1 = dec64(string.reverse(string.sub(rev_path, string.find(rev_path, '/') + 1, string.find(rev_path, string.reverse('api/loadfile')) - 2))) or ""
+    param2 = string.reverse(string.sub(rev_path, 1, string.find(rev_path, '/') - 1)) or ""
+  else
+    param1 = path_components() or ""
+    param2 = path_components() or ""
+  end
 
-  param1 = url.unescape(param1)
-  param2 = url.unescape(param2)
-  return path, param1, param2
+  return path, url.unescape(param1), url.unescape(param2)
 end
 
 local function call_endpoint(endpoint, req_method, request)
