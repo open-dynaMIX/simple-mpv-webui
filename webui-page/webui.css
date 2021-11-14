@@ -45,6 +45,12 @@ h4 {
   clear: right;
 }
 
+input[type=text] {
+  border: 2px solid blue;
+  border-radius: 4px;
+  width: 100%;
+}
+
 .burger {
   float: right;
   font-size: 8vw;

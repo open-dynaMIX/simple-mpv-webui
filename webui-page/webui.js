@@ -711,6 +711,14 @@ function audioPause() {
   }
 }
 
+function playlistUpdate(mode) {
+    uri = document.getElementById("new-playlist-uri").value
+    if (uri) {
+        send("loadfile", btoa(encodeURI(uri)), mode)
+        document.getElementById("new-playlist-uri").value = ''
+    }
+}
+
 function setupNotification({duration, speed, position}) {
   if (useNotifications()) {
     if (navigator.mediaSession.setPositionState) {
