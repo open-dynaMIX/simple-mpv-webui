@@ -52,6 +52,34 @@
           </td>
         </tr>
       </table>
+      <table class="playlist-controls">
+        <tr>
+          <!-- <td>
+           <div class="button unselectable gray icon-content playlist-controls">
+                <i class="fa fa-list"></i>
+            </div>
+          </td> -->
+          <td>
+              <form onsubmit="playlistUpdate('append-play')" class="playlist-controls">
+                Add URI:<input type="text" id="new-playlist-uri"/>
+                <!--
+                <button type="submit" name="action" value="Append-Play"/>
+                <button type="submit" name="action" value="Append"/>
+                -->
+              </form>
+          </td>
+          <td>
+              <div onClick="playlistUpdate('append-play')" class="button unselectable blue icon-content playlist-controls">
+                <i class="fa fa-play-circle"></i>
+              </div>
+          </td>
+          <td>
+              <div onClick="playlistUpdate('append')" class="button unselectable blue icon-content playlist-controls">
+                <i class="fa fa-plus-circle"></i>
+              </div>
+          </td>
+        </tr>
+      </table>
       <div id="playlist"></div>
     </div>
 

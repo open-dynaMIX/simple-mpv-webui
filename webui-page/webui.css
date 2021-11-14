@@ -512,3 +512,9 @@ table#settings-table tr {
   font-size: 12vmin;
   color: var(--main-fg-color);
 }
+
+input[type=text] {
+  border: 2px solid blue;
+  border-radius: 4px;
+  width: 100%;
+}
