@@ -373,6 +373,48 @@ class TestsRequests:
         assert "Allow" in resp.headers
         assert resp.headers["Allow"] == expected
 
+    @pytest.mark.parametrize(
+        "mpv_instance",
+        [
+            get_script_opts(
+                {
+                    "collections": "/app/scripts/simple-mpv-webui/tests/environment/collection"
+                }
+            ),
+        ],
+        indirect=["mpv_instance"],
+    )
+    @pytest.mark.parametrize(
+        "endpoint,expected_status",
+        [
+            ("api/collections", 200),
+            (
+                "api/collections/%2Fapp%2Fscripts%2Fsimple-mpv-webui%2Ftests%2Fenvironment%2Fcollection",
+                200,
+            ),
+            (
+                "api/collections/%2Fapp%2Fscripts%2Fsimple-mpv-webui%2Ftests%2Fenvironment%2Fcollectiona%2F..%2F..%2F",
+                404,
+            ),
+            (
+                "api/collections/%2Fapp%2Fscripts%2Fsimple-mpv-webui%2Ftests%2Fenvironment%2Fcollection%2Ffile%20a.log",
+                404,
+            ),
+            ("api/collections/%2Fsome%2Fother%2Fdir", 404),
+            (
+                "api/collections/%2Fapp%2scripts%2Fsimple-mpv-webui%2Ftests%2environment%2Fcollection%2Fnon-existent",
+                404,
+            ),
+        ],
+    )
+    def test_collections(self, endpoint, expected_status, mpv_instance, snapshot):
+        resp = requests.get(f"{get_uri(endpoint)}")
+
+        assert resp.status_code == expected_status
+
+        if expected_status == 200:
+            snapshot.assert_match(sorted(resp.json(), key=lambda k: k["path"]))
+
 
 @pytest.mark.parametrize(
     "endpoint,arg,position",

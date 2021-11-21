@@ -27,6 +27,7 @@ local options = {
   audio_devices = '',
   static_dir = script_path() .. "webui-page",
   htpasswd_path = "",
+  collections = "",
 }
 read_options(options, "webui")
 
@@ -289,7 +290,7 @@ local endpoints = {
 
   ["api/seek"] = {
     POST = function(request)
-      local t = request.param1
+      local t = request.params[1] or ""
       local valid, msg = validate_number_param(t)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -301,7 +302,7 @@ local endpoints = {
 
   ["api/add"] = {
     POST = function(request)
-      local name, value = request.param1, request.param2
+      local name, value = request.params[1] or "", request.params[2] or ""
       local valid, msg = validate_name_param(name)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -321,7 +322,7 @@ local endpoints = {
 
   ["api/cycle"] = {
     POST = function(request)
-      local name, value = request.param1, request.param2
+      local name, value = request.params[1] or "", request.params[2] or ""
       local valid, msg = validate_name_param(name)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -341,7 +342,7 @@ local endpoints = {
 
   ["api/multiply"] = {
     POST = function(request)
-      local name, value = request.param1, request.param2
+      local name, value = request.params[1] or "", request.params[2] or ""
       local valid, msg = validate_name_param(name)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -357,7 +358,7 @@ local endpoints = {
 
   ["api/set"] = {
     POST = function(request)
-      local name, value = request.param1, request.param2
+      local name, value = request.params[1] or "", request.params[2] or ""
       local valid, msg = validate_name_param(name)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -373,7 +374,7 @@ local endpoints = {
 
   ["api/toggle"] = {
     POST = function(request)
-      local name = request.param1
+      local name = request.params[1] or ""
       local valid, msg = validate_name_param(name)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -386,7 +387,7 @@ local endpoints = {
 
   ["api/set_position"] = {
     POST = function(request)
-      local t = request.param1
+      local t = request.params[1] or ""
       local valid, msg = validate_number_param(t)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -417,7 +418,7 @@ local endpoints = {
 
   ["api/playlist_jump"] = {
     POST = function(request)
-      local p = request.param1
+      local p = request.params[1] or ""
       local valid, msg = validate_number_param(p)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -429,7 +430,7 @@ local endpoints = {
 
   ["api/playlist_remove"] = {
     POST = function(request)
-      local p = request.param1
+      local p = request.params[1] or ""
       local valid, msg = validate_number_param(p)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -441,7 +442,7 @@ local endpoints = {
 
   ["api/playlist_move"] = {
     POST = function(request)
-      local s, t = request.param1, request.param2
+      local s, t = request.params[1] or "", request.params[2] or ""
       args = {s, t}
       for count = 1, 2 do
         local valid, msg = validate_number_param(args[count])
@@ -456,7 +457,7 @@ local endpoints = {
 
   ["api/playlist_move_up"] = {
     POST = function(request)
-      local p = request.param1
+      local p = request.params[1] or ""
       local valid, msg = validate_number_param(p)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -478,7 +479,7 @@ local endpoints = {
 
   ["api/loop_file"] = {
     POST = function(request)
-      local mode = request.param1
+      local mode = request.params[1] or ""
       local valid, msg = validate_loop_param(mode, {"inf", "no"})
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -490,7 +491,7 @@ local endpoints = {
 
   ["api/loop_playlist"] = {
     POST = function(request)
-      local mode = request.param1
+      local mode = request.params[1] or ""
       local valid, msg = validate_loop_param(mode, {"inf", "no", "force"})
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -502,7 +503,7 @@ local endpoints = {
 
   ["api/add_volume"] = {
     POST = function(request)
-      local v = request.param1
+      local v = request.params[1] or ""
       local valid, msg = validate_number_param(v)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -514,7 +515,7 @@ local endpoints = {
 
   ["api/set_volume"] = {
     POST = function(request)
-      local v = request.param1
+      local v = request.params[1] or ""
       local valid, msg = validate_number_param(v)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -526,7 +527,7 @@ local endpoints = {
 
   ["api/add_sub_delay"] = {
     POST = function(request)
-      local sec = request.param1
+      local sec = request.params[1] or ""
       local valid, msg = validate_number_param(sec)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -538,7 +539,7 @@ local endpoints = {
 
   ["api/set_sub_delay"] = {
     POST = function(request)
-      local sec = request.param1
+      local sec = request.params[1] or ""
       local valid, msg = validate_number_param(sec)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -550,7 +551,7 @@ local endpoints = {
 
   ["api/add_audio_delay"] = {
     POST = function(request)
-      local sec = request.param1
+      local sec = request.params[1] or ""
       local valid, msg = validate_number_param(sec)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -562,7 +563,7 @@ local endpoints = {
 
   ["api/set_audio_delay"] = {
     POST = function(request)
-      local sec = request.param1
+      local sec = request.params[1] or ""
       local valid, msg = validate_number_param(sec)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -596,7 +597,7 @@ local endpoints = {
 
   ["api/speed_set"] = {
     POST = function(request)
-      local speed = request.param1
+      local speed = request.params[1] or ""
       if speed == '' then
         speed = '1'
       end
@@ -611,7 +612,7 @@ local endpoints = {
 
   ["api/speed_adjust"] = {
     POST = function(request)
-      local amount = request.param1
+      local amount = request.params[1] or ""
       local valid, msg = validate_number_param(amount)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -623,7 +624,7 @@ local endpoints = {
 
   ["api/add_chapter"] = {
     POST = function(request)
-      local num = request.param1
+      local num = request.params[1] or ""
       local valid, msg = validate_number_param(num)
       if not valid then
         return response(400, "json", utils.format_json({message = msg}), {})
@@ -642,7 +643,7 @@ local endpoints = {
 
   ["api/loadfile"] = {
     POST = function(request)
-      local uri, mode = request.param1, request.param2
+      local uri, mode = request.params[1] or "", request.params[2] or ""
       if uri == "" or type(uri) ~= "string" then
         return response(400, "json", utils.format_json({message = "No url provided!"}), {})
       end
@@ -660,13 +661,91 @@ local endpoints = {
       local _, success, ret = pcall(mp.commandv, "loadfile", uri, mode)
       return handle_post(success, ret)
     end
+  },
+  ["api/collections"] = {
+    GET = function(request)
+      local fs_path = request.params[1] or ""
+
+      if string.find(fs_path, "%/%.%.") then
+        return response(404, "plain", "Error: Requested URL /"..request.raw_path.." not found", {})
+      end
+
+      if fs_path == "" then
+        local json = {}
+        for _,collection in ipairs(options.collections) do
+          table.insert(json, {path = collection, ["is-directory"] = true})
+        end
+        return response(200, "json", utils.format_json(json), {})
+      end
+
+      if not is_path_in_collection(fs_path) or not is_dir(fs_path) then
+        return response(404, "plain", "Error: Requested URL /"..request.raw_path.." not found", {})
+      end
+
+      local json = {}
+
+      for dir in scandir(fs_path, "d") do
+        table.insert(json, {path = dir, ["is-directory"] = true})
+      end
+
+      for file in scandir(fs_path, "f") do
+        table.insert(json, {path = file, ["is-directory"] = false})
+      end
+
+      return response(200, "json", utils.format_json(json), {})
+    end
   }
 }
 
-local function file_exists(file)
-  local f = io.open(file, "rb")
-  if f then f:close() end
-  return f ~= nil
+function is_path_in_collection(path)
+  for _,collection in ipairs(options.collections) do
+    if string.starts(path, collection) then
+      return true
+    end
+  end
+  return false
+end
+
+local function scandir_windows(directory, type)
+  local w_type = "/a-d"
+  if type == "d" then
+    w_type = "/ad"
+  end
+
+  local pfile = assert(io.popen(('chcp 65001 > nul & dir "%s" /s/b %s'):format(directory, w_type), 'r'))
+  local list = pfile:read('*a')
+  pfile:close()
+
+  return list:gmatch("[^\r\n]+")
+end
+
+-- Adapted from https://stackoverflow.com/a/59368633
+function scandir(directory, type)
+  if package.config:sub(1, 1) ~= "/" then
+    return scandir_windows(directory, type)
+  end
+
+  local pfile = assert(io.popen(("find '%s' -mindepth 1 -maxdepth 1 -type %s -print0"):format(directory, type), 'r'))
+  local list = pfile:read('*a')
+  pfile:close()
+
+  return string.gmatch(list, '[^%z]+')
+end
+
+function _is_file_or_dir(path, property)
+  local file_info = utils.file_info(path)
+  if file_info == nil then
+    return false
+  end
+  return file_info[property]
+end
+
+local function is_file(file)
+  return _is_file_or_dir(file, "is_file")
+end
+
+function is_dir(path)
+  return _is_file_or_dir(path, "is_dir")
 end
 
 local function lines_from(file)
@@ -739,12 +818,11 @@ local function parse_path(raw_path)
   if path == 'api' then
     path = path .. "/" .. path_components()
   end
-  local param1 = path_components() or ""
-  local param2 = path_components() or ""
-
-  param1 = url.unescape(param1)
-  param2 = url.unescape(param2)
-  return path, param1, param2
+  local params = {}
+  for w in path_components do
+    table.insert(params, url.unescape(w))
+end
+  return path, params
 end
 
 local function call_endpoint(endpoint, req_method, request)
@@ -777,13 +855,13 @@ local function handle_request(request, passwd)
   end
 
   if request.method == "GET" then
-    return handle_static_get(request.path)
-  elseif file_exists(options.static_dir .. "/" .. request.path) and request.method == "OPTIONS" then
+    return handle_static_get(request.raw_path)
+  elseif is_file(options.static_dir .. "/" .. request.path) and request.method == "OPTIONS" then
     return response(204, "plain", "", {Allow = "GET,OPTIONS"})
-  elseif file_exists(options.static_dir .. "/" .. request.path) then
+  elseif is_file(options.static_dir .. "/" .. request.path) then
     return response(405, "plain", "Error: Method not allowed", {Allow = "GET,OPTIONS"})
   end
-  return response(404, "plain", "Error: Requested URL /"..request.path.." not found", {})
+  return response(404, "plain", "Error: Requested URL /"..request.raw_path.." not found", {})
 end
 
 local function new_request()
@@ -826,9 +904,9 @@ local function parse_request(connection)
     end
     line = connection:receive()
   end
-  if request.method == "POST" then
-    request.path, request.param1, request.param2 = parse_path(request.path)
-  end
+  request.raw_path = request.path
+  request.path, request.params = parse_path(request.path)
+
   return request
 end
 
@@ -858,7 +936,7 @@ end
 
 local function get_passwd(path)
   if path ~= '' then
-    if file_exists(path) then
+    if is_file(path) then
       return lines_from(path)
     end
     msg = "Provided htpasswd_path \"" .. path .. "\" could not be found!"
@@ -918,6 +996,18 @@ local function init_servers()
   return servers
 end
 
+local function parse_collections()
+  local collections = {}
+  for collection in string.gmatch(options.collections, "[^;]+") do
+    if not is_dir(collection) then
+      mp.msg.error("No such directory: " .. collection)
+    else
+      table.insert(collections, collection)
+    end
+  end
+  options.collections = collections
+end
+
 if options.disable then
   mp.msg.info("disabled")
   message = function() log_osd("disabled") end
@@ -928,6 +1018,7 @@ end
 
 local passwd = get_passwd(options.htpasswd_path)
 local servers = init_servers()
+parse_collections()
 
 if passwd ~= 1 then
   if next(servers) == nil then
