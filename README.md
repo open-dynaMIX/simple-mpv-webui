@@ -289,44 +289,44 @@ possible in the settings of the webui (client).
 
 ### List of endpoints
 
-| URI                                | Method | Parameter                                                                                 | Description                                                               |
-| ---------------------------------- | ------ | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| /api/status                        | GET    |                                                                                           | Returns JSON data about playing media --> see below                       |
-| /api/play                          | POST   |                                                                                           | Play media                                                                |
-| /api/pause                         | POST   |                                                                                           | Pause media                                                               |
-| /api/toggle_pause                  | POST   |                                                                                           | Toggle play/pause                                                         |
-| /api/fullscreen                    | POST   |                                                                                           | Toggle fullscreen                                                         |
-| /api/quit                          | POST   |                                                                                           | Quit the program                                                          |
-| /api/add/:name/:value              | POST   | `string` and `int` or `float`                                                             | Add `:value` (default of `1`) to the `:name` property                     |
-| /api/cycle/:name/:value            | POST   | `string` and `up` or `down`                                                               | Cycle `:name` by `:value` (default of `up`)                               |
-| /api/multiply/:name/:value         | POST   | `string` and `int` or `float`                                                             | Multiply `:name` by `:value`                                              |
-| /api/set/:name/:value              | POST   | `string` and anything                                                                     | Set `:name` to `:value`                                                   |
-| /api/toggle/:name                  | POST   | `string`                                                                                  | Toggle the boolean property                                               |
-| /api/seek/:seconds                 | POST   | `int` or `float` (can be negative)                                                        | Seek                                                                      |
-| /api/set_position/:seconds         | POST   |                                                                                           | Go to position :seconds                                                   |
-| /api/playlist_prev                 | POST   |                                                                                           | Go to previous media in playlist                                          |
-| /api/playlist_next                 | POST   |                                                                                           | Go to next media in playlist                                              |
-| /api/playlist_jump/:index          | POST   | `int`                                                                                     | Jump to playlist item at position `:index`                                |
-| /api/playlist_move/:source/:target | POST   | `int` and `int`                                                                           | Move playlist item from position `:source` to position `:target`          |
-| /api/playlist_move_up/:index       | POST   | `int`                                                                                     | Move playlist item at position `:index` one position up                   |
-| /api/playlist_remove/:index        | POST   | `int`                                                                                     | Remove playlist item at position `:index`                                 |
-| /api/playlist_shuffle              | POST   |                                                                                           | Shuffle the playlist                                                      |
-| /api/loop_file/:mode               | POST   | `string` or `int`                                                                         | Loop the current file. `:mode` accepts the same loop modes as mpv         |
-| /api/loop_playlist/:mode           | POST   | `string` or `int`                                                                         | Loop the whole playlist `:mode` accepts the same loop modes as mpv        |
-| /api/add_chapter/:amount           | POST   | `int` (can be negative)                                                                   | Jump `:amount` chapters in current media                                  |
-| /api/add_volume/:percent           | POST   | `int` or `float` (can be negative)                                                        | Add :percent% volume                                                      |
-| /api/set_volume/:percent           | POST   | `int` or `float`                                                                          | Set volume to :percent%                                                   |
-| /api/add_sub_delay/:ms             | POST   | `int` or `float` (can be negative)                                                        | Add :seconds seconds subtitles delay                                      |
-| /api/set_sub_delay/:ms             | POST   | `int` or `float` (can be negative)                                                        | Set subtitles delay to :ms milliseconds                                   |
-| /api/add_audio_delay/:seconds      | POST   | `int` or `float` (can be negative)                                                        | Add :seconds seconds audio delay                                          |
-| /api/set_audio_delay/:seconds      | POST   | `int` or `float` (can be negative)                                                        | Set audio delay to :seconds milliseconds                                  |
-| /api/cycle_sub                     | POST   |                                                                                           | Cycle trough available subtitles                                          |
-| /api/cycle_audio                   | POST   |                                                                                           | Cycle trough available audio tracks                                       |
-| /api/cycle_audio_device            | POST   |                                                                                           | Cycle trough audio devices. [More information.](#audio-devices-string)    |
-| /api/speed_set/:speed              | POST   | `int` or `float`                                                                          | Set playback speed to `:speed` (defaults to `1` for quick reset)          |
-| /api/speed_adjust/:amount          | POST   | `int` or `float`                                                                          | Multiply playback speed by `:amount` (where `1.0` is no change)           |
-| /api/loadfile/:url/:mode           | POST   | :url `string` <br />:mode `string`  options: `replace` (default), `append`, `append-play` | Load file to playlist. Together with youtube-dl, this also works for URLs |
-| /api/collections/:path             | GET    | If no :path is provided, the configured collections are returned.                         | List directories and files (see [collections](#collections)) |
+| URI                                | Method | Parameter                                                                                              | Description                                                               |
+| ---------------------------------- | ------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| /api/status                        | GET    |                                                                                                        | Returns JSON data about playing media --> see below                       |
+| /api/play                          | POST   |                                                                                                        | Play media                                                                |
+| /api/pause                         | POST   |                                                                                                        | Pause media                                                               |
+| /api/toggle_pause                  | POST   |                                                                                                        | Toggle play/pause                                                         |
+| /api/fullscreen                    | POST   |                                                                                                        | Toggle fullscreen                                                         |
+| /api/quit                          | POST   |                                                                                                        | Quit the program                                                          |
+| /api/add/:name/:value              | POST   | `string` and `int` or `float`                                                                          | Add `:value` (default of `1`) to the `:name` property                     |
+| /api/cycle/:name/:value            | POST   | `string` and `up` or `down`                                                                            | Cycle `:name` by `:value` (default of `up`)                               |
+| /api/multiply/:name/:value         | POST   | `string` and `int` or `float`                                                                          | Multiply `:name` by `:value`                                              |
+| /api/set/:name/:value              | POST   | `string` and anything                                                                                  | Set `:name` to `:value`                                                   |
+| /api/toggle/:name                  | POST   | `string`                                                                                               | Toggle the boolean property                                               |
+| /api/seek/:seconds                 | POST   | `int` or `float` (can be negative)                                                                     | Seek                                                                      |
+| /api/set_position/:seconds         | POST   |                                                                                                        | Go to position :seconds                                                   |
+| /api/playlist_prev                 | POST   |                                                                                                        | Go to previous media in playlist                                          |
+| /api/playlist_next                 | POST   |                                                                                                        | Go to next media in playlist                                              |
+| /api/playlist_jump/:index          | POST   | `int`                                                                                                  | Jump to playlist item at position `:index`                                |
+| /api/playlist_move/:source/:target | POST   | `int` and `int`                                                                                        | Move playlist item from position `:source` to position `:target`          |
+| /api/playlist_move_up/:index       | POST   | `int`                                                                                                  | Move playlist item at position `:index` one position up                   |
+| /api/playlist_remove/:index        | POST   | `int`                                                                                                  | Remove playlist item at position `:index`                                 |
+| /api/playlist_shuffle              | POST   |                                                                                                        | Shuffle the playlist                                                      |
+| /api/loop_file/:mode               | POST   | `string` or `int`                                                                                      | Loop the current file. `:mode` accepts the same loop modes as mpv         |
+| /api/loop_playlist/:mode           | POST   | `string` or `int`                                                                                      | Loop the whole playlist `:mode` accepts the same loop modes as mpv        |
+| /api/add_chapter/:amount           | POST   | `int` (can be negative)                                                                                | Jump `:amount` chapters in current media                                  |
+| /api/add_volume/:percent           | POST   | `int` or `float` (can be negative)                                                                     | Add :percent% volume                                                      |
+| /api/set_volume/:percent           | POST   | `int` or `float`                                                                                       | Set volume to :percent%                                                   |
+| /api/add_sub_delay/:ms             | POST   | `int` or `float` (can be negative)                                                                     | Add :seconds seconds subtitles delay                                      |
+| /api/set_sub_delay/:ms             | POST   | `int` or `float` (can be negative)                                                                     | Set subtitles delay to :ms milliseconds                                   |
+| /api/add_audio_delay/:seconds      | POST   | `int` or `float` (can be negative)                                                                     | Add :seconds seconds audio delay                                          |
+| /api/set_audio_delay/:seconds      | POST   | `int` or `float` (can be negative)                                                                     | Set audio delay to :seconds milliseconds                                  |
+| /api/cycle_sub                     | POST   |                                                                                                        | Cycle trough available subtitles                                          |
+| /api/cycle_audio                   | POST   |                                                                                                        | Cycle trough available audio tracks                                       |
+| /api/cycle_audio_device            | POST   |                                                                                                        | Cycle trough audio devices. [More information.](#audio-devices-string)    |
+| /api/speed_set/:speed              | POST   | `int` or `float`                                                                                       | Set playback speed to `:speed` (defaults to `1` for quick reset)          |
+| /api/speed_adjust/:amount          | POST   | `int` or `float`                                                                                       | Multiply playback speed by `:amount` (where `1.0` is no change)           |
+| /api/loadfile/:path/:mode          | POST   | :path URL encoded `string` <br />:mode `string`  options: `replace` (default), `append`, `append-play` | Load file to playlist. Together with youtube-dl, this also works for URLs |
+| /api/collections/:path             | GET    | If no :path is provided, the configured collections are returned.                                      | List directories and files (see [collections](#collections))              |
 
 
 All POST endpoints return a JSON message. If successful: `{"message": "success"}`, otherwise, the message will contain
@@ -382,7 +382,7 @@ information about the error.
     "position": -0.0,        # <-- seconds
     "remaining": 6.024,      # <-- seconds
     "speed": 1,              # <-- multiplier
-    "start": null, ,         # <-- seconds as string or null
+    "start": null,           # <-- seconds as string or null
     "sub-delay": 0,          # <-- milliseconds
     "track-list": [          # <-- all available video, audio and sub tracks
         {
