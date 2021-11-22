@@ -382,7 +382,7 @@ information about the error.
     "position": -0.0,        # <-- seconds
     "remaining": 6.024,      # <-- seconds
     "speed": 1,              # <-- multiplier
-    "start": null, ,         # <-- seconds as string or null
+    "start": null,           # <-- seconds as string or null
     "sub-delay": 0,          # <-- milliseconds
     "track-list": [          # <-- all available video, audio and sub tracks
         {
