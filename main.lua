@@ -1006,12 +1006,18 @@ local function parse_collections()
   local collections = {}
   for collection in string.gmatch(options.collections, "[^;]+") do
     if not is_dir(collection) then
-      mp.msg.error("No such directory: " .. collection)
+      mp.msg.error("No such collection directory: " .. collection)
     else
       table.insert(collections, collection)
     end
   end
   options.collections = collections
+end
+
+local function validate_static_dir()
+  if not is_dir(options.static_dir) then
+    mp.msg.log("WARN", "No such static_dir directory: " .. options.static_dir)
+  end
 end
 
 if options.disable then
@@ -1025,6 +1031,7 @@ end
 local passwd = get_passwd(options.htpasswd_path)
 local servers = init_servers()
 parse_collections()
+validate_static_dir()
 
 if passwd ~= 1 then
   if next(servers) == nil then
