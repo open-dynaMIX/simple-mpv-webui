@@ -6,7 +6,7 @@ local dec64 = require("mime").decode("base64")
 local url = require("socket.url")
 
 local MSG_PREFIX = "[webui] "
-local VERSION = "2.2.0"
+local VERSION = "3.0.0"
 
 function string.starts(String, Start)
   return string.sub(String,1,string.len(Start))==Start

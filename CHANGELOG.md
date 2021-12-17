@@ -1,5 +1,22 @@
 # Changelog
 
+## v3.0.0
+### Feature
+* Warn about missing static_dir directory ([`ad8daf9`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/ad8daf9ceb800cf9068e43ae1da31cbea728d8c4))
+* Make new properties "start" and "end" available ([`da8dc79`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/da8dc79306ca5970c96a135c3f5b147bb3cd72a8))
+* **api:** Add `/api/collections` endpoint ([`450b147`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/450b1473561b91a3fa56a37f354a6dc6b8fafb20))
+* Rename webui.lua to main.lua ([`e7c47c3`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/e7c47c3aa3928f0070253093ad02f06c0b289d50))
+
+### Fix
+* **api:** Fix init servers; gracefully handle port already in use ([`ebde38c`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/ebde38c14df7881f7718f9be65e9d4d4cbec0899))
+
+### Breaking
+* `webui.lua` was renamed to `main.lua`  ([`e7c47c3`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/e7c47c3aa3928f0070253093ad02f06c0b289d50))
+
+### Documentation
+* Fix ToC in README ([`6726d11`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/6726d11f8d79e87f85a088e54757968b99b24d87))
+* Make clear that `loadfile` takes an URL encoded string ([`ed4f9f3`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/ed4f9f3331144d6964d728786120d4ae247ed38e))
+
 ## v2.2.0
 ### Feature
 * Add keyboard shortcut button in settings overlay ([`62b824d`](https://github.com/open-dynaMIX/simple-mpv-webui/commit/62b824d5f11cb5e4cdbe6c982ba6d41bede7c4dd))
