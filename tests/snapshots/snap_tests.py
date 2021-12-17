@@ -246,6 +246,7 @@ snapshots["test_status 1"] = {
             "forced": False,
             "hearing-impaired": False,
             "id": 1,
+            "image": False,
             "main-selection": 0,
             "selected": True,
             "type": "audio",

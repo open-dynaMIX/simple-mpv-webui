@@ -399,6 +399,7 @@ information about the error.
             "ff-index": 0,
             "forced": false,
             "id": 1,
+            "image": False,
             "main-selection": 0,
             "selected": true,
             "src-id": 0,
