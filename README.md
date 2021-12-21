@@ -51,7 +51,7 @@ add something like `scripts-append=/path/to/simple-mpv-webui/` to `mpv.conf`.
   add something like `scripts-append=/path/to/simple-mpv-webui/webui.lua` to `mpv.conf`.
 </details>
 
-See [Dependencies](#dependencies) for more information about the installation.
+See [dependencies](#dependencies) for more information about the installation.
 
 You can access the webui when visiting [http://127.0.0.1:8080](http://127.0.0.1:8080) or
 [http://[::1]:8080](http://[::1]:8080) in your webbrowser.
@@ -399,7 +399,7 @@ information about the error.
             "ff-index": 0,
             "forced": false,
             "id": 1,
-            "image": False,
+            "image": false,
             "main-selection": 0,
             "selected": true,
             "src-id": 0,
