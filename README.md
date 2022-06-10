@@ -202,10 +202,10 @@ Only plaintext `.htpasswd` entries are supported.
 
 ### Windows
 
-In [this repository](https://github.com/chuck-/simple-mpv-webui-windows-libs) you can find a guide,
+In [this repository](https://github.com/57op/simple-mpv-webui-windows-libs) you can find a guide,
 build script and pre-built binaries.
 
-Thanks to [@chuck-](https://github.com/chuck-) for providing this!
+Thanks to [@57op](https://github.com/57op) for providing this!
 
 ### macOS
 
