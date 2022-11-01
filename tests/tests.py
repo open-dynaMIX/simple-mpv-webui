@@ -661,8 +661,8 @@ def test_logging(htpasswd, mpv_instance, use_auth, username, password, status_co
 
     assert (
         mpv_instance.expect(
-            fr"\[simple_mpv_webui\] ::1 - {user} \[\d\d?/[A-Z][a-z][a-z][a-z]?/?/\d{{4}}:\d{{2}}:\d{{2}}:\d{{2}} \+0{{4}}\] "
-            fr'"GET /api/status HTTP/1.1" {status_code} \d* "https://referer" "python-requests/',
+            rf"\[simple_mpv_webui\] ::1 - {user} \[\d\d?/[A-Z][a-z][a-z][a-z]?/?/\d{{4}}:\d{{2}}:\d{{2}}:\d{{2}} \+0{{4}}\] "
+            rf'"GET /api/status HTTP/1.1" {status_code} \d* "https://referer" "python-requests/',
             timeout=1,
         )
         == 0
