@@ -52,6 +52,11 @@
           </td>
         </tr>
       </table>
+      <form onsubmit="playlistUpdate('append-play')" class="playlist-controls">
+        <input type="text" id="new-playlist-uri" placeholder="Add URI">
+        <div onClick="playlistUpdate('append-play')" class="button unselectable blue icon-content playlist-controls"><i class="fa fa-play-circle"></i></div>
+        <div onClick="playlistUpdate('append')" class="button unselectable blue icon-content playlist-controls"><i class="fa fa-plus-circle"></i></div>
+      </form>
       <div id="playlist"></div>
     </div>
 
