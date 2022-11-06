@@ -42,6 +42,7 @@ h3 {
 h4 {
   font-size: 7vmin;
   margin-top: 30px;
+  margin-bottom: 5px;
   clear: right;
 }
 
@@ -434,6 +435,32 @@ input[type="text" i]:focus {
   border: none;
 }
 
+input[type="number" i] {
+  border: none;
+  text-align: center;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  background: var(--main-fg-color);
+  font-size: 80px;
+  white-space: nowrap;
+  outline: none;
+  display: block;
+  width: 2em;
+  height: 1em;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: var(--main-bg-color);
   opacity: 1; /* Firefox */
@@ -460,6 +487,7 @@ input[type="text" i]:focus {
 table#shortcuts-table, table#settings-table {
   width: 100%;
   font-size: 4vmin;
+  border-spacing: 0 .75em;
 }
 
 table#shortcuts-table td, table#settings-table td {
@@ -472,12 +500,13 @@ table#shortcuts-table tr:first-child td {
 }
 
 table#settings-table {
-  margin-top: 50px;
-  margin-bottom: 150px;
+  width: 90%;
+  margin: 50px auto 0;
 }
 
 table#settings-table tr {
   font-weight: bold;
+  margin-bottom: 1em;
 }
 
 .tgl {
