@@ -3,13 +3,33 @@ let DEBUG = false;
     metadata = {};
     subs = {};
     audios = {};
-    settings = {"disableNotifications": false}
+    settings = {"disableNotifications": false, "seekSeconds": 10}
+
+
+function setCookie(cookie) {
+  document.cookie = cookie + '; expires = Thu, 23 May 2200 20:00:00 UTC";'
+}
+
+
+function loadCookies() {
+  document.cookie.split('; ').forEach((cookie) => {
+    if (cookie === "") {
+      return;
+    }
+    let [key, value] = cookie.split('=')
+    if (key === 'disableNotifications') {
+      value = (value === 'true');
+    } else if (key === 'seekSeconds') {
+      value = parseInt(value)
+    }
+    settings[key] = value
+  });
+}
 
 window.onload = function() {
-  if (document.cookie.split('; ').find(row => row.startsWith('disableNotifications'))) {
-    settings.disableNotifications = true;
-    document.getElementById("disableNotifications").checked = true;
-  }
+  loadCookies()
+  document.getElementById("disableNotifications").checked = settings.disableNotifications;
+  document.getElementById("seekSeconds").value = settings.seekSeconds;
 }
 
 function useNotifications() {
@@ -651,6 +671,10 @@ function setLoop(loopFile, loopPlaylist) {
   loopButton.value = value;
 }
 
+function seek(multiplier) {
+  send("seek", settings.seekSeconds * multiplier)
+}
+
 function handleStatusResponse(json) {
   setMetadata(json['metadata'], json['playlist'], json['filename']);
   setTrackList(json['track-list']);
@@ -705,20 +729,20 @@ function status(){
 }
 
 document.getElementById("disableNotifications").onchange = function() {
-  const disableNotifications = document.getElementById("disableNotifications").checked;
-  settings.disableNotifications = disableNotifications;
-  let cookie = "disableNotifications= ; expires = Thu, 23 May 2014 20:00:00 UTC";
-  if (disableNotifications) {
-    cookie = "disableNotifications=true ; expires = Thu, 23 May 2200 20:00:00 UTC";
-  }
-  document.cookie = cookie;
+  settings.disableNotifications = document.getElementById("disableNotifications").checked;
+  setCookie("disableNotification=" + settings.disableNotifications)
   const audio = document.getElementById("audio");
   audio.src = "static/audio/silence.mp3";
-  if (disableNotifications) {
+  if (settings.disableNotifications) {
     audio.src = "";
   } else {
     audioLoad()
   }
+};
+
+document.getElementById("seekSeconds").onchange = function() {
+  settings.seekSeconds = document.getElementById("seekSeconds").value;
+  setCookie("seekSeconds=" + settings.seekSeconds)
 };
 
 function audioLoad() {
@@ -767,8 +791,8 @@ function setupNotification({duration, speed, position}) {
 
     navigator.mediaSession.setActionHandler('play', function() {send('play');});
     navigator.mediaSession.setActionHandler('pause', function() {send('pause');});
-    navigator.mediaSession.setActionHandler('seekbackward', function() {send('seek', '-10');});
-    navigator.mediaSession.setActionHandler('seekforward', function() {send('seek', '10');});
+    navigator.mediaSession.setActionHandler('seekbackward', function() {seek(-1);});
+    navigator.mediaSession.setActionHandler('seekforward', function() {seek(1);});
     navigator.mediaSession.setActionHandler('previoustrack', function() {send('playlist_prev');});
     navigator.mediaSession.setActionHandler('nexttrack', function() {send('playlist_next');});
   }

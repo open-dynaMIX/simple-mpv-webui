@@ -76,6 +76,13 @@
           </td>
           <td>Disable usage of MediaSession API (notifications)</td>
         </tr>
+        <tr>
+          <td>
+            <input type="number" value="1" id="seekSeconds" name="seekSeconds"/>
+            <label for="seekSeconds"></label>
+          </td>
+          <td>Amount of seconds to jump with <i class="fas fa-backward"></i> / <i class="fas fa-forward"></i></td>
+        </tr>
       </table>
       <a class="repo-link" href="https://github.com/open-dynaMIX/simple-mpv-webui" target="_blank" title="simple-mpv-webui on GitHub"><i class="fab fa-github"></i></a>
     </div>
@@ -170,12 +177,12 @@
       </div>
     </div>
 
-    <div onClick="send('seek', '-10')" class="button unselectable left blue" title="Rewind 10 sec (ArrowLeft)">
+    <div onClick="seek(-1)" class="button unselectable left blue" title="Seek back (ArrowLeft)">
       <div class="content icon-content">
         <i class="fas fa-backward"></i>
       </div>
     </div>
-    <div onClick="send('seek', '10')" class="button unselectable right blue" title="Forward 10 sec (ArrowRight)">
+    <div onClick="seek(1)" class="button unselectable right blue" title="Seek forward (ArrowRight)">
       <div class="content icon-content">
         <i class="fas fa-forward"></i>
       </div>
