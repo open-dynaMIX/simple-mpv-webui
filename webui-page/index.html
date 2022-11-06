@@ -31,6 +31,11 @@
               </div>
           </td>
           <td>
+              <div onClick="toggleOverlay('uri-loader-overlay')" class="button unselectable gray content icon-content playlist-controls">
+                <i class="fas fa-plus"></i>
+              </div>
+          </td>
+          <td>
               <div onClick="playlist_loop_cycle()" class="button unselectable blue content icon-content playlist-controls playlistLoopButton">
                 <i class="fas fa-redo-alt"></i>
               </div>
@@ -85,6 +90,19 @@
           <td>Action</td>
         </tr>
       </table>
+    </div>
+
+    <div id="uri-loader-overlay" class="overlay">
+      <div onClick="toggleOverlay('uri-loader-overlay')" class="overlay-top">
+        <i class="far fa-times-circle"></i>
+      </div>
+      <form onsubmit="uriLoader('append-play')" class="uri-loader-form">
+        <label for="uri-loader-input">
+          <input type="text" id="uri-loader-input" placeholder="Enter URI" class="green">
+        </label>
+        <div onClick="uriLoader('append-play')" class="button unselectable blue icon-content playlist-controls"><i class="fa fa-play-circle"></i></div>
+        <div onClick="uriLoader('append')" class="button unselectable blue icon-content playlist-controls"><i class="fa fa-plus-circle"></i></div>
+      </form>
     </div>
 
     <div class="burger">
