@@ -5,7 +5,7 @@ flake8-debugger==4.1.2
 flake8-isort==5.0.0
 flake8-string-format==0.3.0
 flake8-tuple==0.4.1
-gitlint==0.17.0
+gitlint==0.18.0
 ipython==8.6.0
 isort==5.10.1
 pexpect==4.8.0
