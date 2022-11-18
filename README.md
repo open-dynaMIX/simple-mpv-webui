@@ -53,6 +53,7 @@ add something like `scripts-append=/path/to/simple-mpv-webui/` to `mpv.conf`.
 
   Alternatively you can also use the `--script` or `--scripts-append` option from mpv or
   add something like `scripts-append=/path/to/simple-mpv-webui/webui.lua` to `mpv.conf`.
+
   ---
 </details>
 
