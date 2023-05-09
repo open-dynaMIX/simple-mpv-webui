@@ -11,7 +11,12 @@ COPY tests/environment/mpv.conf $MPV_HOME/mpv.conf
 
 WORKDIR $MPV_HOME/scripts/simple-mpv-webui/tests
 
-RUN pip3 install --no-cache-dir --upgrade -r requirements.txt --disable-pip-version-check
+RUN pip3 install \
+    --no-cache-dir \
+    --upgrade \
+    -r requirements.txt \
+    --disable-pip-version-check \
+    --break-system-packages
 
 EXPOSE 8080
 
