@@ -1,0 +1,319 @@
+# serializer version: 1
+# name: TestsRequests.test_collections[api/collections-200-mpv_instance0]
+  list([
+    dict({
+      'is-directory': True,
+      'path': '/app/scripts/simple-mpv-webui/tests/environment/collection',
+    }),
+  ])
+# ---
+# name: TestsRequests.test_collections[api/collections/%2Fapp%2Fscripts%2Fsimple-mpv-webui%2Ftests%2Fenvironment%2Fcollection-200-mpv_instance0]
+  list([
+    dict({
+      'is-directory': False,
+      'path': "/app/scripts/simple-mpv-webui/tests/environment/collection/'file b'.log",
+    }),
+    dict({
+      'is-directory': True,
+      'path': '/app/scripts/simple-mpv-webui/tests/environment/collection/A folder',
+    }),
+    dict({
+      'is-directory': False,
+      'path': '/app/scripts/simple-mpv-webui/tests/environment/collection/file a.log',
+    }),
+    dict({
+      'is-directory': False,
+      'path': '''
+        /app/scripts/simple-mpv-webui/tests/environment/collection/line
+        break
+      ''',
+    }),
+  ])
+# ---
+# name: TestsRequests.test_post_wrong_args[add-&-foo]
+  dict({
+    'message': 'Parameter name contains invalid characters',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[add-foo-&]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[add_audio_delay-&-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[add_chapter-&-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[add_sub_delay-&-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[add_volume-&-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[cycle-&-foo]
+  dict({
+    'message': 'Parameter name contains invalid characters',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[cycle-foo-&]
+  dict({
+    'message': 'Cycle paramater is not "up" or "down"',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[loadfile-None-None]
+  dict({
+    'message': 'No url provided!',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[loadfile-http://foo-invalid]
+  dict({
+    'message': "Invalid mode: 'foo'",
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[loop_file-&-None]
+  dict({
+    'message': 'Invalid parameter!',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[loop_file-None-None]
+  dict({
+    'message': 'Invalid parameter!',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[loop_playlist-&-None]
+  dict({
+    'message': 'Invalid parameter!',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[multiply-&-23]
+  dict({
+    'message': 'Parameter name contains invalid characters',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[multiply-23-&]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[multiply-23-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[playlist_jump-&-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[playlist_jump-None-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[playlist_move-&-23]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[playlist_move-23-&]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[playlist_move-23-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[playlist_move_up-&-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[playlist_move_up-None-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[playlist_remove-&-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[playlist_remove-None-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[seek-None-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[seek-g-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[set-&-foo]
+  dict({
+    'message': 'Parameter name contains invalid characters',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[set-foo- ]
+  dict({
+    'message': 'Parameter value contains invalid characters',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[set_audio_delay-&-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[set_position-&-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[set_position-None-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[set_sub_delay-&-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[set_volume-&-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[speed_adjust-&-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[speed_set-&-None]
+  dict({
+    'message': 'Parameter needs to be an integer or float',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[toggle-&-None]
+  dict({
+    'message': 'Parameter name contains invalid characters',
+  })
+# ---
+# name: TestsRequests.test_post_wrong_args[toggle-None-None]
+  dict({
+    'message': 'Parameter name contains invalid characters',
+  })
+# ---
+# name: test_status
+  dict({
+    'audio-delay': 0,
+    'audio-devices': list([
+      dict({
+        'active': True,
+        'description': 'Autoselect device',
+        'name': 'auto',
+      }),
+      dict({
+        'active': False,
+        'description': 'Default (alsa)',
+        'name': 'alsa',
+      }),
+      dict({
+        'active': False,
+        'description': 'Default (jack)',
+        'name': 'jack',
+      }),
+      dict({
+        'active': False,
+        'description': 'Default (sdl)',
+        'name': 'sdl',
+      }),
+    ]),
+    'chapter': 0,
+    'chapter-list': list([
+    ]),
+    'chapters': 0,
+    'duration': 6.024,
+    'end': None,
+    'filename': '01 - dummy.mp3',
+    'fullscreen': False,
+    'loop-file': False,
+    'loop-playlist': False,
+    'metadata': dict({
+      'album': 'Dummy Album',
+      'artist': 'Dummy Artist',
+      'comment': '0',
+      'date': '2020',
+      'encoder': 'Lavc57.10',
+      'genre': 'Jazz',
+      'title': 'First dummy',
+    }),
+    'pause': True,
+    'playlist': list([
+      dict({
+        'current': True,
+        'filename': './environment/test_media/01 - dummy.mp3',
+        'id': 1,
+        'playing': True,
+        'title': 'First dummy',
+      }),
+      dict({
+        'filename': './environment/test_media/02 - dummy.mp3',
+        'id': 2,
+      }),
+      dict({
+        'filename': './environment/test_media/03 - dummy.mp3',
+        'id': 3,
+      }),
+    ]),
+    'position': -0.0,
+    'remaining': 6.024,
+    'speed': 1,
+    'start': None,
+    'sub-delay': 0,
+    'track-list': list([
+      dict({
+        'albumart': False,
+        'audio-channels': 2,
+        'auto-forced-only': False,
+        'codec': 'mp3',
+        'decoder-desc': 'mp3float (MP3 (MPEG audio layer 3))',
+        'default': False,
+        'demux-bitrate': 32000,
+        'demux-channel-count': 2,
+        'demux-channels': 'stereo',
+        'demux-samplerate': 48000,
+        'dependent': False,
+        'external': False,
+        'ff-index': 0,
+        'forced': False,
+        'hearing-impaired': False,
+        'id': 1,
+        'image': False,
+        'main-selection': 0,
+        'selected': True,
+        'type': 'audio',
+        'visual-impaired': False,
+      }),
+    ]),
+    'volume': 0,
+    'volume-max': 130,
+    'webui-version': '3.0.0',
+  })
+# ---
