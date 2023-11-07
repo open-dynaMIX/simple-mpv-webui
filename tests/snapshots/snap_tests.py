@@ -220,6 +220,7 @@ snapshots["test_status 1"] = {
             "filename": "./environment/test_media/01 - dummy.mp3",
             "id": 1,
             "playing": True,
+            "title": "First dummy",
         },
         {"filename": "./environment/test_media/02 - dummy.mp3", "id": 2},
         {"filename": "./environment/test_media/03 - dummy.mp3", "id": 3},
@@ -233,6 +234,7 @@ snapshots["test_status 1"] = {
         {
             "albumart": False,
             "audio-channels": 2,
+            "auto-forced-only": False,
             "codec": "mp3",
             "decoder-desc": "mp3float (MP3 (MPEG audio layer 3))",
             "default": False,

@@ -224,7 +224,7 @@ class TestsRequests:
             ("speed_adjust", "0.9", 0.9),
             ("speed_set", "", 1),
         )
-        for (endpoint, arg, value) in TESTS:
+        for endpoint, arg, value in TESTS:
             assert send(endpoint, arg=arg, status="speed") == value
 
     @staticmethod
